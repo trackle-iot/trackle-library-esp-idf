@@ -1,0 +1,3 @@
+[submodule "trackle-library"]
+	path = trackle-library
+	url = git@github.com:trackle-iot/trackle-library.git
