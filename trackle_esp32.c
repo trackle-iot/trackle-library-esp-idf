@@ -11,6 +11,11 @@
 static const char *TRACKLE_TAG = "trackle_esp32";
 const TickType_t xTrackleSemaphoreWait = 100;
 
+// for diagnostics
+#define ESP32_DIAGNOSTIC_TIME 1000
+system_tick_t esp32_check_diagnostic_millis = 0;
+uint32_t total_ram = 0;
+
 // if is a product but FIRMWARE_VERSION and PRODUCT_ID not definet, abort
 #if defined(IS_PRODUCT) && (!defined(FIRMWARE_VERSION) || !defined(PRODUCT_ID))
 #error For product FIRMWARE_VERSION and PRODUCT_ID must be defined!
@@ -236,6 +241,12 @@ void reboot_cb(const char *data)
  */
 void trackle_task(void *pvParameter)
 {
+    multi_heap_info_t info;
+    heap_caps_get_info(&info, MALLOC_CAP_INTERNAL);
+    total_ram = info.total_free_bytes + info.total_allocated_bytes;
+    trackleDiagnosticSystem(trackle_s, SYSTEM_TOTAL_RAM, total_ram);
+    trackleDiagnosticSystem(trackle_s, SYSTEM_LAST_RESET_REASON, esp_reset_reason());
+
     trackleConnect(trackle_s);
 
     while (1)
@@ -245,6 +256,16 @@ void trackle_task(void *pvParameter)
             trackleLoop(trackle_s); // da chiamare nel loop per far funzionare la libreria
             xSemaphoreGive(xTrackleSemaphore);
         }
+
+        // updating diagnostic
+        if (getMillis() - esp32_check_diagnostic_millis >= ESP32_DIAGNOSTIC_TIME)
+        {
+            esp32_check_diagnostic_millis = getMillis();
+            trackleDiagnosticSystem(trackle_s, SYSTEM_UPTIME, getMillis() / 1000);
+            trackleDiagnosticSystem(trackle_s, SYSTEM_FREE_MEMORY, esp_get_free_heap_size());
+            trackleDiagnosticSystem(trackle_s, SYSTEM_USED_RAM, (total_ram - esp_get_free_heap_size()));
+        }
+
         vTaskDelay(20 / portTICK_PERIOD_MS);
     }
 
@@ -294,7 +315,7 @@ void initTrackle()
 
     trackleSetFirmwareVersion(trackle_s, FIRMWARE_VERSION);
     trackleSetOtaMethod(trackle_s, SEND_URL);
-    trackleSetConnectionType(trackle_s, WIFI);
+    trackleSetConnectionType(trackle_s, CONNECTION_TYPE_WIFI);
 
     // configurazione delle callback
     trackleSetMillis(trackle_s, getMillis);
@@ -306,6 +327,7 @@ void initTrackle()
     trackleSetSleepCallback(trackle_s, sleep_cb);
 
     trackleSetSystemRebootCallback(trackle_s, reboot_cb);
+    trackleSetPublishHealthCheckInterval(trackle_s, 60 * 60 * 1000); // 1 time a hour
 }
 
 void connectTrackle()
