@@ -9,6 +9,7 @@ jobs:
             - name: Check out code with submodules
               uses: actions/checkout@v2
               with:
+                token: ${{ secrets.TOKEN }}
                 submodules: 'recursive'
             - name: Initialize mandatory git config
               run: |
