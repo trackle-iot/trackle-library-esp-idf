@@ -10,6 +10,7 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/trackle-library/src/trackle.cpp"
      "${COMPONENT_DIR}/trackle-library/src/trackle_interface.cpp"
      "${COMPONENT_DIR}/trackle-library/src/logging.cpp"
+     "${COMPONENT_DIR}/trackle-library/src/diagnostic.cpp"
      "${COMPONENT_DIR}/trackle-library/src/messages.cpp"
      "${COMPONENT_DIR}/trackle-library/src/protocol.cpp"
      "${COMPONENT_DIR}/trackle-library/src/protocol_defs.cpp"
