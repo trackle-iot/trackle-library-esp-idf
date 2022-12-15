@@ -96,11 +96,6 @@ int connect_cb_udp(const char *address, int port)
     int ip_protocol;
     char addr_str[128];
 
-    // const char *address = "192.168.1.124";
-    // const char *address = "79.6.140.254";
-    // const char *address = "010203040506070809101112.udp.device-staging.trackle.io";
-    // port = 30027;
-
     struct hostent *res = gethostbyname(address);
     if (res)
     {
