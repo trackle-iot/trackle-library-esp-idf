@@ -96,7 +96,16 @@ int connect_cb_udp(const char *address, int port)
     int ip_protocol;
     char addr_str[128];
 
+#ifdef SERVER_ADDRESS
+    struct hostent *res = gethostbyname(SERVER_ADDRESS);
+#else
     struct hostent *res = gethostbyname(address);
+#endif
+
+#ifdef SERVER_PORT
+    port = SERVER_PORT;
+#endif
+
     if (res)
     {
         ESP_LOGI(TRACKLE_TAG, "Dns address %s resolved", address);
