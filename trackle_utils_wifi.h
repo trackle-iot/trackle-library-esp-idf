@@ -89,7 +89,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
 
         // diagnostic
         trackleDiagnosticNetwork(trackle_s, NETWORK_IPV4_ADDRESS, (int32_t)(event->ip_info.ip.addr));
-        trackleDiagnosticNetwork(trackle_s, NETWORK_IPV4_GATEWAY, event->ip_info.gw.addr);
+        trackleDiagnosticNetwork(trackle_s, NETWORK_IPV4_GATEWAY, (int32_t)event->ip_info.gw.addr);
     }
 }
 
