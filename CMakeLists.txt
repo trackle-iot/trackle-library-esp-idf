@@ -30,8 +30,13 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/trackle-library/lib/tinydtls/peer.c"
      "${COMPONENT_DIR}/trackle-library/lib/tinydtls/session.c"
      "${COMPONENT_DIR}/trackle-library/lib/micro-ecc/uECC.c"
+     "${COMPONENT_DIR}/src/trackle_utils.c"
+     "${COMPONENT_DIR}/src/trackle_utils_bt_functions.c"
+     "${COMPONENT_DIR}/src/trackle_utils_bt_provision.c"
+     "${COMPONENT_DIR}/src/trackle_utils_claimcode.c"
+    
      INCLUDE_DIRS "." "./trackle-library/include" "./trackle-library/lib/tinydtls" "./trackle-library/lib/tinydtls/aes" "./trackle-library/lib/tinydtls/sha2" "./trackle-library/lib/micro-ecc"
-     REQUIRES json)
+     REQUIRES json wifi_provisioning)
 
 target_link_libraries(${COMPONENT_TARGET} "-u custom_app_desc")
 target_compile_definitions(${COMPONENT_TARGET} PUBLIC "-DWITH_ESPIDF")
