@@ -1,0 +1,7 @@
+digraph "__attribute__"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{__attribute__\n|+ platform_version\l+ empty1\l+ empty2\l+ empty3\l+ empty4\l+ firmware_version\l+ empty5\l+ empty6\l+ product_id\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+}

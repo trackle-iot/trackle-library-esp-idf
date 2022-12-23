@@ -1,0 +1,7 @@
+digraph "ota_data"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{ota_data\n|+ url\l+ job_id\l+ event_data\l+ firmware_crc32_ota\l+ actual_crc32_ota\l+ ota_finish_err\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+}
