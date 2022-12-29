@@ -4,6 +4,7 @@
 #define TRACKLE_ESP32_VERSION "1.0.0"
 
 #include "trackle_interface.h"
+#include "trackle_utils.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

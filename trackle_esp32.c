@@ -91,6 +91,14 @@ void sleep_cb(uint32_t sleep)
  */
 int connect_cb_udp(const char *address, int port)
 {
+    // wifi not connected
+    EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
+    if (!(bits & WIFI_CONNECTED_BIT))
+    {
+        ESP_LOGI(TRACKLE_TAG, "WiFi not connected, skipping cloud connection...");
+        return -2;
+    }
+
     ESP_LOGI(TRACKLE_TAG, "Connecting socket");
     int addr_family;
     int ip_protocol;
@@ -112,7 +120,7 @@ int connect_cb_udp(const char *address, int port)
     }
     else
     {
-        ESP_LOGW(TRACKLE_TAG, "error resolving gethostbyname %s resolved", address);
+        ESP_LOGW(TRACKLE_TAG, "error resolving gethostbyname %s", address);
         return -1;
     }
 
@@ -129,6 +137,7 @@ int connect_cb_udp(const char *address, int port)
     if (cloud_socket < 0)
     {
         ESP_LOGE(TRACKLE_TAG, "Unable to create socket: errno %d", errno);
+        return -3;
     }
     ESP_LOGI(TRACKLE_TAG, "Socket created, sending to %s:%d", address, port);
 
@@ -138,7 +147,6 @@ int connect_cb_udp(const char *address, int port)
     socket_timeout.tv_usec = 1000; // 1ms
     setsockopt(cloud_socket, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&socket_timeout, sizeof(struct timeval));
 
-    trackleConnectionCompleted(trackle_s);
     return 1;
 }
 
