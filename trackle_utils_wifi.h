@@ -11,7 +11,7 @@
  * @brief Functions to manage the connection of the device to WLAN via Wi-Fi
  */
 
-#define CHECK_WIFI_TIMEOUT 5000
+#define CHECK_WIFI_TIMEOUT 10000
 unsigned long timeout_connect_wifi = 0;
 esp_netif_t *sta_netif;
 
