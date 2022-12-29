@@ -44,6 +44,7 @@ digraph "trackle_utils_bt_provision.h"
   Node19 [label="trackle_esp32.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__esp32_8h.html",tooltip=" "];
   Node19 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node20 [label="trackle_interface.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node19 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node19 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node19 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node19 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

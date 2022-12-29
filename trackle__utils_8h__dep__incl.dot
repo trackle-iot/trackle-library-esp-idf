@@ -5,12 +5,17 @@ digraph "trackle_utils.h"
   node [fontname="Helvetica",fontsize="10",shape=record];
   Node1 [label="trackle_utils.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Utility functions."];
   Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="trackle_utils_bt_provision.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__bt__provision_8h.html",tooltip="Functions to perform Bluetooth provisioning."];
-  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="trackle_utils_ota.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__ota_8h.html",tooltip="Utilities to implement Over The Air firmware updates."];
+  Node2 [label="trackle_esp32.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__esp32_8h.html",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="trackle_esp32.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__esp32_8c.html",tooltip=" "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="trackle_utils_bt_provision.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__bt__provision_8h.html",tooltip="Functions to perform Bluetooth provisioning."];
   Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node4 [label="trackle_utils_storage.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__storage_8h.html",tooltip="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS."];
   Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node5 [label="trackle_utils_wifi.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__wifi_8h.html",tooltip="Functions to manage the connection of the device to WLAN via Wi-Fi."];
-  Node5 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="trackle_utils_ota.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__ota_8h.html",tooltip="Utilities to implement Over The Air firmware updates."];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="trackle_utils_storage.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__storage_8h.html",tooltip="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS."];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="trackle_utils_wifi.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$trackle__utils__wifi_8h.html",tooltip="Functions to manage the connection of the device to WLAN via Wi-Fi."];
+  Node7 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 }
