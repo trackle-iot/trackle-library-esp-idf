@@ -1,6 +1,20 @@
 /**
- * @file trackle_utils_ota.h
- * @brief Utilities to implement Over The Air firmware updates.
+ ******************************************************************************
+  Copyright (c) 2022 IOTREADY S.r.l.
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation, either
+  version 3 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************
  */
 
 #ifndef TRACKLE_UTILS_OTA_H
@@ -13,6 +27,11 @@
 #include "cJSON.h"
 
 #include "trackle_utils.h"
+
+/**
+ * @file trackle_utils_ota.h
+ * @brief Utilities to implement Over The Air firmware updates.
+ */
 
 static const char *OTA_TAG = "trackle-utils-ota";
 static const char *OTA_EVENT_NAME = "trackle/device/update/status";

@@ -4,6 +4,9 @@ This framework enables Trackle cloud connectivity with ESP32 based platforms usi
 
 Documentation for this repository can be found [here](https://trackle-iot.github.io/trackle-library-esp-idf/).
 
+# License
+Unless stated elsewhere, file headers or otherwise, all files herein are licensed under an LGPLv3 license. For more information, please read the LICENSE file.
+
 ## Getting Started
 ### Hardware
 
