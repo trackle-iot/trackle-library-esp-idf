@@ -26,13 +26,12 @@ var NAVTREE =
 [
   [ "Trackle esp-idf", "index.html", [
     [ "trackle-esp-idf-component", "md__r_e_a_d_m_e.html", [
-      [ "License", "md__r_e_a_d_m_e.html#autotoc_md1", [
-        [ "Getting Started", "md__r_e_a_d_m_e.html#autotoc_md2", [
-          [ "Hardware", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
-          [ "Development Host Setup", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
-        ] ],
-        [ "Creating a Trackle Device", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
-      ] ]
+      [ "License", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
+      [ "Getting Started", "md__r_e_a_d_m_e.html#autotoc_md2", [
+        [ "Hardware", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
+        [ "Development Host Setup", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+      ] ],
+      [ "Creating a Trackle Device", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
     ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
