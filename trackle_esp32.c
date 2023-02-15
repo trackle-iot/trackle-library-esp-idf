@@ -316,7 +316,7 @@ void initTrackle()
 
     // calback per i log e livello del log
     trackleSetLogCallback(trackle_s, log_cb);
-    trackleSetLogLevel(trackle_s, INFO);
+    trackleSetLogLevel(trackle_s, TRACKLE_INFO);
 
     // inizializzazione della libreria
     trackleInit(trackle_s);
