@@ -92,19 +92,19 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         wifi_event_sta_disconnected_t *event = (wifi_event_sta_disconnected_t *)event_data;
         ESP_LOGW(WIFI_TAG, "Wifi disconnection event: %d...", event->reason);
 
-        if (bits & WIFI_CONNECTED_BIT)
+        if (bits & NETWORK_CONNECTED_BIT)
         {
             trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTS, 1);
         }
 
         timeout_connect_wifi = millis() + CHECK_WIFI_TIMEOUT;
-        xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        xEventGroupClearBits(s_wifi_event_group, NETWORK_CONNECTED_BIT);
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGW(WIFI_TAG, "Got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        xEventGroupSetBits(s_wifi_event_group, NETWORK_CONNECTED_BIT);
 
         // diagnostic
         esp_wifi_sta_get_ap_info(&ap);
@@ -174,7 +174,7 @@ void trackle_utils_wifi_loop()
     if (getMillis() - utility_check_diagnostic_millis >= UTILITY_DIAGNOSTIC_TIME)
     {
         utility_check_diagnostic_millis = getMillis();
-        if (bits & WIFI_CONNECTED_BIT)
+        if (bits & NETWORK_CONNECTED_BIT)
         {
             esp_wifi_sta_get_ap_info(&ap);
             trackleDiagnosticNetwork(trackle_s, NETWORK_RSSI, ap.rssi);

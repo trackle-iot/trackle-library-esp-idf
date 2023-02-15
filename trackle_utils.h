@@ -36,7 +36,7 @@
 // commons bits definitions
 extern EventGroupHandle_t s_wifi_event_group;
 
-#define WIFI_CONNECTED_BIT BIT0
+#define NETWORK_CONNECTED_BIT BIT0
 #define WIFI_TO_CONNECT_BIT BIT1
 
 #define START_PROVISIONING BIT2

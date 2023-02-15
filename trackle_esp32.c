@@ -93,7 +93,7 @@ int connect_cb_udp(const char *address, int port)
 {
     // wifi not connected
     EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
-    if (!(bits & WIFI_CONNECTED_BIT))
+    if (!(bits & NETWORK_CONNECTED_BIT))
     {
         ESP_LOGI(TRACKLE_TAG, "WiFi not connected, skipping cloud connection...");
         return -2;
