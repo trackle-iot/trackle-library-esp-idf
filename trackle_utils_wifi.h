@@ -107,8 +107,11 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
 
         // diagnostic
+        esp_wifi_sta_get_ap_info(&ap);
         trackleDiagnosticNetwork(trackle_s, NETWORK_IPV4_ADDRESS, (int32_t)(event->ip_info.ip.addr));
         trackleDiagnosticNetwork(trackle_s, NETWORK_IPV4_GATEWAY, (int32_t)event->ip_info.gw.addr);
+        trackleDiagnosticNetwork(trackle_s, NETWORK_RSSI, ap.rssi);
+        trackleDiagnosticNetwork(trackle_s, NETWORK_SIGNAL_STRENGTH, rssiToPercentage(ap.rssi));
     }
 }
 
