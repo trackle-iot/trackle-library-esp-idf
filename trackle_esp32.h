@@ -20,7 +20,7 @@
 #ifndef TRACKLE_ESP32_H
 #define TRACKLE_ESP32_H
 
-#define TRACKLE_ESP32_VERSION "1.0.0"
+#define TRACKLE_ESP32_VERSION "2.0.2"
 
 #include "trackle_interface.h"
 #include "trackle_utils.h"
