@@ -340,6 +340,15 @@ void initTrackle()
 
     trackleSetSystemRebootCallback(trackle_s, reboot_cb);
     trackleSetPublishHealthCheckInterval(trackle_s, 60 * 60 * 1000); // 1 time a hour
+
+    uint8_t derived_mac_addr[6] = {0};
+    ESP_ERROR_CHECK(esp_read_mac(derived_mac_addr, ESP_MAC_WIFI_STA));
+    ESP_LOGI(TRACKLE_TAG, "mac_wifi_sta %02x:%02x:%02x:%02x:%02x:%02x",
+             derived_mac_addr[0], derived_mac_addr[1], derived_mac_addr[2],
+             derived_mac_addr[3], derived_mac_addr[4], derived_mac_addr[5]);
+
+    trackleDiagnosticNetwork(trackle_s, NETWORK_MAC_ADDRESS_OUI, ouiFromMacAddress(derived_mac_addr));
+    trackleDiagnosticNetwork(trackle_s, NETWORK_MAC_ADDRESS_NIC, nicFromMacAddress(derived_mac_addr));
 }
 
 void connectTrackle()

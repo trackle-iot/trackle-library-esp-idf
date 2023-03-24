@@ -105,6 +105,16 @@ bool isValid(char *input, const char *op, int b)
     return false;
 }
 
+int32_t ouiFromMacAddress(uint8_t *value)
+{
+    return (value[0] << 0) + (value[1] << 8) + (value[2] << 16);
+}
+
+int32_t nicFromMacAddress(uint8_t *value)
+{
+    return (value[3] << 0) + (value[4] << 8) + (value[5] << 16);
+}
+
 /* struct tm to seconds since Unix epoch */
 time_t getGmTimestamp()
 {

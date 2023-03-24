@@ -98,6 +98,22 @@ int splitString(char *value, const char *separator, char *results[], size_t max_
 bool isValid(char *input, const char *op, int b);
 
 /**
+ * @brief Extract Organizationally Unique Identifier (OUI) from given MAC address
+ *
+ * @param value MAC address bytes array
+ * @return uint32_t Organizationally Unique Identifier (OUI)
+ */
+int32_t ouiFromMacAddress(uint8_t *value);
+
+/**
+ * @brief Extract Network Interface Card (NIC) from given MAC address
+ *
+ * @param value MAC address bytes array
+ * @return uint32_t Extract Network Interface Card (NIC)
+ */
+int32_t nicFromMacAddress(uint8_t *value);
+
+/**
  * @brief Get current UNIX epoch in seconds.
  *
  * @return Current UNIX epoch in seconds.
