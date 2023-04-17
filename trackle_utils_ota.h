@@ -140,7 +140,7 @@ void simple_ota_task(void *pvParameter)
         }
     }
 
-    if (esp_https_ota_is_complete_data_received(https_ota_handle) != true)
+    if (https_ota_handle == NULL || esp_https_ota_is_complete_data_received(https_ota_handle) != true)
     {
         ESP_LOGE(OTA_TAG, "Complete data was not received.");
         ota_data.ota_finish_err = ESP_ERR_INVALID_ARG;
