@@ -67,21 +67,6 @@ void time_cb(time_t time, unsigned int param, void *reserved)
 }
 
 /**
- * The Trackle library calls the sleep_cb function when it needs to sleep for a specified number of
- * milliseconds.
- *
- * @param sleep The number of milliseconds to sleep.
- *
- * @return Nothing.
- */
-void sleep_cb(uint32_t sleep)
-{
-    ESP_LOGD(TRACKLE_TAG, "sleep_cb: %d", sleep);
-    vTaskDelay(sleep / portTICK_PERIOD_MS);
-    return;
-}
-
-/**
  * It creates a socket, sets the timeout and calls the trackleConnectionCompleted function
  *
  * @param address the address of the server to connect to.
@@ -106,6 +91,8 @@ int connect_cb_udp(const char *address, int port)
 
 #ifdef SERVER_ADDRESS
     struct hostent *res = gethostbyname(SERVER_ADDRESS);
+    ESP_LOGI(TRACKLE_TAG, "Overriding server address: %s", SERVER_ADDRESS);
+
 #else
     struct hostent *res = gethostbyname(address);
 #endif
@@ -336,7 +323,6 @@ void initTrackle()
     trackleSetConnectCallback(trackle_s, connect_cb_udp);
     trackleSetDisconnectCallback(trackle_s, disconnect_cb);
     trackleSetSystemTimeCallback(trackle_s, time_cb);
-    trackleSetSleepCallback(trackle_s, sleep_cb);
 
     trackleSetSystemRebootCallback(trackle_s, reboot_cb);
     trackleSetPublishHealthCheckInterval(trackle_s, 60 * 60 * 1000); // 1 time a hour
