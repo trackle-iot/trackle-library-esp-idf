@@ -8,6 +8,27 @@
 #include "hal_platform.h"
 #include "cJSON.h"
 
+// check mandatory defines
+#ifndef CONFIG_OTA_ALLOW_HTTP
+#error "CONFIG_OTA_ALLOW_HTTP must be enabled on your sdkconfig file"
+#endif
+
+#ifndef CONFIG_ESP_TLS_INSECURE
+#error "CONFIG_ESP_TLS_INSECURE must be enabled on your sdkconfig file"
+#endif
+
+#ifndef CONFIG_ESP_TLS_SKIP_SERVER_CERT_VERIFY
+#error "CONFIG_ESP_TLS_SKIP_SERVER_CERT_VERIFY must be enabled on your sdkconfig file"
+#endif
+
+#ifndef CONFIG_MBEDTLS_ECP_DP_SECP384R1_ENABLED
+#error "CONFIG_MBEDTLS_ECP_DP_SECP384R1_ENABLED must be enabled on your sdkconfig file"
+#endif
+
+#ifndef CONFIG_MBEDTLS_KEY_EXCHANGE_RSA
+#error "CONFIG_MBEDTLS_KEY_EXCHANGE_RSA must be enabled on your sdkconfig file"
+#endif
+
 static const char *TRACKLE_TAG = "trackle_esp32";
 const TickType_t xTrackleSemaphoreWait = 100;
 
