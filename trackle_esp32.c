@@ -319,7 +319,6 @@ bool trackleSyncStateSecure(const char *data)
 static void get_millis_for_tinydtls(uint32_t *t)
 {
     *t = getMillis();
-    ESP_LOGE("getMillis", "T=%" PRIu32, *t);
 }
 
 void initTrackle()
