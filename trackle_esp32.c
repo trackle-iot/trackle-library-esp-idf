@@ -8,8 +8,6 @@
 #include "hal_platform.h"
 #include "cJSON.h"
 
-#include "tinydtls_set_get_millis.h"
-
 // check mandatory defines
 #ifndef CONFIG_OTA_ALLOW_HTTP
 #error "CONFIG_OTA_ALLOW_HTTP must be enabled on your sdkconfig file"
@@ -316,15 +314,8 @@ bool trackleSyncStateSecure(const char *data)
     return res;
 }
 
-static void get_millis_for_tinydtls(uint32_t *t)
-{
-    *t = getMillis();
-}
-
 void initTrackle()
 {
-    // Initialize TinyDtls platform dependent callbacks
-    TinyDtls_set_get_millis(get_millis_for_tinydtls);
 
     // init semaphore
     xTrackleSemaphore = xSemaphoreCreateMutex();
