@@ -2,6 +2,14 @@
 
 This framework enables Trackle cloud connectivity with ESP32 based platforms using [Trackle C++ SDK](https://github.com/trackle-iot/trackle-library).
 
+> :warning: **Note on `old-stable` branch**:
+>
+> This branch contains the library at the state in which it was before the changes introduced to make it platform-agnostic via callbacks (changes merged from the branch `agnostic`).
+>
+> It was made as a backup in case a heavy bug is discovered in changes made by `agnostic`, and a fast rollback is needed.
+>
+> Please, don't introduce new functionality in this branch, since it was not meant for development.
+
 Documentation for this repository can be found [here](https://trackle-iot.github.io/trackle-library-esp-idf/).
 
 ## License
