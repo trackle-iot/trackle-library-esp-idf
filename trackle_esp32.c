@@ -322,13 +322,13 @@ void initTrackle()
     // dichiarazione della libreria
     trackle_s = newTrackle();
 
-    // calback per i log e livello del log
-    trackleSetLogCallback(trackle_s, log_cb);
-    trackleSetLogLevel(trackle_s, TRACKLE_INFO);
-
     // inizializzazione della libreria
     trackleInit(trackle_s);
     trackleSetEnabled(trackle_s, true);
+
+    // calback per i log e livello del log
+    trackleSetLogCallback(trackle_s, log_cb);
+    trackleSetLogLevel(trackle_s, TRACKLE_INFO);
 
     if (PRODUCT_ID > 0)
         trackleSetProductId(trackle_s, PRODUCT_ID);
