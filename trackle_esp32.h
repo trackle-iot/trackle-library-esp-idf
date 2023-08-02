@@ -20,7 +20,7 @@
 #ifndef TRACKLE_ESP32_H
 #define TRACKLE_ESP32_H
 
-#define TRACKLE_ESP32_VERSION "3.0.1"
+#define TRACKLE_ESP32_VERSION "3.1.0"
 
 #include "trackle_interface.h"
 #include "trackle_utils.h"
@@ -64,6 +64,19 @@ void connectTrackle();
  * @return A boolean value.
  */
 bool tracklePublishSecure(const char *eventName, const char *data);
+
+/**
+ * It takes a string, and publishes it to the trackle server
+ *
+ * @param eventName the name of the event to publish
+ * @param data the data to be sent
+ * @param eventType type of event, public or private.
+ * @param eventFlag event flags, with or without ack.
+ * @param msg_key the message key, if you want to use it.
+ *
+ * @return A boolean value.
+ */
+bool tracklePublishSecureWithParams(const char *eventName, const char *data, Event_Type eventType, Event_Flags eventFlag, uint32_t msg_key);
 
 /**
  *  It takes a json that contain a list of properties and publishes it to the trackle server
