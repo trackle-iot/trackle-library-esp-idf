@@ -46,17 +46,6 @@ extern EventGroupHandle_t s_wifi_event_group;
 #define OTA_UPDATING BIT5
 
 /**
- * @brief Returns milliseconds elapsed since boot.
- * @return Time elapsed in milliseconds.
- */
-static uint32_t millis(void)
-{
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return (uint32_t)(tp.tv_sec * 1000 + tp.tv_usec / 1000);
-}
-
-/**
  * @brief Convert a raw bytes array to its HEX string representation.
  *
  * @param in Raw bytes array to convert.

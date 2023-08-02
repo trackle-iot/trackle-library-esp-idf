@@ -79,7 +79,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         {
             ESP_LOGI(WIFI_TAG, "Connecting to the AP");
             xEventGroupSetBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT); // connettiti
-            timeout_connect_wifi = millis();
+            timeout_connect_wifi = getMillis();
         }
         else if (currentMode == WIFI_MODE_APSTA)
         {
@@ -97,7 +97,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
             trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTS, 1);
         }
 
-        timeout_connect_wifi = millis() + CHECK_WIFI_TIMEOUT;
+        timeout_connect_wifi = getMillis() + CHECK_WIFI_TIMEOUT;
         xEventGroupClearBits(s_wifi_event_group, NETWORK_CONNECTED_BIT);
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
@@ -155,7 +155,7 @@ void wifi_init_sta()
 void trackle_utils_wifi_loop()
 {
     EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
-    uint32_t loop_millis = millis();
+    uint32_t loop_millis = getMillis();
 
     // check connessione wifi
     if (timeout_connect_wifi > 0 && timeout_connect_wifi < loop_millis)
