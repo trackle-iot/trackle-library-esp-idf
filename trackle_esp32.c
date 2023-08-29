@@ -297,7 +297,7 @@ bool tracklePublishSecure(const char *eventName, const char *data)
     bool res = false;
     if (xSemaphoreTake(xTrackleSemaphore, xTrackleSemaphoreWait) == pdTRUE)
     {
-        res = tracklePublish(trackle_s, eventName, data, 30, PRIVATE, EMPTY_FLAGS, 0);
+        res = tracklePublish(trackle_s, eventName, data, 30, PRIVATE, WITH_ACK, 0);
         xSemaphoreGive(xTrackleSemaphore);
     }
     return res;
