@@ -173,6 +173,7 @@ void simple_ota_task(void *pvParameter)
         ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed 0x%x", ota_data.ota_finish_err);
         tracklePublishSecure(OTA_EVENT_NAME, createEventData("failed", ota_data.ota_finish_err));
         xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
+        esp_https_ota_abort(https_ota_handle);
         vTaskDelete(NULL);
     }
 }
