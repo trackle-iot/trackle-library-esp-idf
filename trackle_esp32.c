@@ -359,6 +359,10 @@ void initTrackle()
     trackleSetSystemRebootCallback(trackle_s, reboot_cb);
     trackleSetPublishHealthCheckInterval(trackle_s, 60 * 60 * 1000); // 1 time a hour
 
+#ifdef COMPONENTS_LIST
+    trackleSetComponentsList(trackle_s, COMPONENTS_LIST);
+#endif
+
     uint8_t derived_mac_addr[6] = {0};
     ESP_ERROR_CHECK(esp_read_mac(derived_mac_addr, ESP_MAC_WIFI_STA));
     ESP_LOGI(TRACKLE_TAG, "mac_wifi_sta %02x:%02x:%02x:%02x:%02x:%02x",
