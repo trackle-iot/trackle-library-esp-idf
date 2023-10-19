@@ -35,27 +35,33 @@
 
 static const char *OTA_TAG = "trackle-utils-ota";
 static const char *OTA_EVENT_NAME = "trackle/device/update/status";
+static const int OTA_TIMEOUT = 120 * 1000;
+TaskHandle_t xOtaTaskHandle = NULL;
 
-struct ota_data
+typedef struct
 {
     char url[256];
     char job_id[256];
     char event_data[256];
+    uint32_t start_timestamp;
     int32_t firmware_crc32_ota;
     int32_t actual_crc32_ota;
     esp_err_t ota_finish_err;
 } ota_data;
 
-const char *createEventData(const char *data, esp_err_t error)
+ota_data current_ota_data;
+ota_data new_ota_data;
+
+const char *createEventData(const char *data, esp_err_t error, ota_data *_ota_data)
 {
-    memset(ota_data.event_data, 0, 256);
-    sprintf(ota_data.event_data, "%s", data);
+    memset(_ota_data->event_data, 0, 256);
+    sprintf(_ota_data->event_data, "%s", data);
 
     // if job_id, append it to event_data
-    if (strlen(ota_data.job_id) > 0)
+    if (strlen(_ota_data->job_id) > 0)
     {
-        ota_data.event_data[strlen(data)] = ',';
-        memcpy(ota_data.event_data + strlen(data) + 1, ota_data.job_id, strlen(ota_data.job_id));
+        _ota_data->event_data[strlen(data)] = ',';
+        memcpy(_ota_data->event_data + strlen(data) + 1, _ota_data->job_id, strlen(_ota_data->job_id));
 
         // if error, append it to event_data
         if (error != ESP_OK)
@@ -64,16 +70,16 @@ const char *createEventData(const char *data, esp_err_t error)
             memset(error_code, 0, 10);
             sprintf(error_code, "%d", error);
 
-            uint8_t len = strlen(data) + 1 + strlen(ota_data.job_id);
-            ota_data.event_data[len] = ',';
-            memcpy(ota_data.event_data + len + 1, error_code, strlen(error_code));
+            uint8_t len = strlen(data) + 1 + strlen(_ota_data->job_id);
+            _ota_data->event_data[len] = ',';
+            memcpy(_ota_data->event_data + len + 1, error_code, strlen(error_code));
         }
 
-        ESP_LOGI(OTA_TAG, "%s", ota_data.event_data);
+        ESP_LOGI(OTA_TAG, "%s", _ota_data->event_data);
     }
 
-    ESP_LOGI(OTA_TAG, "createEventData ota_data.event_data %s", ota_data.event_data);
-    return ota_data.event_data;
+    ESP_LOGI(OTA_TAG, "createEventData _ota_data->event_data %s", _ota_data->event_data);
+    return _ota_data->event_data;
 }
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt)
@@ -94,7 +100,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
         break;
     case HTTP_EVENT_ON_DATA:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-        ota_data.actual_crc32_ota = crc32_le(ota_data.actual_crc32_ota, evt->data, evt->data_len);
+        current_ota_data.actual_crc32_ota = crc32_le(current_ota_data.actual_crc32_ota, evt->data, evt->data_len);
         break;
     case HTTP_EVENT_ON_FINISH:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_FINISH");
@@ -108,18 +114,18 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 
 void simple_ota_task(void *pvParameter)
 {
-    ESP_LOGW(OTA_TAG, "Starting OTA %s", ota_data.url);
-
-    tracklePublishSecure(OTA_EVENT_NAME, createEventData("started", ESP_OK));
+    ESP_LOGW(OTA_TAG, "Starting OTA %s", current_ota_data.url);
+    current_ota_data.start_timestamp = getMillis();
 
     xEventGroupSetBits(s_wifi_event_group, OTA_UPDATING); // updating
+    tracklePublishSecure(OTA_EVENT_NAME, createEventData("started", ESP_OK, &current_ota_data));
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-    ota_data.ota_finish_err = ESP_OK;
-    ota_data.actual_crc32_ota = 0;
+    current_ota_data.ota_finish_err = ESP_OK;
+    current_ota_data.actual_crc32_ota = 0;
 
     esp_http_client_config_t config = {
-        .url = ota_data.url,
+        .url = current_ota_data.url,
         .event_handler = _http_event_handler,
         .buffer_size = 1024,
     };
@@ -143,42 +149,42 @@ void simple_ota_task(void *pvParameter)
     if (https_ota_handle == NULL || esp_https_ota_is_complete_data_received(https_ota_handle) != true)
     {
         ESP_LOGE(OTA_TAG, "Complete data was not received.");
-        ota_data.ota_finish_err = ESP_ERR_INVALID_ARG;
+        current_ota_data.ota_finish_err = ESP_ERR_INVALID_ARG;
     }
     else
     {
         // check crc
-        ESP_LOGW(OTA_TAG, "ota_data.actual_crc32_ota %d", ota_data.actual_crc32_ota);
-        ESP_LOGW(OTA_TAG, "ota_data.firmware_crc32_ota %d", ota_data.firmware_crc32_ota);
+        ESP_LOGW(OTA_TAG, "current_ota_data.actual_crc32_ota %d", current_ota_data.actual_crc32_ota);
+        ESP_LOGW(OTA_TAG, "current_ota_data.firmware_crc32_ota %d", current_ota_data.firmware_crc32_ota);
 
-        if (ota_data.firmware_crc32_ota == 0 || ota_data.firmware_crc32_ota == ota_data.actual_crc32_ota)
+        if (current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota)
         {
-            ota_data.ota_finish_err = esp_https_ota_finish(https_ota_handle);
-            if ((err == ESP_OK) && (ota_data.ota_finish_err == ESP_OK))
+            current_ota_data.ota_finish_err = esp_https_ota_finish(https_ota_handle);
+            if ((err == ESP_OK) && (current_ota_data.ota_finish_err == ESP_OK))
             {
                 ESP_LOGW(OTA_TAG, "OTA completed, now restarting....");
-                tracklePublishSecure(OTA_EVENT_NAME, createEventData("success", ESP_OK));
+                tracklePublishSecure(OTA_EVENT_NAME, createEventData("success", ESP_OK, &current_ota_data));
                 vTaskDelay(1000 / portTICK_PERIOD_MS);
                 esp_restart();
             }
         }
         else
         {
-            ota_data.ota_finish_err = ESP_ERR_INVALID_CRC;
+            current_ota_data.ota_finish_err = ESP_ERR_INVALID_CRC;
         }
     }
 
-    if (ota_data.ota_finish_err != ESP_OK)
+    if (current_ota_data.ota_finish_err != ESP_OK)
     {
-        ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed 0x%x", ota_data.ota_finish_err);
-        tracklePublishSecure(OTA_EVENT_NAME, createEventData("failed", ota_data.ota_finish_err));
+        ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed 0x%x", current_ota_data.ota_finish_err);
+        tracklePublishSecure(OTA_EVENT_NAME, createEventData("failed", current_ota_data.ota_finish_err, &current_ota_data));
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
+        current_ota_data.start_timestamp = 0;
         esp_https_ota_abort(https_ota_handle);
-        vTaskDelete(NULL);
+        vTaskDelete(xOtaTaskHandle);
     }
 }
-
-// TODO handle already flashing
 
 /**
  * @brief Callback meant to be given as parameter to \ref trackleSetFirmwareUrlUpdateCallback to implement OTA via URL.
@@ -187,40 +193,71 @@ void simple_ota_task(void *pvParameter)
  */
 void firmware_ota_url(const char *data)
 {
+    // check if reset start_timestamp
+    EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
+    if (bits & OTA_UPDATING)
+    {
+        // delete task and reset counter
+        if (current_ota_data.start_timestamp > 0 && getMillis() - current_ota_data.start_timestamp >= OTA_TIMEOUT)
+        {
+            current_ota_data.start_timestamp = 0;
+            if (xOtaTaskHandle != NULL)
+            {
+                vTaskDelete(xOtaTaskHandle);
+            }
+            xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING);
+        }
+    }
+
     ESP_LOGI(OTA_TAG, "firmware_ota_url %s", data);
+    bits = xEventGroupGetBits(s_wifi_event_group); // update group bits
+    memset(&new_ota_data, 0, sizeof(new_ota_data));
+    new_ota_data.ota_finish_err = 0x99; // json parse error
+
     cJSON *json = cJSON_Parse(data);
-    int result = -1;
     if (json != NULL)
     {
         cJSON *crc = cJSON_GetObjectItemCaseSensitive(json, "crc");
-        ota_data.firmware_crc32_ota = 0;
+        new_ota_data.firmware_crc32_ota = 0;
         if (cJSON_IsString(crc) && (crc->valuestring != NULL))
         {
-            sscanf(crc->valuestring, "%x", &ota_data.firmware_crc32_ota);
-            ESP_LOGI(OTA_TAG, "ota_data.firmware_crc32_ota %d", ota_data.firmware_crc32_ota);
+            sscanf(crc->valuestring, "%x", &new_ota_data.firmware_crc32_ota);
+            ESP_LOGI(OTA_TAG, "new_ota_data.firmware_crc32_ota %d", new_ota_data.firmware_crc32_ota);
         }
 
         cJSON *job_id = cJSON_GetObjectItemCaseSensitive(json, "jobId");
-        memset(ota_data.job_id, 0, sizeof(ota_data.job_id));
         if (cJSON_IsString(job_id) && (job_id->valuestring != NULL))
         {
-            strcpy(ota_data.job_id, job_id->valuestring);
-            ESP_LOGI(OTA_TAG, "ota_data.job_id %s", ota_data.job_id);
+            strcpy(new_ota_data.job_id, job_id->valuestring);
+            ESP_LOGI(OTA_TAG, "new_ota_data.job_id %s", new_ota_data.job_id);
         }
 
         cJSON *url = cJSON_GetObjectItemCaseSensitive(json, "url");
-        memset(ota_data.url, 0, sizeof(ota_data.url));
         if (cJSON_IsString(url) && (url->valuestring != NULL))
         {
-            strcpy(ota_data.url, url->valuestring);
-            ESP_LOGI(OTA_TAG, "ota_data.url %s", ota_data.url);
+            strcpy(new_ota_data.url, url->valuestring);
+            ESP_LOGI(OTA_TAG, "new_ota_data.url %s", new_ota_data.url);
 
-            xTaskCreate(&simple_ota_task, "simple_ota_task", 8192, NULL, 5, NULL);
-            result = 1;
+            if (!(bits & OTA_UPDATING))
+            {
+                memcpy(&current_ota_data, &new_ota_data, sizeof(new_ota_data));
+                new_ota_data.ota_finish_err = ESP_OK;
+                xTaskCreate(&simple_ota_task, "simple_ota_task", 8192, NULL, 5, &xOtaTaskHandle);
+            }
+            else
+            {
+                ESP_LOGE(OTA_TAG, "OTA already in progress...");
+                new_ota_data.ota_finish_err = 0x100; // already updating
+            }
         }
     }
     cJSON_Delete(json);
-    ESP_LOGI(OTA_TAG, "firmware_ota_url result %d", result);
+
+    if (new_ota_data.ota_finish_err != ESP_OK)
+    {
+        tracklePublishSecure(OTA_EVENT_NAME, createEventData("failed", new_ota_data.ota_finish_err, &new_ota_data));
+        ESP_LOGI(OTA_TAG, "firmware_ota_url result %d", new_ota_data.ota_finish_err);
+    }
 }
 
 #endif
