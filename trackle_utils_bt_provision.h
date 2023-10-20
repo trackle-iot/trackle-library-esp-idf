@@ -192,6 +192,26 @@ static int btPostCbClaimCode(const char *args)
     return 1;
 }
 
+static void *btGetCbDeviceInfo(const char *args)
+{
+    static char json[256] = {0};
+    char *jsonPtr = json;
+    jsonPtr += sprintf(jsonPtr, "{");
+    jsonPtr += sprintf(jsonPtr, "\"deviceID\":\"%s\",", trackleGetDeviceIdAsStr());
+#ifdef PRODUCT_ID
+    jsonPtr += sprintf(jsonPtr, "\"productID\":%u,", PRODUCT_ID);
+#else
+    jsonPtr += sprintf(jsonPtr, "\"productID\":%u,", 0);
+#endif
+#ifdef FIRMWARE_VERSION
+    jsonPtr += sprintf(jsonPtr, "\"firmwareVersion\":%u", FIRMWARE_VERSION);
+#else
+    jsonPtr += sprintf(jsonPtr, "\"firmwareVersion\":%u", 0);
+#endif
+    jsonPtr += sprintf(jsonPtr, "}");
+    return json;
+}
+
 /**
  * @brief Start BT provisioning.
  */
@@ -201,6 +221,7 @@ void trackle_utils_bt_provision_init()
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
     configASSERT(Trackle_BtPost_add("set", btPostCbClaimCode));
+    configASSERT(Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON));
 }
 
 /**

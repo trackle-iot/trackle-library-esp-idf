@@ -96,4 +96,10 @@ bool trackleSyncStateSecure(const char *data);
  */
 esp_log_level_t get_espidf_log_level(const char *level_name);
 
+/**
+ * @brief Get the currently set Trackle device ID as string.
+ * @return String representation of the Trackle device ID.
+ */
+const char *trackleGetDeviceIdAsStr();
+
 #endif /* TRACKLE_ESP32_H */
