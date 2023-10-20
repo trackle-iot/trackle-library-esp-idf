@@ -200,7 +200,7 @@ void trackle_utils_bt_provision_init()
     wifiProvisioningEvents = xEventGroupCreate();
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
-    configASSERT(Trackle_BtPost_add("cc", btPostCbClaimCode));
+    configASSERT(Trackle_BtPost_add("set", btPostCbClaimCode));
 }
 
 /**
