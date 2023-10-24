@@ -1,5 +1,6 @@
 idf_component_register(SRCS
      "${COMPONENT_DIR}/trackle_esp32.c"
+     "${COMPONENT_DIR}/trackle_esp32_cpp.cpp"
      "${COMPONENT_DIR}/trackle-library/src/chunked_transfer.cpp"
      "${COMPONENT_DIR}/trackle-library/src/coap.cpp"
      "${COMPONENT_DIR}/trackle-library/src/coap_channel.cpp"
