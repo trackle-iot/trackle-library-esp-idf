@@ -1,3 +1,0 @@
-[submodule "trackle-library"]
-	path = trackle-library
-	url = https://github.com/trackle-iot/trackle-library-cpp.git
