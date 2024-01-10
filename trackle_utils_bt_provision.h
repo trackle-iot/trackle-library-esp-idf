@@ -89,7 +89,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
                              int32_t event_id, void *event_data)
 {
     ESP_LOGI(BT_TAG, "----------------------------------------");
-    ESP_LOGI(BT_TAG, "bt event_handler: %s %d", event_base, event_id);
+    ESP_LOGI(BT_TAG, "bt event_handler: %s %" PRIu32, event_base, event_id);
     ESP_LOGI(BT_TAG, "----------------------------------------");
 
     if (event_base == WIFI_PROV_EVENT)

@@ -20,7 +20,7 @@
 #ifndef TRACKLE_ESP32_H
 #define TRACKLE_ESP32_H
 
-#define TRACKLE_ESP32_VERSION "3.3.0"
+#define TRACKLE_ESP32_VERSION "3.3.1"
 
 #include "trackle_interface.h"
 #include "trackle_utils.h"
@@ -31,13 +31,14 @@
 #include <sys/time.h>
 
 #include "esp_log.h"
+#include "esp_timer.h"
 #include <string.h>
 
 // A pointer to the Trackle structure.
-struct Trackle *trackle_s;
+static struct Trackle *trackle_s;
 
 // Semaphore to sync main e trackle tasks
-SemaphoreHandle_t xTrackleSemaphore;
+static SemaphoreHandle_t xTrackleSemaphore;
 
 // This function is used to get the current time in milliseconds.
 static system_tick_t getMillis(void)

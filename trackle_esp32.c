@@ -4,6 +4,7 @@
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
+#include "esp_mac.h"
 
 #include "hal_platform.h"
 #include "cJSON.h"

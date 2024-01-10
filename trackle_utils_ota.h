@@ -108,6 +108,8 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     case HTTP_EVENT_DISCONNECTED:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_DISCONNECTED");
         break;
+    default:
+        ESP_LOGI(OTA_TAG, "OTHER HTTP_EVENT");
     }
     return ESP_OK;
 }
@@ -154,8 +156,8 @@ void simple_ota_task(void *pvParameter)
     else
     {
         // check crc
-        ESP_LOGW(OTA_TAG, "current_ota_data.actual_crc32_ota %d", current_ota_data.actual_crc32_ota);
-        ESP_LOGW(OTA_TAG, "current_ota_data.firmware_crc32_ota %d", current_ota_data.firmware_crc32_ota);
+        ESP_LOGW(OTA_TAG, "current_ota_data.actual_crc32_ota %" PRIu32, current_ota_data.actual_crc32_ota);
+        ESP_LOGW(OTA_TAG, "current_ota_data.firmware_crc32_ota %" PRIu32, current_ota_data.firmware_crc32_ota);
 
         if (current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota)
         {
@@ -221,8 +223,8 @@ void firmware_ota_url(const char *data)
         new_ota_data.firmware_crc32_ota = 0;
         if (cJSON_IsString(crc) && (crc->valuestring != NULL))
         {
-            sscanf(crc->valuestring, "%x", &new_ota_data.firmware_crc32_ota);
-            ESP_LOGI(OTA_TAG, "new_ota_data.firmware_crc32_ota %d", new_ota_data.firmware_crc32_ota);
+            sscanf(crc->valuestring, "%" PRIx32 "", &new_ota_data.firmware_crc32_ota);
+            ESP_LOGI(OTA_TAG, "new_ota_data.firmware_crc32_ota %" PRIu32, new_ota_data.firmware_crc32_ota);
         }
 
         cJSON *job_id = cJSON_GetObjectItemCaseSensitive(json, "jobId");
