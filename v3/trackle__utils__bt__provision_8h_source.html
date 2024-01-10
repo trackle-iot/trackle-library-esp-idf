@@ -134,7 +134,7 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                             int32_t event_id, <span class="keywordtype">void</span> *event_data)</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;{</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;----------------------------------------&quot;</span>);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;bt event_handler: %s %d&quot;</span>, event_base, event_id);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;bt event_handler: %s %&quot;</span> PRIu32, event_base, event_id);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;----------------------------------------&quot;</span>);</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordflow">if</span> (event_base == WIFI_PROV_EVENT)</div>
