@@ -5,7 +5,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/.trackle_developer")
      set(TRACKLE_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}/trackle-library")
 
      FetchContent_Populate(trackle-library
-          URL "https://github.com/trackle-iot/trackle-library-cpp/releases/download/v3.3.1/trackle-library-cpp-v3.3.1.tar.gz"
+          URL "https://github.com/trackle-iot/trackle-library-cpp/releases/download/v4.0.0/trackle-library-cpp-v4.0.0.tar.gz"
           SOURCE_DIR "${TRACKLE_LIBRARY_DIR}"
      )
 endif()
