@@ -1,0 +1,9 @@
+<map id="trackle_utils.h" name="trackle_utils.h">
+<area shape="rect" id="node1" title="Utility functions." alt="" coords="262,5,377,32"/>
+<area shape="rect" id="node2" href="$trackle__esp32_8h.html" title=" " alt="" coords="47,80,173,107"/>
+<area shape="rect" id="node4" href="$trackle__utils__bt__provision_8h.html" title="Functions to perform Bluetooth provisioning." alt="" coords="153,155,355,181"/>
+<area shape="rect" id="node5" href="$trackle__utils__ota_8h.html" title="Utilities to implement Over The Air firmware updates." alt="" coords="248,80,391,107"/>
+<area shape="rect" id="node6" href="$trackle__utils__storage_8h.html" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="415,80,586,107"/>
+<area shape="rect" id="node7" href="$trackle__utils__wifi_8h.html" title="Functions to manage the connection of the device to WLAN via Wi&#45;Fi." alt="" coords="610,80,754,107"/>
+<area shape="rect" id="node3" href="$trackle__esp32_8c.html" title=" " alt="" coords="5,155,129,181"/>
+</map>
