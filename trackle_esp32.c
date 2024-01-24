@@ -31,7 +31,7 @@
 #endif
 
 static const char *TRACKLE_TAG = "trackle_esp32";
-const TickType_t xTrackleSemaphoreWait = 100;
+SemaphoreHandle_t xTrackleSemaphore;
 
 // for diagnostics
 #define ESP32_DIAGNOSTIC_TIME 1000

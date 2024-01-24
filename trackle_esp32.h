@@ -38,7 +38,8 @@
 static struct Trackle *trackle_s;
 
 // Semaphore to sync main e trackle tasks
-static SemaphoreHandle_t xTrackleSemaphore;
+extern SemaphoreHandle_t xTrackleSemaphore;
+static TickType_t xTrackleSemaphoreWait = 100;
 
 // This function is used to get the current time in milliseconds.
 static system_tick_t getMillis(void)
