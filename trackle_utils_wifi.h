@@ -95,6 +95,9 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         if (bits & NETWORK_CONNECTED_BIT)
         {
             trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTS, 1);
+
+            // reset connections attemps for new cloud session
+            trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ATTEMPTS, 0);
         }
 
         timeout_connect_wifi = getMillis() + CHECK_WIFI_TIMEOUT;
