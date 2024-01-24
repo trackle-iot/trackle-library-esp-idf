@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['get_5fespidf_5flog_5flevel_150',['get_espidf_log_level',['../trackle__esp32_8c.html#aba36fa15c7de08d2cf8024c3cbf797be',1,'get_espidf_log_level(const char *level_name):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#aba36fa15c7de08d2cf8024c3cbf797be',1,'get_espidf_log_level(const char *level_name):&#160;trackle_esp32.c']]],
-  ['getgmtimestamp_151',['getGmTimestamp',['../trackle__utils_8h.html#aba0bed0e1689801a1985fab37e0d6602',1,'trackle_utils.h']]]
+  ['firmware_5fota_5furl_157',['firmware_ota_url',['../trackle__utils__ota_8h.html#afb2762b7874ce8eaca7c25f1e2e6eef8',1,'trackle_utils_ota.h']]]
 ];

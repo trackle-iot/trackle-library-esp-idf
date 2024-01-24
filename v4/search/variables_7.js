@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['new_5fota_5fdata_212',['new_ota_data',['../trackle__utils__ota_8h.html#acfa77be6933d623dc9fd3b726de7deec',1,'trackle_utils_ota.h']]]
+  ['s_5fwifi_5fevent_5fgroup_224',['s_wifi_event_group',['../trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381',1,'trackle_utils.h']]],
+  ['sta_5fnetif_225',['sta_netif',['../trackle__utils__wifi_8h.html#a8475209c3d16d25790fc4b67e18f3f57',1,'trackle_utils_wifi.h']]],
+  ['start_5ftimestamp_226',['start_timestamp',['../structota__data.html#afef007a0b23725377b62387afc2e552e',1,'ota_data']]],
+  ['string_5fdevice_5fid_227',['string_device_id',['../trackle__esp32__cpp_8cpp.html#a6ddf806ef2597597ee519b71793d52ec',1,'string_device_id():&#160;trackle_utils_storage.h'],['../trackle__utils__storage_8h.html#a2f5c2bd285ab79cac4981636defa0a2b',1,'string_device_id():&#160;trackle_utils_storage.h']]]
 ];

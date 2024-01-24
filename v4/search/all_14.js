@@ -1,9 +1,5 @@
 var searchData=
 [
-  ['wifi_5finit_120',['wifi_init',['../trackle__utils__wifi_8h.html#af67410a15ecc24ecef0e5abce0c5b30c',1,'trackle_utils_wifi.h']]],
-  ['wifi_5finit_5fsta_121',['wifi_init_sta',['../trackle__utils__wifi_8h.html#aaf48dd31815d6c6e4a94cebfb63e56a3',1,'trackle_utils_wifi.h']]],
-  ['wifi_5fis_5fprovisioned_122',['wifi_is_provisioned',['../trackle__utils__wifi_8h.html#a070e7458bd4670954a7512f1e1f2b201',1,'trackle_utils_wifi.h']]],
-  ['wifi_5fto_5fconnect_5fbit_123',['WIFI_TO_CONNECT_BIT',['../trackle__utils_8h.html#a6b9162dc5c1626c8b075c6c60dfc4132',1,'trackle_utils.h']]],
-  ['wifiprovisioningevents_124',['wifiProvisioningEvents',['../trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee',1,'trackle_utils_bt_provision.h']]],
-  ['writeconfigtostorage_125',['writeConfigToStorage',['../trackle__utils__storage_8h.html#aecf0c1df31c97b01b55382f718019ed3',1,'trackle_utils_storage.h']]]
+  ['xotataskhandle_134',['xOtaTaskHandle',['../trackle__utils__ota_8h.html#af77337f2aef0f29787066c9b011b9b0e',1,'trackle_utils_ota.h']]],
+  ['xtracklesemaphore_135',['xTrackleSemaphore',['../trackle__esp32_8c.html#a02af40530ea06dfb3c5b0c3e1d1b0f91',1,'xTrackleSemaphore():&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a02af40530ea06dfb3c5b0c3e1d1b0f91',1,'xTrackleSemaphore():&#160;trackle_esp32.c']]]
 ];

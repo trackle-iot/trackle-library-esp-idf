@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['readconfigfromstorage_71',['readConfigFromStorage',['../trackle__utils__storage_8h.html#a4c74614bb8cadb981faf5d5b724ee97d',1,'trackle_utils_storage.h']]],
-  ['readdeviceinfofromstorage_72',['readDeviceInfoFromStorage',['../trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567',1,'trackle_utils_storage.h']]],
-  ['readme_2emd_73',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
-  ['reboot_5fcb_74',['reboot_cb',['../trackle__esp32_8c.html#aaa51bc4eec593c39d843fdf1724ecd9d',1,'trackle_esp32.c']]],
-  ['receive_5fcb_5fudp_75',['receive_cb_udp',['../trackle__esp32_8c.html#a215d39f2f710df0bccdc53965adc008b',1,'trackle_esp32.c']]],
-  ['restart_76',['RESTART',['../trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374',1,'trackle_utils.h']]],
-  ['rssitopercentage_77',['rssiToPercentage',['../trackle__utils_8h.html#aa50ac73ca5fcb2410725def91f76cb11',1,'trackle_utils.h']]]
+  ['s_5fwifi_5fevent_5fgroup_86',['s_wifi_event_group',['../trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381',1,'trackle_utils.h']]],
+  ['send_5fcb_5fudp_87',['send_cb_udp',['../trackle__esp32_8c.html#a68775577aa2c7d852f9c588d63ee3f70',1,'trackle_esp32.c']]],
+  ['sendotamessage_88',['sendOtaMessage',['../trackle__utils__ota_8h.html#abb02c2d630db9efea69c6f8297709b6d',1,'trackle_utils_ota.h']]],
+  ['splitstring_89',['splitString',['../trackle__utils_8h.html#aa4389eec9f363a491d4b5679b26e3c3d',1,'trackle_utils.h']]],
+  ['sta_5fnetif_90',['sta_netif',['../trackle__utils__wifi_8h.html#a8475209c3d16d25790fc4b67e18f3f57',1,'trackle_utils_wifi.h']]],
+  ['start_5fprovisioning_91',['START_PROVISIONING',['../trackle__utils_8h.html#a4e00f705d8c6b61ebf4470c4f5793cee',1,'trackle_utils.h']]],
+  ['start_5ftimestamp_92',['start_timestamp',['../structota__data.html#afef007a0b23725377b62387afc2e552e',1,'ota_data']]],
+  ['string_5fdevice_5fid_93',['string_device_id',['../trackle__esp32__cpp_8cpp.html#a6ddf806ef2597597ee519b71793d52ec',1,'string_device_id():&#160;trackle_utils_storage.h'],['../trackle__utils__storage_8h.html#a2f5c2bd285ab79cac4981636defa0a2b',1,'string_device_id():&#160;trackle_utils_storage.h']]],
+  ['stringtohex_94',['stringToHex',['../trackle__utils_8h.html#a1fc69e2dc8816830c378eb4881ac25f2',1,'trackle_utils.h']]]
 ];

@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('trackle__utils__ota_8h.html',''); init
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -128,17 +129,38 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structota__data.html">ota_data</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a0bdda30f70343ed9aa7a3b8bd5df3fbf"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbf">Ota_Error</a> { <br />
+&#160;&#160;<a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfaf46cd113cedd2f254d16373967f9974c">OTA_ERR_OK</a> = 0
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfac0300910714f773080e1599da5c8e6e8">OTA_ERR_ALREADY_RUNNING</a>
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfa72ad23e3c44218c7ff28e187a8f6fa6b">OTA_ERR_PARTITION</a>
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfafaf272d50758517d9df7f1a2305d1eb6">OTA_ERR_MEMORY</a>
+, <br />
+&#160;&#160;<a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfae3fb477c0d24b63db4de0979313b9245">OTA_ERR_VALIDATE_FAILED</a>
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfa90456234deb295510a6c7ef70a99f085">OTA_ERR_INCOMPLETE</a>
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfa4545f54dff13f934db7f44eeb9b4a15b">OTA_ERR_COMPLETING</a>
+, <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfa0949c6767bb56cbbfb1478ef288841a5">OTA_ERR_GENERIC</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a0bdda30f70343ed9aa7a3b8bd5df3fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synthetic list of available OTA error for esp_https_ota.  <a href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbf">More...</a><br /></td></tr>
+<tr class="separator:a0bdda30f70343ed9aa7a3b8bd5df3fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7254fff97eefe15232dd9fe630e1097"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#af7254fff97eefe15232dd9fe630e1097">Ota_Message</a> { <a class="el" href="trackle__utils__ota_8h.html#af7254fff97eefe15232dd9fe630e1097a92a14a1080ce35328885179b4b735e0d">OTA_MSG_DONE</a> = 0
+, <a class="el" href="trackle__utils__ota_8h.html#af7254fff97eefe15232dd9fe630e1097a90177cbf946234d2df073cc6b3b4504d">OTA_MSG_UPDATE</a>
+ }</td></tr>
+<tr class="separator:af7254fff97eefe15232dd9fe630e1097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2cc3cb113946799c19405af299121f05"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#a2cc3cb113946799c19405af299121f05">createEventData</a> (const char *data, esp_err_t error, <a class="el" href="structota__data.html">ota_data</a> *_ota_data)</td></tr>
-<tr class="separator:a2cc3cb113946799c19405af299121f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7c4f5057d30a650919c74c7f9e7d67c"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#ae7c4f5057d30a650919c74c7f9e7d67c">_http_event_handler</a> (esp_http_client_event_t *evt)</td></tr>
 <tr class="separator:ae7c4f5057d30a650919c74c7f9e7d67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab11284ede385340cba8278bbc2df3f8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#ab11284ede385340cba8278bbc2df3f8e">simple_ota_task</a> (void *pvParameter)</td></tr>
-<tr class="separator:ab11284ede385340cba8278bbc2df3f8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2e187542a74410e3d1eabae0a6708c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#ac2e187542a74410e3d1eabae0a6708c4">firmware_ota_url</a> (const char *data)</td></tr>
-<tr class="memdesc:ac2e187542a74410e3d1eabae0a6708c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback meant to be given as parameter to trackleSetFirmwareUrlUpdateCallback to implement OTA via URL.  <a href="trackle__utils__ota_8h.html#ac2e187542a74410e3d1eabae0a6708c4">More...</a><br /></td></tr>
-<tr class="separator:ac2e187542a74410e3d1eabae0a6708c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb02c2d630db9efea69c6f8297709b6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#abb02c2d630db9efea69c6f8297709b6d">sendOtaMessage</a> (uint8_t message_type, int value)</td></tr>
+<tr class="separator:abb02c2d630db9efea69c6f8297709b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e5d7d8d7de8cc62c4d6a5e984be9eb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#a3e5d7d8d7de8cc62c4d6a5e984be9eb1">execute_ota_task</a> (void *pvParameter)</td></tr>
+<tr class="separator:a3e5d7d8d7de8cc62c4d6a5e984be9eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb2762b7874ce8eaca7c25f1e2e6eef8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#afb2762b7874ce8eaca7c25f1e2e6eef8">firmware_ota_url</a> (const char *url, uint32_t crc)</td></tr>
+<tr class="memdesc:afb2762b7874ce8eaca7c25f1e2e6eef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback meant to be given as parameter to trackleSetFirmwareUrlUpdateCallback to implement OTA via URL.  <a href="trackle__utils__ota_8h.html#afb2762b7874ce8eaca7c25f1e2e6eef8">More...</a><br /></td></tr>
+<tr class="separator:afb2762b7874ce8eaca7c25f1e2e6eef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -146,8 +168,6 @@ Variables</h2></td></tr>
 <tr class="separator:af77337f2aef0f29787066c9b011b9b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95ad28a3f597019033de905ef85732fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structota__data.html">ota_data</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#a95ad28a3f597019033de905ef85732fd">current_ota_data</a></td></tr>
 <tr class="separator:a95ad28a3f597019033de905ef85732fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfa77be6933d623dc9fd3b726de7deec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structota__data.html">ota_data</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__ota_8h.html#acfa77be6933d623dc9fd3b726de7deec">new_ota_data</a></td></tr>
-<tr class="separator:acfa77be6933d623dc9fd3b726de7deec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utilities to implement Over The Air firmware updates. </p>
@@ -155,7 +175,60 @@ Variables</h2></td></tr>
 <p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p>
 <p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a0bdda30f70343ed9aa7a3b8bd5df3fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bdda30f70343ed9aa7a3b8bd5df3fbf">&#9670;&nbsp;</a></span>Ota_Error</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbf">Ota_Error</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Synthetic list of available OTA error for esp_https_ota. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfaf46cd113cedd2f254d16373967f9974c"></a>OTA_ERR_OK&#160;</td><td class="fielddoc"><p>No error </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfac0300910714f773080e1599da5c8e6e8"></a>OTA_ERR_ALREADY_RUNNING&#160;</td><td class="fielddoc"><p>OTA already in progress </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfa72ad23e3c44218c7ff28e187a8f6fa6b"></a>OTA_ERR_PARTITION&#160;</td><td class="fielddoc"><p>partition error (not found, invalid, conflict, etc..) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfafaf272d50758517d9df7f1a2305d1eb6"></a>OTA_ERR_MEMORY&#160;</td><td class="fielddoc"><p>not enough free memory </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfae3fb477c0d24b63db4de0979313b9245"></a>OTA_ERR_VALIDATE_FAILED&#160;</td><td class="fielddoc"><p>image validation failed (crc, wrong platform, etc..) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfa90456234deb295510a6c7ef70a99f085"></a>OTA_ERR_INCOMPLETE&#160;</td><td class="fielddoc"><p>download interrupter </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfa4545f54dff13f934db7f44eeb9b4a15b"></a>OTA_ERR_COMPLETING&#160;</td><td class="fielddoc"><p>download completed but image not validated </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0bdda30f70343ed9aa7a3b8bd5df3fbfa0949c6767bb56cbbfb1478ef288841a5"></a>OTA_ERR_GENERIC&#160;</td><td class="fielddoc"><p>all other errors </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="af7254fff97eefe15232dd9fe630e1097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7254fff97eefe15232dd9fe630e1097">&#9670;&nbsp;</a></span>Ota_Message</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="trackle__utils__ota_8h.html#af7254fff97eefe15232dd9fe630e1097">Ota_Message</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af7254fff97eefe15232dd9fe630e1097a92a14a1080ce35328885179b4b735e0d"></a>OTA_MSG_DONE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af7254fff97eefe15232dd9fe630e1097a90177cbf946234d2df073cc6b3b4504d"></a>OTA_MSG_UPDATE&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="ae7c4f5057d30a650919c74c7f9e7d67c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae7c4f5057d30a650919c74c7f9e7d67c">&#9670;&nbsp;</a></span>_http_event_handler()</h2>
 
@@ -174,29 +247,41 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a2cc3cb113946799c19405af299121f05"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2cc3cb113946799c19405af299121f05">&#9670;&nbsp;</a></span>createEventData()</h2>
+<a id="a3e5d7d8d7de8cc62c4d6a5e984be9eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5d7d8d7de8cc62c4d6a5e984be9eb1">&#9670;&nbsp;</a></span>execute_ota_task()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const char* createEventData </td>
+          <td class="memname">void execute_ota_task </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pvParameter</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb2762b7874ce8eaca7c25f1e2e6eef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb2762b7874ce8eaca7c25f1e2e6eef8">&#9670;&nbsp;</a></span>firmware_ota_url()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int firmware_ota_url </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
+          <td class="paramname"><em>url</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">esp_err_t&#160;</td>
-          <td class="paramname"><em>error</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structota__data.html">ota_data</a> *&#160;</td>
-          <td class="paramname"><em>_ota_data</em>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>crc</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -206,46 +291,39 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="ac2e187542a74410e3d1eabae0a6708c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2e187542a74410e3d1eabae0a6708c4">&#9670;&nbsp;</a></span>firmware_ota_url()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void firmware_ota_url </td>
-          <td>(</td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>data</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
 <p>Callback meant to be given as parameter to trackleSetFirmwareUrlUpdateCallback to implement OTA via URL. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">data</td><td>JSON string containing the "url" key, that points to the URL of the firmware to be downloaded. </td></tr>
+    <tr><td class="paramname">url</td><td>string containing the "url" key, that points to the URL of the firmware to be downloaded. </td></tr>
+    <tr><td class="paramname">crc</td><td>crc32 of the firmware, needed to validate it after download </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ab11284ede385340cba8278bbc2df3f8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab11284ede385340cba8278bbc2df3f8e">&#9670;&nbsp;</a></span>simple_ota_task()</h2>
+<a id="abb02c2d630db9efea69c6f8297709b6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb02c2d630db9efea69c6f8297709b6d">&#9670;&nbsp;</a></span>sendOtaMessage()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void simple_ota_task </td>
+          <td class="memname">void sendOtaMessage </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>pvParameter</em></td><td>)</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>message_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -261,20 +339,6 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structota__data.html">ota_data</a> current_ota_data</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="acfa77be6933d623dc9fd3b726de7deec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfa77be6933d623dc9fd3b726de7deec">&#9670;&nbsp;</a></span>new_ota_data</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structota__data.html">ota_data</a> new_ota_data</td>
         </tr>
       </table>
 </div><div class="memdoc">

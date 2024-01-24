@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['firmware_5fota_5furl_149',['firmware_ota_url',['../trackle__utils__ota_8h.html#ac2e187542a74410e3d1eabae0a6708c4',1,'trackle_utils_ota.h']]]
+  ['execute_5fota_5ftask_156',['execute_ota_task',['../trackle__utils__ota_8h.html#a3e5d7d8d7de8cc62c4d6a5e984be9eb1',1,'trackle_utils_ota.h']]]
 ];
