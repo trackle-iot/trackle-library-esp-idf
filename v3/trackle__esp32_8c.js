@@ -27,6 +27,5 @@ var trackle__esp32_8c =
     [ "platform_version_v", "trackle__esp32_8c.html#a4eb412a6bf756774a14dec1368fff5ca", null ],
     [ "product_id_v", "trackle__esp32_8c.html#a90a7f6f4636d26775286135d4a60fbd1", null ],
     [ "total_ram", "trackle__esp32_8c.html#a8eaf7a8d628a8e89a54bbfa3edd88857", null ],
-    [ "trackle_s", "trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7", null ],
-    [ "xTrackleSemaphore", "trackle__esp32_8c.html#a02af40530ea06dfb3c5b0c3e1d1b0f91", null ]
+    [ "xTrackleSemaphoreWait", "trackle__esp32_8c.html#ab94361fd52145b00b4e32e5d2f16fed2", null ]
 ];
