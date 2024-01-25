@@ -224,7 +224,7 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    }</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    ESP_LOGE(<span class="stringliteral">&quot;cc&quot;</span>, <span class="stringliteral">&quot;Claim code received successfully:&quot;</span>);</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    ESP_LOG_BUFFER_CHAR_LEVEL(<span class="stringliteral">&quot;cc&quot;</span>, claimCode, <a class="code" href="trackle__utils__claimcode_8h.html#a2b2d8f4a427e6ab42fd8c3a3afd716f9">CLAIM_CODE_LENGTH</a>, ESP_LOG_ERROR);</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    trackleSetClaimCode(trackle_s, claimCode);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    trackleSetClaimCode(<a class="code" href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a>, claimCode);</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <a class="code" href="trackle__utils__claimcode_8h.html#a76677cc9fd97c16baaf467495b91cce9">Trackle_saveClaimCode</a>(claimCode);</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;}</div>
@@ -305,8 +305,9 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="atrackle__esp32_8c_html_a6b41096e44c646df97fba9581acb4b4a"><div class="ttname"><a href="trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a">PRODUCT_ID</a></div><div class="ttdeci">#define PRODUCT_ID</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:51</div></div>
-<div class="ttc" id="atrackle__esp32_8c_html_aa14dc39d52ab121ceb570f1a265385e0"><div class="ttname"><a href="trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0">FIRMWARE_VERSION</a></div><div class="ttdeci">#define FIRMWARE_VERSION</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:47</div></div>
+<div class="ttc" id="atrackle__esp32_8c_html_a6b41096e44c646df97fba9581acb4b4a"><div class="ttname"><a href="trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a">PRODUCT_ID</a></div><div class="ttdeci">#define PRODUCT_ID</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:52</div></div>
+<div class="ttc" id="atrackle__esp32_8c_html_aa14dc39d52ab121ceb570f1a265385e0"><div class="ttname"><a href="trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0">FIRMWARE_VERSION</a></div><div class="ttdeci">#define FIRMWARE_VERSION</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:48</div></div>
+<div class="ttc" id="atrackle__esp32_8c_html_af474a33b6561600f2a3412204b67d6f7"><div class="ttname"><a href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a></div><div class="ttdeci">struct Trackle * trackle_s</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:35</div></div>
 <div class="ttc" id="atrackle__esp32_8h_html"><div class="ttname"><a href="trackle__esp32_8h.html">trackle_esp32.h</a></div></div>
 <div class="ttc" id="atrackle__esp32_8h_html_aef3f5d3587fa28cfb5b5e4ae828b03d0"><div class="ttname"><a href="trackle__esp32_8h.html#aef3f5d3587fa28cfb5b5e4ae828b03d0">trackleGetDeviceIdAsStr</a></div><div class="ttdeci">const char * trackleGetDeviceIdAsStr()</div><div class="ttdoc">Get the currently set Trackle device ID as string.</div><div class="ttdef"><b>Definition:</b> trackle_esp32_cpp.cpp:5</div></div>
 <div class="ttc" id="atrackle__utils_8h_html"><div class="ttname"><a href="trackle__utils_8h.html">trackle_utils.h</a></div><div class="ttdoc">Utility functions.</div></div>
