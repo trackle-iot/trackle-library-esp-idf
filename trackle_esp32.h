@@ -35,7 +35,7 @@
 #include <string.h>
 
 // A pointer to the Trackle structure.
-static struct Trackle *trackle_s;
+extern struct Trackle *trackle_s;
 
 // Semaphore to sync main e trackle tasks
 extern SemaphoreHandle_t xTrackleSemaphore;
