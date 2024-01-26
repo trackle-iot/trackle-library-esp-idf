@@ -143,6 +143,8 @@ Functions</h2></td></tr>
 <tr class="separator:a411a00fc01d4cee3e57afc33acfee5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5155dc4d884837a6d57c60da58da4f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__esp32_8h.html#ac5155dc4d884837a6d57c60da58da4f6">connectTrackle</a> ()</td></tr>
 <tr class="separator:ac5155dc4d884837a6d57c60da58da4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877b8146229c13c7791f8ad59cee8edf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__esp32_8h.html#a877b8146229c13c7791f8ad59cee8edf">trackle_task</a> (void *pvParameter)</td></tr>
+<tr class="separator:a877b8146229c13c7791f8ad59cee8edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a513a3836b5eb1a404a5840e6fdb842f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__esp32_8h.html#a513a3836b5eb1a404a5840e6fdb842f1">tracklePublishSecure</a> (const char *eventName, const char *data)</td></tr>
 <tr class="separator:a513a3836b5eb1a404a5840e6fdb842f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a010cb2352a708cb43c07f53f9996a1fe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__esp32_8h.html#a010cb2352a708cb43c07f53f9996a1fe">tracklePublishSecureWithParams</a> (const char *eventName, const char *data, Event_Type eventType, Event_Flags eventFlag, uint32_t msg_key)</td></tr>
@@ -241,6 +243,31 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>It initializes the Trackle library </p>
+
+</div>
+</div>
+<a id="a877b8146229c13c7791f8ad59cee8edf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a877b8146229c13c7791f8ad59cee8edf">&#9670;&nbsp;</a></span>trackle_task()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void trackle_task </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pvParameter</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Task that will run the trackleLoop() function every 20 milliseconds and update memory diagnostics.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pvParameter</td><td>This is a parameter that is passed to the task when it is created. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

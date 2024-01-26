@@ -4,6 +4,7 @@ var trackle__esp32_8h =
     [ "connectTrackle", "trackle__esp32_8h.html#ac5155dc4d884837a6d57c60da58da4f6", null ],
     [ "get_espidf_log_level", "trackle__esp32_8h.html#aba36fa15c7de08d2cf8024c3cbf797be", null ],
     [ "initTrackle", "trackle__esp32_8h.html#a411a00fc01d4cee3e57afc33acfee5e5", null ],
+    [ "trackle_task", "trackle__esp32_8h.html#a877b8146229c13c7791f8ad59cee8edf", null ],
     [ "trackleGetDeviceIdAsStr", "trackle__esp32_8h.html#aef3f5d3587fa28cfb5b5e4ae828b03d0", null ],
     [ "tracklePublishSecure", "trackle__esp32_8h.html#a513a3836b5eb1a404a5840e6fdb842f1", null ],
     [ "tracklePublishSecureWithParams", "trackle__esp32_8h.html#a010cb2352a708cb43c07f53f9996a1fe", null ],

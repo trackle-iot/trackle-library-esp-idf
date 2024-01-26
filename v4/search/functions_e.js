@@ -5,7 +5,7 @@ var searchData=
   ['trackle_5fbtpost_5fadd_179',['Trackle_BtPost_add',['../trackle__utils__bt__functions_8h.html#acb468bd3ad26641f9072d671e309f5a9',1,'trackle_utils_bt_functions.h']]],
   ['trackle_5floadclaimcode_180',['Trackle_loadClaimCode',['../trackle__utils__claimcode_8h.html#a3d531b222ce72d581a99f389d9fabc56',1,'trackle_utils_claimcode.h']]],
   ['trackle_5fsaveclaimcode_181',['Trackle_saveClaimCode',['../trackle__utils__claimcode_8h.html#a76677cc9fd97c16baaf467495b91cce9',1,'trackle_utils_claimcode.h']]],
-  ['trackle_5ftask_182',['trackle_task',['../trackle__esp32_8c.html#a877b8146229c13c7791f8ad59cee8edf',1,'trackle_esp32.c']]],
+  ['trackle_5ftask_182',['trackle_task',['../trackle__esp32_8c.html#a877b8146229c13c7791f8ad59cee8edf',1,'trackle_task(void *pvParameter):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a877b8146229c13c7791f8ad59cee8edf',1,'trackle_task(void *pvParameter):&#160;trackle_esp32.c']]],
   ['trackle_5futils_5fbt_5fprovision_5finit_183',['trackle_utils_bt_provision_init',['../trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c',1,'trackle_utils_bt_provision.h']]],
   ['trackle_5futils_5fbt_5fprovision_5floop_184',['trackle_utils_bt_provision_loop',['../trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634',1,'trackle_utils_bt_provision.h']]],
   ['trackle_5futils_5fbt_5fprovision_5fset_5fdevice_5fname_185',['trackle_utils_bt_provision_set_device_name',['../trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67',1,'trackle_utils_bt_provision.h']]],
