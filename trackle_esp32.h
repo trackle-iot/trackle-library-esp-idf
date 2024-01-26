@@ -58,6 +58,13 @@ void initTrackle();
 void connectTrackle();
 
 /**
+ * Task that will run the trackleLoop() function every 20 milliseconds and update memory diagnostics.
+ *
+ * @param pvParameter This is a parameter that is passed to the task when it is created.
+ */
+void trackle_task(void *pvParameter);
+
+/**
  * It takes a string, and publishes it to the trackle server
  *
  * @param eventName The name of the event to publish.

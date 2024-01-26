@@ -256,11 +256,6 @@ void reboot_cb(const char *data)
     return;
 }
 
-/**
- * It creates a task that will run the trackleLoop() function every 20 milliseconds
- *
- * @param pvParameter This is a parameter that is passed to the task when it is created.
- */
 void trackle_task(void *pvParameter)
 {
     multi_heap_info_t info;
