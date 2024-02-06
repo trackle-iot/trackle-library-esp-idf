@@ -44,6 +44,7 @@
 #define PROV_EVT_OK BIT1
 #define PROV_EVT_ERR BIT2
 #define PROV_EVT_RUN BIT4
+#define PROV_EVT_CRED BIT5
 
 extern char bleProvDeviceName[21];
 extern uint8_t bleProvUuid[16];
@@ -98,7 +99,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
         {
         case WIFI_PROV_START:
             ESP_LOGI(BT_TAG, "Provisioning started");
-            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN);
+            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_RUN);
             break;
         case WIFI_PROV_CRED_RECV:
@@ -108,6 +109,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
                              "\n\tSSID     : %s\n\tPassword : %s",
                      (const char *)wifi_sta_cfg->ssid,
                      (const char *)wifi_sta_cfg->password);
+            xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
             break;
         }
         case WIFI_PROV_CRED_FAIL:
@@ -127,7 +129,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
                 {
                     ESP_LOGE(BT_TAG, "Failed to set wifi config, 0x%x", err);
                 }
-                xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN);
+                xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED);
                 xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_ERR);
                 xEventGroupSetBits(s_wifi_event_group, RESTART);
             }
@@ -136,14 +138,14 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
         }
         case WIFI_PROV_CRED_SUCCESS:
             ESP_LOGI(BT_TAG, "Provisioning successful");
-            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN);
+            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
             break;
         case WIFI_PROV_END:
             // De-initialize manager once provisioning is finished and restart
             ESP_LOGI(BT_TAG, "Provisioning end");
             wifi_prov_mgr_deinit();
-            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN);
+            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
             xEventGroupSetBits(s_wifi_event_group, RESTART);
             break;
