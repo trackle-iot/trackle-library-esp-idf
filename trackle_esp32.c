@@ -30,6 +30,10 @@
 #error "CONFIG_MBEDTLS_KEY_EXCHANGE_RSA must be enabled on your sdkconfig file"
 #endif
 
+#ifndef CONFIG_MBEDTLS_ECP_DP_CURVE25519_ENABLED
+#error "CONFIG_MBEDTLS_ECP_DP_CURVE25519_ENABLED must be enabled on your sdkconfig file"
+#endif
+
 static const char *TRACKLE_TAG = "trackle_esp32";
 SemaphoreHandle_t xTrackleSemaphore;
 struct Trackle *trackle_s;
