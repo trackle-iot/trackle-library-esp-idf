@@ -20,6 +20,14 @@
 #ifndef TRACKLE_UTILS_BT_PROVISION_H
 #define TRACKLE_UTILS_BT_PROVISION_H
 
+#ifndef CONFIG_BT_NIMBLE_ENABLED
+#error "CONFIG_BT_NIMBLE_ENABLED must be enabled on your sdkconfig file. Did you enable Bluetooth and NIMBLE in menuconfig?"
+#endif
+
+#ifndef CONFIG_MBEDTLS_ECP_DP_CURVE25519_ENABLED
+#error "CONFIG_MBEDTLS_ECP_DP_CURVE25519_ENABLED must be enabled on your sdkconfig file"
+#endif
+
 #include "nvs_flash.h"
 
 #include "trackle_utils_wifi.h"
