@@ -6,6 +6,7 @@ var trackle__utils__bt__provision_8h =
     [ "PROV_EVT_OK", "trackle__utils__bt__provision_8h.html#a52ef89726ea5b47e6f9d2db4f651cbb8", null ],
     [ "PROV_EVT_RUN", "trackle__utils__bt__provision_8h.html#acccbdb05adcc00c526abfc92dc74866b", null ],
     [ "PROV_MGR_MAX_RETRY_CNT", "trackle__utils__bt__provision_8h.html#ab5ad58d01d83caba9783d625f7eb1222", null ],
+    [ "PROV_PROTOCOMM_SESSION_READY", "trackle__utils__bt__provision_8h.html#af66de4b275955a1ff030c184f58f07a1", null ],
     [ "trackle_utils_bt_provision_init", "trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c", null ],
     [ "trackle_utils_bt_provision_loop", "trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634", null ],
     [ "trackle_utils_bt_provision_set_device_name", "trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67", null ],
