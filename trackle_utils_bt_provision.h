@@ -54,6 +54,7 @@
 #define PROV_EVT_ERR BIT2
 #define PROV_EVT_RUN BIT4
 #define PROV_EVT_CRED BIT5
+#define PROV_PROTOCOMM_SESSION_READY BIT6
 
 extern char bleProvDeviceName[21];
 extern uint8_t bleProvUuid[16];
@@ -102,7 +103,21 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(BT_TAG, "bt event_handler: %s %" PRIu32, event_base, event_id);
     ESP_LOGI(BT_TAG, "----------------------------------------");
 
-    if (event_base == WIFI_PROV_EVENT)
+    if (event_base == PROTOCOMM_TRANSPORT_BLE_EVENT)
+    {
+        switch (event_id)
+        {
+        case PROTOCOMM_TRANSPORT_BLE_CONNECTED:
+            ESP_LOGI(TAG, "PROTOCOMM SESSION STARTED");
+            xEventGroupSetBits(wifiProvisioningEvents, PROV_PROTOCOMM_SESSION_READY);
+            break;
+        case PROTOCOMM_TRANSPORT_BLE_DISCONNECTED:
+            ESP_LOGI(TAG, "PROTOCOMM SESSION STOPPED");
+            xEventGroupClearBits(wifiProvisioningEvents, PROV_PROTOCOMM_SESSION_READY);
+            break;
+        }
+    }
+    else if (event_base == WIFI_PROV_EVENT)
     {
         switch (event_id)
         {
