@@ -12,6 +12,5 @@ var searchData=
   ['prov_5fevt_5fok_76',['PROV_EVT_OK',['../trackle__utils__bt__provision_8h.html#a52ef89726ea5b47e6f9d2db4f651cbb8',1,'trackle_utils_bt_provision.h']]],
   ['prov_5fevt_5frun_77',['PROV_EVT_RUN',['../trackle__utils__bt__provision_8h.html#acccbdb05adcc00c526abfc92dc74866b',1,'trackle_utils_bt_provision.h']]],
   ['prov_5fmgr_5fmax_5fretry_5fcnt_78',['PROV_MGR_MAX_RETRY_CNT',['../trackle__utils__bt__provision_8h.html#ab5ad58d01d83caba9783d625f7eb1222',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fprotocomm_5fsession_5fready_79',['PROV_PROTOCOMM_SESSION_READY',['../trackle__utils__bt__provision_8h.html#af66de4b275955a1ff030c184f58f07a1',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fretry_5fnum_80',['prov_retry_num',['../trackle__utils__bt__provision_8h.html#aed35ae8c893bfcbe26113761cda92385',1,'trackle_utils_bt_provision.h']]]
+  ['prov_5fretry_5fnum_79',['prov_retry_num',['../trackle__utils__bt__provision_8h.html#aed35ae8c893bfcbe26113761cda92385',1,'trackle_utils_bt_provision.h']]]
 ];
