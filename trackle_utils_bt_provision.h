@@ -42,6 +42,13 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
 #include <esp_bt.h>
+#include <protocomm.h>
+
+// Protocomm events have been added in version 5.1.0 of ESP-IDF
+// If we are using such version or a newer one, enable code that uses such events.
+#if ESP_IDF_VERSION_MAJOR >= 5 && ESP_IDF_VERSION_MINOR >= 1
+#define PROTOCOMM_EVENTS_SUPPORTED
+#endif
 
 /**
  * @file trackle_utils_bt_provision.h
@@ -54,7 +61,10 @@
 #define PROV_EVT_ERR BIT2
 #define PROV_EVT_RUN BIT4
 #define PROV_EVT_CRED BIT5
+
+#ifdef PROTOCOMM_EVENTS_SUPPORTED
 #define PROV_PROTOCOMM_SESSION_READY BIT6
+#endif
 
 extern char bleProvDeviceName[21];
 extern uint8_t bleProvUuid[16];
@@ -103,6 +113,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(BT_TAG, "bt event_handler: %s %" PRIu32, event_base, event_id);
     ESP_LOGI(BT_TAG, "----------------------------------------");
 
+#ifdef PROTOCOMM_EVENTS_SUPPORTED
     if (event_base == PROTOCOMM_TRANSPORT_BLE_EVENT)
     {
         switch (event_id)
@@ -117,7 +128,8 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
             break;
         }
     }
-    else if (event_base == WIFI_PROV_EVENT)
+#endif
+    if (event_base == WIFI_PROV_EVENT)
     {
         switch (event_id)
         {
