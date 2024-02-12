@@ -164,11 +164,11 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">switch</span> (event_id)</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        {</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">case</span> PROTOCOMM_TRANSPORT_BLE_CONNECTED:</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            ESP_LOGI(TAG, <span class="stringliteral">&quot;PROTOCOMM SESSION STARTED&quot;</span>);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;PROTOCOMM SESSION STARTED&quot;</span>);</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            xEventGroupSetBits(<a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a>, PROV_PROTOCOMM_SESSION_READY);</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">case</span> PROTOCOMM_TRANSPORT_BLE_DISCONNECTED:</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            ESP_LOGI(TAG, <span class="stringliteral">&quot;PROTOCOMM SESSION STOPPED&quot;</span>);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;PROTOCOMM SESSION STOPPED&quot;</span>);</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            xEventGroupClearBits(<a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a>, PROV_PROTOCOMM_SESSION_READY);</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;            <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        }</div>
