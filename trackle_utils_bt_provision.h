@@ -119,11 +119,11 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
         switch (event_id)
         {
         case PROTOCOMM_TRANSPORT_BLE_CONNECTED:
-            ESP_LOGI(TAG, "PROTOCOMM SESSION STARTED");
+            ESP_LOGI(BT_TAG, "PROTOCOMM SESSION STARTED");
             xEventGroupSetBits(wifiProvisioningEvents, PROV_PROTOCOMM_SESSION_READY);
             break;
         case PROTOCOMM_TRANSPORT_BLE_DISCONNECTED:
-            ESP_LOGI(TAG, "PROTOCOMM SESSION STOPPED");
+            ESP_LOGI(BT_TAG, "PROTOCOMM SESSION STOPPED");
             xEventGroupClearBits(wifiProvisioningEvents, PROV_PROTOCOMM_SESSION_READY);
             break;
         }
