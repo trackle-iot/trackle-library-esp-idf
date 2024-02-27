@@ -377,7 +377,7 @@ void initTrackle()
 
 void connectTrackle()
 {
-    xTaskCreate(&trackle_task, "trackle_task", 32768, NULL, 5, NULL);
+    xTaskCreate(&trackle_task, "trackle_task", 16384, NULL, 5, NULL);
 }
 
 esp_log_level_t get_espidf_log_level(const char *level_name)
