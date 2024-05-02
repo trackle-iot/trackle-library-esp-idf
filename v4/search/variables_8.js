@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['timeout_5fconnect_5fwifi_230',['timeout_connect_wifi',['../trackle__utils__wifi_8h.html#a4761d43b92b1ef8b6e00519d3d589ecf',1,'trackle_utils_wifi.h']]],
-  ['total_5fram_231',['total_ram',['../trackle__esp32_8c.html#a8eaf7a8d628a8e89a54bbfa3edd88857',1,'trackle_esp32.c']]],
-  ['trackle_5fs_232',['trackle_s',['../trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7',1,'trackle_s():&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#af474a33b6561600f2a3412204b67d6f7',1,'trackle_s():&#160;trackle_esp32.c']]]
+  ['s_5fwifi_5fevent_5fgroup_246',['s_wifi_event_group',['../trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381',1,'trackle_utils.h']]],
+  ['sta_5fnetif_247',['sta_netif',['../trackle__utils__wifi_8h.html#a8475209c3d16d25790fc4b67e18f3f57',1,'trackle_utils_wifi.h']]],
+  ['start_5ftimestamp_248',['start_timestamp',['../structota__data.html#afef007a0b23725377b62387afc2e552e',1,'ota_data']]],
+  ['string_5fdevice_5fid_249',['string_device_id',['../trackle__esp32__cpp_8cpp.html#a6ddf806ef2597597ee519b71793d52ec',1,'string_device_id():&#160;trackle_utils_storage.h'],['../trackle__utils__storage_8h.html#a2f5c2bd285ab79cac4981636defa0a2b',1,'string_device_id():&#160;trackle_utils_storage.h']]]
 ];
