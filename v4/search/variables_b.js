@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['xotataskhandle_236',['xOtaTaskHandle',['../trackle__utils__ota_8h.html#af77337f2aef0f29787066c9b011b9b0e',1,'trackle_utils_ota.h']]],
-  ['xtracklesemaphore_237',['xTrackleSemaphore',['../trackle__esp32_8c.html#a02af40530ea06dfb3c5b0c3e1d1b0f91',1,'xTrackleSemaphore():&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a02af40530ea06dfb3c5b0c3e1d1b0f91',1,'xTrackleSemaphore():&#160;trackle_esp32.c']]]
+  ['wifi_5fprov_5finitialized_255',['wifi_prov_initialized',['../trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e',1,'trackle_utils_bt_provision.h']]],
+  ['wifiprovisioningevents_256',['wifiProvisioningEvents',['../trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee',1,'trackle_utils_bt_provision.h']]]
 ];
