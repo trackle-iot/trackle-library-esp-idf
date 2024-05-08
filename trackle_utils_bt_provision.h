@@ -197,15 +197,17 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
             // disconnect wifi and trackle
             esp_wifi_disconnect();
             trackleDisconnect(trackle_s);
+            xEventGroupClearBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT);
 
             break;
         }
         case WIFI_PROV_CRED_FAIL:
         {
             wifi_prov_sta_fail_reason_t *reason = (wifi_prov_sta_fail_reason_t *)event_data;
-            ESP_LOGE(BT_TAG, "Provisioning failed!\n\tReason : %s"
-                             "\n\tPlease reset to factory and retry provisioning",
+            ESP_LOGE(BT_TAG, "Provisioning failed!\n\tReason : %s",
                      (*reason == WIFI_PROV_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
+
+            wifi_prov_mgr_reset_sm_state_on_failure();
 
             prov_retry_num++;
             if (prov_retry_num >= PROV_MGR_MAX_RETRY_CNT)
