@@ -74,10 +74,11 @@ extern size_t bleAdvDataLen;
 
 EventGroupHandle_t wifiProvisioningEvents;
 
-#define PROV_MGR_MAX_RETRY_CNT 2
+#define PROV_MGR_MAX_RETRY_CNT 3
 int prov_retry_num = 0;
 
 #define PROV_TIMEOUT_RESTART_AFTER 30000
+#define PROV_ERROR_STOP_AFTER 5000
 
 bool wifi_prov_initialized = false;          // do not initialize again
 bool deinit_on_provisioning_end = true;      // bluetooth can't be used again
@@ -94,6 +95,7 @@ typedef enum
 } TrackleUtilsBtOption;
 
 uint32_t restart_start_millis = 0;
+uint32_t stop_start_millis = 0;
 
 static const char *BT_TAG = "trackle-utils-bt-provision";
 
@@ -221,13 +223,16 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
                 }
                 xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
                 xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_ERR);
-                wifi_prov_mgr_stop_provisioning();
+
+                ESP_LOGI(BT_TAG, "provisioning error, retry end, stopping...");
+                stop_start_millis = getMillis();
             }
 
             break;
         }
         case WIFI_PROV_CRED_SUCCESS:
             ESP_LOGI(BT_TAG, "Provisioning successful");
+            prov_retry_num = 0;
             xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
             break;
@@ -245,7 +250,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base,
                 wifi_prov_mgr_deinit();
             }
 
-            // restart on timeout, failed or success
+            // restart on timeout, error or success
             if (restart_on_provisioning_error && (wifiprov_bits & PROV_EVT_ERR))
             {
                 ESP_LOGI(BT_TAG, "provisioning error, restart");
@@ -412,6 +417,17 @@ void trackle_utils_bt_provision_loop()
             restart_start_millis = 0;
             ESP_LOGI(BT_TAG, "timeout, restarting...");
             xEventGroupSetBits(s_wifi_event_group, RESTART);
+        }
+    }
+
+    // check timeout for stop
+    if (stop_start_millis > 0)
+    {
+        if (getMillis() - stop_start_millis >= PROV_ERROR_STOP_AFTER)
+        {
+            stop_start_millis = 0;
+            ESP_LOGI(BT_TAG, "stopping provision...");
+            wifi_prov_mgr_stop_provisioning();
         }
     }
 }
