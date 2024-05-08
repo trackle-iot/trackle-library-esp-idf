@@ -115,11 +115,11 @@ void trackle_utils_bt_provision_set_option(TrackleUtilsBtOption option, bool val
     }
     else if (option == RESTART_ON_PROV_SUCCESS)
     {
-        restart_on_provisioning_timeout = value;
+        restart_on_provisioning_success = value;
     }
     else if (option == RESTART_ON_PROV_ERROR)
     {
-        restart_on_provisioning_timeout = value;
+        restart_on_provisioning_error = value;
     }
 }
 
