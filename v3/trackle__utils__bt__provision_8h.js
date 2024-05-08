@@ -1,5 +1,6 @@
 var trackle__utils__bt__provision_8h =
 [
+    [ "PROV_ERROR_STOP_AFTER", "trackle__utils__bt__provision_8h.html#ac69984d8d4040283bd7156d94c00e098", null ],
     [ "PROV_EVT_CRED", "trackle__utils__bt__provision_8h.html#a20faf091267e75e819ef0d22c5d9ca02", null ],
     [ "PROV_EVT_END", "trackle__utils__bt__provision_8h.html#ad2bef85d604dde6db8ae86f9a24b1128", null ],
     [ "PROV_EVT_ERR", "trackle__utils__bt__provision_8h.html#a166afcd249e678b887feb76e0f4482b7", null ],
@@ -30,6 +31,7 @@ var trackle__utils__bt__provision_8h =
     [ "restart_on_provisioning_success", "trackle__utils__bt__provision_8h.html#a1eda2b1d1486b68ad6a71c55e9c89083", null ],
     [ "restart_on_provisioning_timeout", "trackle__utils__bt__provision_8h.html#a2560da36c4b86b23af50eb035650f82f", null ],
     [ "restart_start_millis", "trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58", null ],
+    [ "stop_start_millis", "trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7", null ],
     [ "wifi_prov_initialized", "trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e", null ],
     [ "wifiProvisioningEvents", "trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee", null ]
 ];
