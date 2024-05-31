@@ -299,17 +299,17 @@ static int btPostCbClaimCode(const char *args)
     char *key = strtok(args, ",");
     if (key == NULL || strcmp(key, "cc") != 0)
     {
-        ESP_LOGE("cc", "Invalid key for setting claim code");
+        ESP_LOGE(BT_TAG, "Invalid key for setting claim code");
         return -1;
     }
     char *claimCode = strtok(NULL, ",");
     if (key == NULL || strlen(claimCode) != 63)
     {
-        ESP_LOGE("cc", "Invalid claim code");
+        ESP_LOGE(BT_TAG, "Invalid claim code");
         return -1;
     }
-    ESP_LOGE("cc", "Claim code received successfully:");
-    ESP_LOG_BUFFER_CHAR_LEVEL("cc", claimCode, CLAIM_CODE_LENGTH, ESP_LOG_ERROR);
+    ESP_LOGI(BT_TAG, "Claim code received successfully:");
+    ESP_LOG_BUFFER_CHAR_LEVEL(BT_TAG, claimCode, CLAIM_CODE_LENGTH, ESP_LOG_INFO);
     trackleSetClaimCode(trackle_s, claimCode);
     Trackle_saveClaimCode(claimCode);
     return 1;
