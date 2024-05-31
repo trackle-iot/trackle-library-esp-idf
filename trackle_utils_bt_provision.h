@@ -315,6 +315,13 @@ static int btPostCbClaimCode(const char *args)
     return 1;
 }
 
+static int btPostEnd(const char *args)
+{
+    ESP_LOGI(BT_TAG, "End bluetooth provisiong, restarting...");
+    xEventGroupSetBits(s_wifi_event_group, RESTART);
+    return 1;
+}
+
 static void *btGetCbDeviceInfo(const char *args)
 {
     static char json[256] = {0};
@@ -343,8 +350,9 @@ void trackle_utils_bt_provision_init()
     wifiProvisioningEvents = xEventGroupCreate();
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
-    configASSERT(Trackle_BtPost_add("set", btPostCbClaimCode));
-    configASSERT(Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON));
+    Trackle_BtPost_add("set", btPostCbClaimCode);
+    Trackle_BtPost_add("end", btPostEnd);
+    Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON);
     esp_bt_mem_release(ESP_BT_MODE_CLASSIC_BT);
 }
 
