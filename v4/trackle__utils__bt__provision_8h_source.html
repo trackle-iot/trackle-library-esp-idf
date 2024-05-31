@@ -330,132 +330,140 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordtype">char</span> *key = strtok(args, <span class="stringliteral">&quot;,&quot;</span>);</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">if</span> (key == NULL || strcmp(key, <span class="stringliteral">&quot;cc&quot;</span>) != 0)</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        ESP_LOGE(<span class="stringliteral">&quot;cc&quot;</span>, <span class="stringliteral">&quot;Invalid key for setting claim code&quot;</span>);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        ESP_LOGE(BT_TAG, <span class="stringliteral">&quot;Invalid key for setting claim code&quot;</span>);</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordtype">char</span> *claimCode = strtok(NULL, <span class="stringliteral">&quot;,&quot;</span>);</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keywordflow">if</span> (key == NULL || strlen(claimCode) != 63)</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    {</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        ESP_LOGE(<span class="stringliteral">&quot;cc&quot;</span>, <span class="stringliteral">&quot;Invalid claim code&quot;</span>);</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        ESP_LOGE(BT_TAG, <span class="stringliteral">&quot;Invalid claim code&quot;</span>);</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    ESP_LOGE(<span class="stringliteral">&quot;cc&quot;</span>, <span class="stringliteral">&quot;Claim code received successfully:&quot;</span>);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    ESP_LOG_BUFFER_CHAR_LEVEL(<span class="stringliteral">&quot;cc&quot;</span>, claimCode, <a class="code" href="trackle__utils__claimcode_8h.html#a2b2d8f4a427e6ab42fd8c3a3afd716f9">CLAIM_CODE_LENGTH</a>, ESP_LOG_ERROR);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;Claim code received successfully:&quot;</span>);</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    ESP_LOG_BUFFER_CHAR_LEVEL(BT_TAG, claimCode, <a class="code" href="trackle__utils__claimcode_8h.html#a2b2d8f4a427e6ab42fd8c3a3afd716f9">CLAIM_CODE_LENGTH</a>, ESP_LOG_INFO);</div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    trackleSetClaimCode(<a class="code" href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a>, claimCode);</div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <a class="code" href="trackle__utils__claimcode_8h.html#a76677cc9fd97c16baaf467495b91cce9">Trackle_saveClaimCode</a>(claimCode);</div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;}</div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> *btGetCbDeviceInfo(<span class="keyword">const</span> <span class="keywordtype">char</span> *args)</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="keyword">static</span> <span class="keywordtype">int</span> btPostEnd(<span class="keyword">const</span> <span class="keywordtype">char</span> *args)</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;{</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">char</span> json[256] = {0};</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordtype">char</span> *jsonPtr = json;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;{&quot;</span>);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;deviceID\&quot;:\&quot;%s\&quot;,&quot;</span>, <a class="code" href="trackle__esp32_8h.html#aef3f5d3587fa28cfb5b5e4ae828b03d0">trackleGetDeviceIdAsStr</a>());</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="preprocessor">#ifdef PRODUCT_ID</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;productID\&quot;:%u,&quot;</span>, <a class="code" href="trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a">PRODUCT_ID</a>);</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;productID\&quot;:%u,&quot;</span>, 0);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="preprocessor">#ifdef FIRMWARE_VERSION</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;firmwareVersion\&quot;:%u&quot;</span>, <a class="code" href="trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0">FIRMWARE_VERSION</a>);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;firmwareVersion\&quot;:%u&quot;</span>, 0);</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;}&quot;</span>);</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">return</span> json;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;}</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
-<div class="line"><a name="l00341"></a><span class="lineno"><a class="line" href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">  341</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">trackle_utils_bt_provision_init</a>()</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;{</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a> = xEventGroupCreate();</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    xEventGroupSetBits(<a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a>, <a class="code" href="trackle__utils__bt__provision_8h.html#a35b50cc2bdb88fcbc5066578634b51d4">PROV_EVT_NO</a>);</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &amp;bt_event_handler, NULL));</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    configASSERT(<a class="code" href="trackle__utils__bt__functions_8h.html#acb468bd3ad26641f9072d671e309f5a9">Trackle_BtPost_add</a>(<span class="stringliteral">&quot;set&quot;</span>, btPostCbClaimCode));</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    configASSERT(<a class="code" href="trackle__utils__bt__functions_8h.html#aeaa8cb33e84d21f66d2336cb39826ab0">Trackle_BtGet_add</a>(<span class="stringliteral">&quot;deviceInfo&quot;</span>, btGetCbDeviceInfo, VAR_JSON));</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    esp_bt_mem_release(ESP_BT_MODE_CLASSIC_BT);</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160; </div>
-<div class="line"><a name="l00356"></a><span class="lineno"><a class="line" href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">  356</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">trackle_utils_bt_provision_loop</a>()</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;{</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    EventBits_t bits = xEventGroupGetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>);</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <span class="comment">// Check if start or stop provisioning</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">if</span> (bits &amp; <a class="code" href="trackle__utils_8h.html#a4e00f705d8c6b61ebf4470c4f5793cee">START_PROVISIONING</a>)</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    {</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        xEventGroupClearBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#a4e00f705d8c6b61ebf4470c4f5793cee">START_PROVISIONING</a>);</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#a97524ff282c3231e0e60d5a484b489d4">IS_PROVISIONING</a>);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160; </div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        esp_wifi_set_ps(WIFI_PS_MIN_MODEM); <span class="comment">// enable powersave</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;End bluetooth provisiong, restarting...&quot;</span>);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374">RESTART</a>);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;}</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> *btGetCbDeviceInfo(<span class="keyword">const</span> <span class="keywordtype">char</span> *args)</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;{</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">char</span> json[256] = {0};</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordtype">char</span> *jsonPtr = json;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;{&quot;</span>);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;deviceID\&quot;:\&quot;%s\&quot;,&quot;</span>, <a class="code" href="trackle__esp32_8h.html#aef3f5d3587fa28cfb5b5e4ae828b03d0">trackleGetDeviceIdAsStr</a>());</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#ifdef PRODUCT_ID</span></div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;productID\&quot;:%u,&quot;</span>, <a class="code" href="trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a">PRODUCT_ID</a>);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;productID\&quot;:%u,&quot;</span>, 0);</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="preprocessor">#ifdef FIRMWARE_VERSION</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;firmwareVersion\&quot;:%u&quot;</span>, <a class="code" href="trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0">FIRMWARE_VERSION</a>);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;\&quot;firmwareVersion\&quot;:%u&quot;</span>, 0);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    jsonPtr += sprintf(jsonPtr, <span class="stringliteral">&quot;}&quot;</span>);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordflow">return</span> json;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
+<div class="line"><a name="l00348"></a><span class="lineno"><a class="line" href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">  348</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">trackle_utils_bt_provision_init</a>()</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;{</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a> = xEventGroupCreate();</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    xEventGroupSetBits(<a class="code" href="trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee">wifiProvisioningEvents</a>, <a class="code" href="trackle__utils__bt__provision_8h.html#a35b50cc2bdb88fcbc5066578634b51d4">PROV_EVT_NO</a>);</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &amp;bt_event_handler, NULL));</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <a class="code" href="trackle__utils__bt__functions_8h.html#acb468bd3ad26641f9072d671e309f5a9">Trackle_BtPost_add</a>(<span class="stringliteral">&quot;set&quot;</span>, btPostCbClaimCode);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <a class="code" href="trackle__utils__bt__functions_8h.html#acb468bd3ad26641f9072d671e309f5a9">Trackle_BtPost_add</a>(<span class="stringliteral">&quot;end&quot;</span>, btPostEnd);</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <a class="code" href="trackle__utils__bt__functions_8h.html#aeaa8cb33e84d21f66d2336cb39826ab0">Trackle_BtGet_add</a>(<span class="stringliteral">&quot;deviceInfo&quot;</span>, btGetCbDeviceInfo, VAR_JSON);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    esp_bt_mem_release(ESP_BT_MODE_CLASSIC_BT);</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;}</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
+<div class="line"><a name="l00364"></a><span class="lineno"><a class="line" href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">  364</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">trackle_utils_bt_provision_loop</a>()</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;{</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    EventBits_t bits = xEventGroupGetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>);</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160; </div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="keywordflow">if</span> (!<a class="code" href="trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e">wifi_prov_initialized</a>)</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        {</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e">wifi_prov_initialized</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;            <span class="comment">// Configuration for the provisioning manager</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;            wifi_prov_mgr_config_t config = {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;                .scheme = wifi_prov_scheme_ble,</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                .scheme_event_handler = WIFI_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM,</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;            };</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160; </div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;            <span class="comment">// Initialize provisioning manager</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;            wifi_prov_mgr_init(config);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;            <a class="code" href="trackle__utils__bt__functions_8h.html#a8faf9bcc20248123159522c676d8fbc3">btFunctionsEndpointsCreate</a>();</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        }</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160; </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        wifi_prov_scheme_ble_set_service_uuid(<a class="code" href="trackle__utils__bt__provision_8h.html#a09849acf09d734a6b37e226663efa7e0">bleProvUuid</a>);</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a">bleAdvDataLen</a> &gt; 0)</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        {</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;            <span class="keyword">const</span> esp_err_t e = wifi_prov_scheme_ble_set_mfg_data(<a class="code" href="trackle__utils__bt__provision_8h.html#a28194e9a940cac0852432d8de8c9362c">bleAdvData</a>, <a class="code" href="trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a">bleAdvDataLen</a>);</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;            ESP_LOGE(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;ERROR REG ADV: %s&quot;</span>, esp_err_to_name(e));</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="comment">// Check if start or stop provisioning</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="keywordflow">if</span> (bits &amp; <a class="code" href="trackle__utils_8h.html#a4e00f705d8c6b61ebf4470c4f5793cee">START_PROVISIONING</a>)</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    {</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        xEventGroupClearBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#a4e00f705d8c6b61ebf4470c4f5793cee">START_PROVISIONING</a>);</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#a97524ff282c3231e0e60d5a484b489d4">IS_PROVISIONING</a>);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160; </div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        esp_wifi_set_ps(WIFI_PS_MIN_MODEM); <span class="comment">// enable powersave</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160; </div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="keywordflow">if</span> (!<a class="code" href="trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e">wifi_prov_initialized</a>)</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e">wifi_prov_initialized</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;            <span class="comment">// Configuration for the provisioning manager</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;            wifi_prov_mgr_config_t config = {</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                .scheme = wifi_prov_scheme_ble,</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                .scheme_event_handler = WIFI_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM,</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;            };</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160; </div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;            <span class="comment">// Initialize provisioning manager</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;            wifi_prov_mgr_init(config);</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;            <a class="code" href="trackle__utils__bt__functions_8h.html#a8faf9bcc20248123159522c676d8fbc3">btFunctionsEndpointsCreate</a>();</div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        }</div>
 <div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160; </div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        <span class="keywordflow">if</span> (strlen(<a class="code" href="trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0">bleProvDeviceName</a>) == 0)</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        {</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;            uint8_t eth_mac[6];</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            <span class="keywordtype">char</span> default_name[20];</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            esp_wifi_get_mac(WIFI_IF_STA, eth_mac);</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            snprintf(default_name, 20, <span class="stringliteral">&quot;DEVICE_%02X%02X%02X&quot;</span>, eth_mac[3], eth_mac[4], eth_mac[5]);</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67">trackle_utils_bt_provision_set_device_name</a>(default_name);</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        }</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160; </div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        esp_err_t prov_err = wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, <a class="code" href="trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0">bleProvDeviceName</a>, NULL);</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;wifi_prov_mgr_start_provisioning %&quot;</span> PRIi16, prov_err);</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <a class="code" href="trackle__utils__bt__functions_8h.html#a4625feaca2e20f96816b7e278b9cf26f">btFunctionsEndpointsRegister</a>();</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    }</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160; </div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <span class="comment">// check timout for restart</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> &gt; 0)</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    {</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        <span class="keywordflow">if</span> (trackleConnected(<a class="code" href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a>))</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        {</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> = 0;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;cloud connected, restarting...&quot;</span>);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;            xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374">RESTART</a>);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        }</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160; </div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordflow">if</span> (getMillis() - <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> &gt;= <a class="code" href="trackle__utils__bt__provision_8h.html#a4aff98b16710c38d24a0e3858855eddb">PROV_TIMEOUT_RESTART_AFTER</a>)</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> = 0;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;timeout, restarting...&quot;</span>);</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;            xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374">RESTART</a>);</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        }</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    }</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        wifi_prov_scheme_ble_set_service_uuid(<a class="code" href="trackle__utils__bt__provision_8h.html#a09849acf09d734a6b37e226663efa7e0">bleProvUuid</a>);</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160; </div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a">bleAdvDataLen</a> &gt; 0)</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        {</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;            <span class="keyword">const</span> esp_err_t e = wifi_prov_scheme_ble_set_mfg_data(<a class="code" href="trackle__utils__bt__provision_8h.html#a28194e9a940cac0852432d8de8c9362c">bleAdvData</a>, <a class="code" href="trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a">bleAdvDataLen</a>);</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            ESP_LOGE(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;ERROR REG ADV: %s&quot;</span>, esp_err_to_name(e));</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        }</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="keywordflow">if</span> (strlen(<a class="code" href="trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0">bleProvDeviceName</a>) == 0)</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        {</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;            uint8_t eth_mac[6];</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;            <span class="keywordtype">char</span> default_name[20];</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;            esp_wifi_get_mac(WIFI_IF_STA, eth_mac);</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;            snprintf(default_name, 20, <span class="stringliteral">&quot;DEVICE_%02X%02X%02X&quot;</span>, eth_mac[3], eth_mac[4], eth_mac[5]);</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67">trackle_utils_bt_provision_set_device_name</a>(default_name);</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        }</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        esp_err_t prov_err = wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, <a class="code" href="trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0">bleProvDeviceName</a>, NULL);</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;wifi_prov_mgr_start_provisioning %&quot;</span> PRIi16, prov_err);</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        <a class="code" href="trackle__utils__bt__functions_8h.html#a4625feaca2e20f96816b7e278b9cf26f">btFunctionsEndpointsRegister</a>();</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    }</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; </div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="comment">// check timout for restart</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> &gt; 0)</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    {</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        <span class="keywordflow">if</span> (trackleConnected(<a class="code" href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a>))</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        {</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> = 0;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;cloud connected, restarting...&quot;</span>);</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;            xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374">RESTART</a>);</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        }</div>
 <div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="comment">// check timeout for stop</span></div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> &gt; 0)</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    {</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        <span class="keywordflow">if</span> (getMillis() - <a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> &gt;= <a class="code" href="trackle__utils__bt__provision_8h.html#ac69984d8d4040283bd7156d94c00e098">PROV_ERROR_STOP_AFTER</a>)</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        {</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> = 0;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;stopping provision...&quot;</span>);</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;            wifi_prov_mgr_stop_provisioning();</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;        }</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    }</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160; </div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        <span class="keywordflow">if</span> (getMillis() - <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> &gt;= <a class="code" href="trackle__utils__bt__provision_8h.html#a4aff98b16710c38d24a0e3858855eddb">PROV_TIMEOUT_RESTART_AFTER</a>)</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        {</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a> = 0;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;timeout, restarting...&quot;</span>);</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;            xEventGroupSetBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374">RESTART</a>);</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        }</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    }</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160; </div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="comment">// check timeout for stop</span></div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> &gt; 0)</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;        <span class="keywordflow">if</span> (getMillis() - <a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> &gt;= <a class="code" href="trackle__utils__bt__provision_8h.html#ac69984d8d4040283bd7156d94c00e098">PROV_ERROR_STOP_AFTER</a>)</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;        {</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;            <a class="code" href="trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7">stop_start_millis</a> = 0;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;            ESP_LOGI(BT_TAG, <span class="stringliteral">&quot;stopping provision...&quot;</span>);</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;            wifi_prov_mgr_stop_provisioning();</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        }</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    }</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;}</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160; </div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="atrackle__esp32_8c_html_a6b41096e44c646df97fba9581acb4b4a"><div class="ttname"><a href="trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a">PRODUCT_ID</a></div><div class="ttdeci">#define PRODUCT_ID</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:52</div></div>
 <div class="ttc" id="atrackle__esp32_8c_html_aa14dc39d52ab121ceb570f1a265385e0"><div class="ttname"><a href="trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0">FIRMWARE_VERSION</a></div><div class="ttdeci">#define FIRMWARE_VERSION</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:48</div></div>
 <div class="ttc" id="atrackle__esp32_8c_html_af474a33b6561600f2a3412204b67d6f7"><div class="ttname"><a href="trackle__esp32_8c.html#af474a33b6561600f2a3412204b67d6f7">trackle_s</a></div><div class="ttdeci">struct Trackle * trackle_s</div><div class="ttdef"><b>Definition:</b> trackle_esp32.c:35</div></div>
@@ -475,7 +483,7 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a022dbea5b501fc5d49a519ac3208d96a"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a">bleAdvDataLen</a></div><div class="ttdeci">size_t bleAdvDataLen</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a082f13ffc71cf067df0c68b6ce790c67"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67">trackle_utils_bt_provision_set_device_name</a></div><div class="ttdeci">void trackle_utils_bt_provision_set_device_name(const char *deviceName)</div><div class="ttdoc">Set BLE device name. Max length is 20 characters.</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a09849acf09d734a6b37e226663efa7e0"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a09849acf09d734a6b37e226663efa7e0">bleProvUuid</a></div><div class="ttdeci">uint8_t bleProvUuid[16]</div></div>
-<div class="ttc" id="atrackle__utils__bt__provision_8h_html_a098ddae8c6f927c6e45a3be6ff8da634"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">trackle_utils_bt_provision_loop</a></div><div class="ttdeci">void trackle_utils_bt_provision_loop()</div><div class="ttdoc">Function that must be called periodically during BT provisioning.</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:356</div></div>
+<div class="ttc" id="atrackle__utils__bt__provision_8h_html_a098ddae8c6f927c6e45a3be6ff8da634"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634">trackle_utils_bt_provision_loop</a></div><div class="ttdeci">void trackle_utils_bt_provision_loop()</div><div class="ttdoc">Function that must be called periodically during BT provisioning.</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:364</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a09ea3f5cfb422238d5ca5b9188778b58"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58">restart_start_millis</a></div><div class="ttdeci">uint32_t restart_start_millis</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:97</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a123c972a2e7c95af41c0a1b19efc0a0f"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a123c972a2e7c95af41c0a1b19efc0a0f">trackle_utils_bt_provision_set_option</a></div><div class="ttdeci">void trackle_utils_bt_provision_set_option(TrackleUtilsBtOption option, bool value)</div><div class="ttdoc">Set if device must be restarted on completed provisioning *.</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:108</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_a166afcd249e678b887feb76e0f4482b7"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#a166afcd249e678b887feb76e0f4482b7">PROV_EVT_ERR</a></div><div class="ttdeci">#define PROV_EVT_ERR</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:61</div></div>
@@ -498,7 +506,7 @@ $(document).ready(function(){initNavTree('trackle__utils__bt__provision_8h_sourc
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_aca0253e2c055ddf1f9386d4153dc09aa"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#aca0253e2c055ddf1f9386d4153dc09aa">trackle_utils_bt_provision_set_uuid</a></div><div class="ttdeci">void trackle_utils_bt_provision_set_uuid(const uint8_t uuid[16])</div><div class="ttdoc">Set BLE device service UUID.</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_acccbdb05adcc00c526abfc92dc74866b"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#acccbdb05adcc00c526abfc92dc74866b">PROV_EVT_RUN</a></div><div class="ttdeci">#define PROV_EVT_RUN</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:62</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_ad2bef85d604dde6db8ae86f9a24b1128"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ad2bef85d604dde6db8ae86f9a24b1128">PROV_EVT_END</a></div><div class="ttdeci">#define PROV_EVT_END</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:64</div></div>
-<div class="ttc" id="atrackle__utils__bt__provision_8h_html_ae6ad309a638b1aaabc8a4e1f7a6df33c"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">trackle_utils_bt_provision_init</a></div><div class="ttdeci">void trackle_utils_bt_provision_init()</div><div class="ttdoc">Start BT provisioning.</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:341</div></div>
+<div class="ttc" id="atrackle__utils__bt__provision_8h_html_ae6ad309a638b1aaabc8a4e1f7a6df33c"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c">trackle_utils_bt_provision_init</a></div><div class="ttdeci">void trackle_utils_bt_provision_init()</div><div class="ttdoc">Start BT provisioning.</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:348</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_ae7a66fa838f4310922031b0bb98f4da1"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1">TrackleUtilsBtOption</a></div><div class="ttdeci">TrackleUtilsBtOption</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:90</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_ae7a66fa838f4310922031b0bb98f4da1aa838879f3987001e3f54b56fa6e364ef"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1aa838879f3987001e3f54b56fa6e364ef">DEINIT_ON_END</a></div><div class="ttdeci">@ DEINIT_ON_END</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:91</div></div>
 <div class="ttc" id="atrackle__utils__bt__provision_8h_html_ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67"><div class="ttname"><a href="trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67">RESTART_ON_PROV_ERROR</a></div><div class="ttdeci">@ RESTART_ON_PROV_ERROR</div><div class="ttdef"><b>Definition:</b> trackle_utils_bt_provision.h:94</div></div>
