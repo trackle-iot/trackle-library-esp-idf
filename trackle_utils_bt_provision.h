@@ -343,8 +343,8 @@ void trackle_utils_bt_provision_init()
     wifiProvisioningEvents = xEventGroupCreate();
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
-    configASSERT(Trackle_BtPost_add("set", btPostCbClaimCode));
-    configASSERT(Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON));
+    Trackle_BtPost_add("set", btPostCbClaimCode);
+    Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON);
     esp_bt_mem_release(ESP_BT_MODE_CLASSIC_BT);
 }
 
