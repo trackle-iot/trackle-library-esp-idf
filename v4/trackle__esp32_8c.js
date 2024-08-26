@@ -2,7 +2,6 @@ var trackle__esp32_8c =
 [
     [ "__attribute__", "struct____attribute____.html", "struct____attribute____" ],
     [ "ESP32_DIAGNOSTIC_TIME", "trackle__esp32_8c.html#a8935727175ac881f5ac69d90a58b2ffe", null ],
-    [ "FIRMWARE_BUILD", "trackle__esp32_8c.html#a7c8ea82568111b632a8e71a7a400b652", null ],
     [ "FIRMWARE_VERSION", "trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0", null ],
     [ "PRODUCT_ID", "trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a", null ],
     [ "__attribute__", "trackle__esp32_8c.html#a3a163df47dcbba20376a23cc8375709f", null ],
