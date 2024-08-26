@@ -48,6 +48,10 @@ uint32_t total_ram = 0;
 #define FIRMWARE_VERSION 1
 #endif
 
+#ifndef FIRMWARE_BUILD
+#define FIRMWARE_BUILD 0
+#endif
+
 #ifndef PRODUCT_ID
 #define PRODUCT_ID 0
 #endif
@@ -347,6 +351,10 @@ void initTrackle()
         trackleSetProductId(trackle_s, PRODUCT_ID);
 
     trackleSetFirmwareVersion(trackle_s, FIRMWARE_VERSION);
+
+    if (FIRMWARE_BUILD > 0)
+        trackleSetFirmwareBuild(trackle_s, FIRMWARE_BUILD);
+
     trackleSetOtaMethod(trackle_s, SEND_URL);
     trackleSetConnectionType(trackle_s, CONNECTION_TYPE_WIFI);
 
