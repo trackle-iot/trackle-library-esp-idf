@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['factory_5fpartition_267',['FACTORY_PARTITION',['../trackle__utils__storage_8h.html#ae29cb94d96a265f4d02aa98992aa1d08',1,'trackle_utils_storage.h']]],
-  ['firmware_5fversion_268',['FIRMWARE_VERSION',['../trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0',1,'trackle_esp32.c']]]
+  ['factory_5fpartition_268',['FACTORY_PARTITION',['../trackle__utils__storage_8h.html#ae29cb94d96a265f4d02aa98992aa1d08',1,'trackle_utils_storage.h']]],
+  ['firmware_5fbuild_269',['FIRMWARE_BUILD',['../trackle__esp32_8c.html#a7c8ea82568111b632a8e71a7a400b652',1,'trackle_esp32.c']]],
+  ['firmware_5fversion_270',['FIRMWARE_VERSION',['../trackle__esp32_8c.html#aa14dc39d52ab121ceb570f1a265385e0',1,'trackle_esp32.c']]]
 ];
