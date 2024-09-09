@@ -254,14 +254,14 @@ $(document).ready(function(){initNavTree('trackle__utils__ota_8h_source.html',''
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                <a class="code" href="trackle__utils__ota_8h.html#abb02c2d630db9efea69c6f8297709b6d">sendOtaMessage</a>(<a class="code" href="trackle__utils__ota_8h.html#af7254fff97eefe15232dd9fe630e1097a92a14a1080ce35328885179b4b735e0d">OTA_MSG_DONE</a>, <a class="code" href="trackle__utils__ota_8h.html#a0bdda30f70343ed9aa7a3b8bd5df3fbfae3fb477c0d24b63db4de0979313b9245">OTA_ERR_VALIDATE_FAILED</a>);</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;            }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        }</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160; </div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        ESP_LOGE(OTA_TAG, <span class="stringliteral">&quot;ESP_HTTPS_OTA upgrade failed&quot;</span>);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        vTaskDelay(1000 / portTICK_PERIOD_MS);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        xEventGroupClearBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#aff8a44b6213dfe96816a60cb03c2dc78">OTA_UPDATING</a>); <span class="comment">// stop updating</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <a class="code" href="trackle__utils__ota_8h.html#a95ad28a3f597019033de905ef85732fd">current_ota_data</a>.<a class="code" href="structota__data.html#afef007a0b23725377b62387afc2e552e">start_timestamp</a> = 0;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        esp_https_ota_abort(https_ota_handle);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        vTaskDelete(<a class="code" href="trackle__utils__ota_8h.html#af77337f2aef0f29787066c9b011b9b0e">xOtaTaskHandle</a>);</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    }</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    }</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160; </div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    ESP_LOGE(OTA_TAG, <span class="stringliteral">&quot;ESP_HTTPS_OTA upgrade failed&quot;</span>);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    vTaskDelay(1000 / portTICK_PERIOD_MS);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    xEventGroupClearBits(<a class="code" href="trackle__utils_8h.html#a6aaca350cca4b3d105d88a6f399cb381">s_wifi_event_group</a>, <a class="code" href="trackle__utils_8h.html#aff8a44b6213dfe96816a60cb03c2dc78">OTA_UPDATING</a>); <span class="comment">// stop updating</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <a class="code" href="trackle__utils__ota_8h.html#a95ad28a3f597019033de905ef85732fd">current_ota_data</a>.<a class="code" href="structota__data.html#afef007a0b23725377b62387afc2e552e">start_timestamp</a> = 0;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    esp_https_ota_abort(https_ota_handle);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    vTaskDelete(<a class="code" href="trackle__utils__ota_8h.html#af77337f2aef0f29787066c9b011b9b0e">xOtaTaskHandle</a>);</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;}</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
 <div class="line"><a name="l00210"></a><span class="lineno"><a class="line" href="trackle__utils__ota_8h.html#afb2762b7874ce8eaca7c25f1e2e6eef8">  210</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="trackle__utils__ota_8h.html#afb2762b7874ce8eaca7c25f1e2e6eef8">firmware_ota_url</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *url, uint32_t crc)</div>
