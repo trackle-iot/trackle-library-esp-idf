@@ -191,14 +191,14 @@ void execute_ota_task(void *pvParameter)
                 sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_FAILED);
             }
         }
-
-        ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
-        current_ota_data.start_timestamp = 0;
-        esp_https_ota_abort(https_ota_handle);
-        vTaskDelete(xOtaTaskHandle);
     }
+
+    ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed");
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
+    current_ota_data.start_timestamp = 0;
+    esp_https_ota_abort(https_ota_handle);
+    vTaskDelete(xOtaTaskHandle);
 }
 
 /**
