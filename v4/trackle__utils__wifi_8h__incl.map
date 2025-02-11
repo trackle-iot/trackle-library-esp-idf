@@ -1,11 +1,20 @@
 <map id="trackle_utils_wifi.h" name="trackle_utils_wifi.h">
-<area shape="rect" id="node1" title="Functions to manage the connection of the device to WLAN via Wi&#45;Fi." alt="" coords="115,5,259,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,155,76,181"/>
-<area shape="rect" id="node3" title=" " alt="" coords="144,80,231,107"/>
-<area shape="rect" id="node4" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="277,80,391,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="100,155,251,181"/>
-<area shape="rect" id="node6" title=" " alt="" coords="275,155,393,181"/>
-<area shape="rect" id="node7" title=" " alt="" coords="417,155,595,181"/>
-<area shape="rect" id="node8" title=" " alt="" coords="619,155,710,181"/>
-<area shape="rect" id="node9" title=" " alt="" coords="734,155,801,181"/>
+<area shape="rect" id="Node000001" title="Functions to manage the connection of the device to WLAN via Wi&#45;Fi." alt="" coords="115,5,259,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,152,76,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,33,64,144,60,141,173,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="144,79,231,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,31,190,65,185,65,185,31"/>
+<area shape="rect" id="Node000004" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="277,79,391,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="212,28,299,70,297,75,210,33"/>
+<area shape="poly" id="edge9_Node000004_Node000002" title=" " alt="" coords="287,107,90,154,89,149,286,101"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="100,152,251,177"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="310,106,215,149,213,144,307,102"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="275,152,393,177"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="337,104,337,138,331,138,331,104"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="417,152,595,177"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="363,102,466,144,464,149,361,106"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="619,152,710,177"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="388,101,607,148,606,153,387,107"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="734,152,801,177"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="392,97,537,117,721,149,720,155,536,123,391,102"/>
 </map>

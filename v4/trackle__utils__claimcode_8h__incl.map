@@ -1,5 +1,7 @@
 <map id="trackle_utils_claimcode.h" name="trackle_utils_claimcode.h">
-<area shape="rect" id="node1" title="Functions and constants for working with the claimcode." alt="" coords="20,5,208,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,80,105,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="129,80,216,107"/>
+<area shape="rect" id="Node000001" title="Functions and constants for working with the claimcode." alt="" coords="20,5,208,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,105,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,33,75,70,71,67,102,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="129,79,216,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="126,29,157,67,153,70,122,33"/>
 </map>

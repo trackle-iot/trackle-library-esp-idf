@@ -1,15 +1,27 @@
 <map id="trackle_utils_ota.h" name="trackle_utils_ota.h">
-<area shape="rect" id="node1" title="Utilities to implement Over The Air firmware updates." alt="" coords="367,5,510,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,80,120,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="144,80,277,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="301,80,427,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="451,80,578,107"/>
-<area shape="rect" id="node6" title=" " alt="" coords="602,80,675,107"/>
-<area shape="rect" id="node7" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="700,80,815,107"/>
-<area shape="rect" id="node8" title=" " alt="" coords="271,155,422,181"/>
-<area shape="rect" id="node9" title=" " alt="" coords="447,155,564,181"/>
-<area shape="rect" id="node10" title=" " alt="" coords="589,155,766,181"/>
-<area shape="rect" id="node11" title=" " alt="" coords="791,155,881,181"/>
-<area shape="rect" id="node12" title=" " alt="" coords="905,155,972,181"/>
-<area shape="rect" id="node13" title=" " alt="" coords="997,155,1067,181"/>
+<area shape="rect" id="Node000001" title="Utilities to implement Over The Air firmware updates." alt="" coords="367,5,510,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,120,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="379,33,134,79,133,74,378,28"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="144,79,277,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="403,33,262,77,260,72,401,28"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="301,79,427,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="429,33,388,71,384,67,425,29"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="451,79,578,104"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="453,29,494,67,490,71,449,33"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="602,79,675,104"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="472,28,594,71,592,76,470,33"/>
+<area shape="rect" id="Node000007" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="700,79,815,104"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="490,28,693,73,692,78,489,33"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="271,152,422,177"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="700,105,427,152,426,147,699,100"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="447,152,564,177"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="718,107,560,151,559,146,716,101"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="589,152,766,177"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="746,106,702,145,699,141,743,102"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="791,152,881,177"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="772,102,815,141,811,145,768,106"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="905,152,972,177"/>
+<area shape="poly" id="edge11_Node000007_Node000012" title=" " alt="" coords="787,102,897,144,895,149,785,107"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="997,152,1067,177"/>
+<area shape="poly" id="edge12_Node000007_Node000013" title=" " alt="" coords="802,101,984,148,983,153,801,107"/>
 </map>

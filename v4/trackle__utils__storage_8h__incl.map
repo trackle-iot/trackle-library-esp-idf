@@ -1,11 +1,19 @@
 <map id="trackle_utils_storage.h" name="trackle_utils_storage.h">
-<area shape="rect" id="node1" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="339,5,510,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="313,80,408,107"/>
-<area shape="rect" id="node3" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="433,80,547,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="5,155,156,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="181,155,298,181"/>
-<area shape="rect" id="node6" title=" " alt="" coords="323,155,500,181"/>
-<area shape="rect" id="node7" title=" " alt="" coords="525,155,615,181"/>
-<area shape="rect" id="node8" title=" " alt="" coords="639,155,706,181"/>
-<area shape="rect" id="node9" title=" " alt="" coords="731,155,801,181"/>
+<area shape="rect" id="Node000001" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="339,5,510,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="313,79,408,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="416,33,382,70,378,67,412,29"/>
+<area shape="rect" id="Node000003" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="433,79,547,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="437,29,472,67,468,70,433,33"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,152,156,177"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="433,105,160,152,159,147,432,100"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="181,152,298,177"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="450,107,294,151,292,146,449,101"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="323,152,500,177"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="479,106,436,145,432,141,476,102"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="525,152,615,177"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="505,102,549,141,545,145,501,106"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="639,152,706,177"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="520,102,631,144,629,149,518,107"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="731,152,801,177"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="535,101,718,148,717,153,534,107"/>
 </map>
