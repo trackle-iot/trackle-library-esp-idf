@@ -27,8 +27,7 @@ You will basically just need a development host and an [ESP32 development board]
 
 - Please refer to https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html for setting up ESP-IDF
   - ESP-IDF can be downloaded from https://github.com/espressif/esp-idf/
-  - Please set your branch to `release/v4.3` or `release/v4.4` and pull in the latest changes.
-  - IDF `release/v5.0` is not supported.
+  - Please set your branch to `release/v5.1` or `release/v5.2` and pull in the latest changes.
 - For a production-ready starting point for making applications that connect to Trackle cloud using trackle-esp-idf-component, refer to the [Trackle template project](https://github.com/trackle-iot/trackle-firmware-template-project).
 
 ## Creating a Trackle Device
