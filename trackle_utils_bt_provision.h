@@ -81,21 +81,25 @@ int prov_retry_num = 0;
 #define PROV_ERROR_STOP_AFTER 5000
 
 bool wifi_prov_initialized = false;          // do not initialize again
+uint16_t wifi_prov_timeout = 5 * 60;         // timeout for provisioning in seconds
 bool deinit_on_provisioning_end = true;      // bluetooth can't be used again
 bool restart_on_provisioning_timeout = true; // on provision timout, device is restarted
 bool restart_on_provisioning_success = true; // on provision success, device is restarted
 bool restart_on_provisioning_error = true;   // on provision error, device is restarted
+bool stop_on_wifi_prov_timeout = true;       // stop provisioning on wifi timeout
 
 typedef enum
 {
     DEINIT_ON_END = 0,
     RESTART_ON_PROV_TIMEOUT,
     RESTART_ON_PROV_SUCCESS,
-    RESTART_ON_PROV_ERROR
+    RESTART_ON_PROV_ERROR,
+    WIFI_PROV_TIMEOUT
 } TrackleUtilsBtOption;
 
 uint32_t restart_start_millis = 0;
 uint32_t stop_start_millis = 0;
+uint32_t wifi_prov_start_millis = 0;
 
 static const char *BT_TAG = "trackle-utils-bt-provision";
 
@@ -123,6 +127,20 @@ void trackle_utils_bt_provision_set_option(TrackleUtilsBtOption option, bool val
     {
         restart_on_provisioning_error = value;
     }
+    else if (option == WIFI_PROV_TIMEOUT)
+    {
+        stop_on_wifi_prov_timeout = value;
+    }
+}
+
+/**
+ * @brief Set timeout for provisioning.
+ *
+ * @param timeout Timeout in seconds.
+ */
+void trackle_utils_bt_provision_set_wifi_prov_timeout(uint16_t timeout)
+{
+    wifi_prov_timeout = timeout;
 }
 
 /**
@@ -370,6 +388,7 @@ void trackle_utils_bt_provision_loop()
     {
         xEventGroupClearBits(s_wifi_event_group, START_PROVISIONING);
         xEventGroupSetBits(s_wifi_event_group, IS_PROVISIONING);
+        wifi_prov_start_millis = getMillis();
 
         esp_wifi_set_ps(WIFI_PS_MIN_MODEM); // enable powersave
 
@@ -435,6 +454,17 @@ void trackle_utils_bt_provision_loop()
         {
             stop_start_millis = 0;
             ESP_LOGI(BT_TAG, "stopping provision...");
+            wifi_prov_mgr_stop_provisioning();
+        }
+    }
+
+    // check timeout for wifi provisioning
+    if (stop_on_wifi_prov_timeout && wifi_prov_start_millis > 0)
+    {
+        if (getMillis() - wifi_prov_start_millis >= wifi_prov_timeout * 1000)
+        {
+            wifi_prov_start_millis = 0;
+            ESP_LOGI(BT_TAG, "wifi provisioning timeout, stopping...");
             wifi_prov_mgr_stop_provisioning();
         }
     }
