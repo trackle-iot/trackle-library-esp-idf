@@ -7,7 +7,6 @@
 #include "esp_mac.h"
 
 #include "hal_platform.h"
-#include "cJSON.h"
 
 // check mandatory defines
 #ifndef CONFIG_OTA_ALLOW_HTTP
