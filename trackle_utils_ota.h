@@ -24,7 +24,7 @@
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
 #include "esp32/rom/crc.h"
-#include "esp32/rom/sha.h"
+#include "mbedtls/sha256.h"
 
 #include "trackle_utils.h"
 
@@ -42,14 +42,16 @@
  */
 typedef enum
 {
-    OTA_ERR_OK = 0,          /*!< No error */
-    OTA_ERR_ALREADY_RUNNING, /*!< OTA already in progress */
-    OTA_ERR_PARTITION,       /*!< partition error (not found, invalid, conflict, etc..) */
-    OTA_ERR_MEMORY,          /*!< not enough free memory */
-    OTA_ERR_VALIDATE_FAILED, /*!< image validation failed (crc, wrong platform, etc..) */
-    OTA_ERR_INCOMPLETE,      /*!< download interrupter */
-    OTA_ERR_COMPLETING,      /*!< download completed but image not validated */
-    OTA_ERR_GENERIC          /*!< all other errors */
+    OTA_ERR_OK = 0,             /*!< No error */
+    OTA_ERR_ALREADY_RUNNING,    /*!< OTA already in progress */
+    OTA_ERR_PARTITION,          /*!< partition error (not found, invalid, conflict, etc..) */
+    OTA_ERR_MEMORY,             /*!< not enough free memory */
+    OTA_ERR_VALIDATE_FAILED,    /*!< image validation failed (crc, wrong platform, etc..) */
+    OTA_ERR_INCOMPLETE,         /*!< download interrupter */
+    OTA_ERR_COMPLETING,         /*!< download completed but image not validated */
+    OTA_ERR_GENERIC,            /*!< all other errors */
+    OTA_ERR_VALIDATE_CA_FAILED, /*!< error validating https server root CA */
+    OTA_ERR_SIGNATURE_FAILED,   /*!< error validating firmware signature */
 } Ota_Error;
 
 typedef enum
@@ -65,8 +67,9 @@ typedef struct
     uint32_t start_timestamp;
     uint32_t firmware_crc32_ota;
     uint32_t actual_crc32_ota;
+    uint8_t calculated_hash[32];
     bool sha256_initialized;
-    SHA_CTX sha_ctx;
+    mbedtls_sha256_context sha256_ctx;
 } ota_data;
 
 /**
@@ -76,5 +79,13 @@ typedef struct
  * @param crc crc32 of the firmware, needed to validate it after download
  */
 int firmware_ota_url(const char *url, uint32_t crc);
+
+/**
+ * Sets the certificate to validate the CA.
+ *
+ * @param cert_pem The PEM encoded certificate.
+ * @return true if the validation is successful, false otherwise.
+ */
+bool set_https_ota_certificate(const char *cert_pem);
 
 #endif /* TRACKLE_UTILS_OTA_H */

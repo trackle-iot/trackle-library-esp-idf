@@ -30,6 +30,10 @@
 ota_data current_ota_data;
 TaskHandle_t xOtaTaskHandle = NULL;
 
+#define MAX_CERT_LEN 2048
+const char *g_https_root_cert = NULL;
+static bool g_cert_set = false;
+
 static const char *OTA_TAG = "trackle-utils-ota";
 
 // Private function declarations
@@ -60,10 +64,10 @@ int firmware_ota_url(const char *url, uint32_t crc)
         }
     }
 
+    memset(&current_ota_data, 0, sizeof(ota_data));
     ESP_LOGI(OTA_TAG, "ota update callback, url: %s, crc %" PRIu32, url, crc);
     strcpy(current_ota_data.url, url);
     current_ota_data.firmware_crc32_ota = crc;
-    current_ota_data.actual_crc32_ota = 0;
     xTaskCreate(&execute_ota_task, "execute_ota_task", 8192, NULL, 5, &xOtaTaskHandle);
     return OTA_ERR_OK;
 }
@@ -88,7 +92,19 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     case HTTP_EVENT_ON_DATA:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
         current_ota_data.actual_crc32_ota = crc32_le(current_ota_data.actual_crc32_ota, evt->data, evt->data_len);
-        // TODO update percentage
+
+        // Initialize SHA256 at the first packet
+        if (!current_ota_data.sha256_initialized)
+        {
+            mbedtls_sha256_init(&current_ota_data.sha256_ctx);
+            mbedtls_sha256_starts(&current_ota_data.sha256_ctx, 0);
+            current_ota_data.sha256_initialized = true;
+            ESP_LOGI(OTA_TAG, "SHA256 calculation started (mbedtls)");
+        }
+
+        // update SHA256
+        mbedtls_sha256_update(&current_ota_data.sha256_ctx, evt->data, evt->data_len);
+
         break;
     case HTTP_EVENT_ON_FINISH:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_FINISH");
@@ -125,11 +141,24 @@ static void execute_ota_task(void *pvParameter)
 
     xEventGroupSetBits(s_wifi_event_group, OTA_UPDATING);
 
+    if (trackleUpdatesForced(trackle_s))
+    {
+        ESP_LOGE(OTA_TAG, "OTA forced, https root ca verification skipped...");
+        g_https_root_cert = NULL;
+        g_cert_set = false;
+    }
+
     esp_http_client_config_t config = {
         .url = current_ota_data.url,
         .event_handler = _http_event_handler,
         .buffer_size = 1024,
     };
+
+    if (g_cert_set)
+    {
+        ESP_LOGI(OTA_TAG, "Configuring OTA certificate...");
+        config.cert_pem = g_https_root_cert;
+    }
 
     esp_https_ota_config_t ota_config = {
         .http_config = &config,
@@ -137,6 +166,7 @@ static void execute_ota_task(void *pvParameter)
 
     esp_https_ota_handle_t https_ota_handle = NULL;
     esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle);
+    ESP_LOGE(OTA_TAG, "Errore durante l'inizio dell'OTA: %s", esp_err_to_name(err));
 
     if (err == ESP_ERR_INVALID_ARG || err == ESP_ERR_OTA_PARTITION_CONFLICT || err == ESP_ERR_OTA_SELECT_INFO_INVALID || err == ESP_ERR_INVALID_SIZE || err == ESP_ERR_OTA_ROLLBACK_INVALID_STATE || err == ESP_ERR_NOT_FOUND)
     {
@@ -145,6 +175,12 @@ static void execute_ota_task(void *pvParameter)
     else if (err == ESP_ERR_NO_MEM)
     {
         sendOtaMessage(OTA_MSG_DONE, OTA_ERR_MEMORY);
+    }
+    else if (err == ESP_ERR_HTTP_CONNECT)
+    {
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
+        trackleDisableUpdates(trackle_s);
+
     }
     else if (err != ESP_OK)
     {
@@ -174,17 +210,46 @@ static void execute_ota_task(void *pvParameter)
 
             if (current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota)
             {
-                err = esp_https_ota_finish(https_ota_handle);
-                if (err == ESP_OK)
+                // if forced, do not verify signature
+                bool signatureValidated = false;
+
+                if (trackleUpdatesForced(trackle_s))
                 {
-                    ESP_LOGI(OTA_TAG, "OTA completed, now restarting....");
-                    sendOtaMessage(OTA_MSG_DONE, OTA_ERR_OK);
-                    vTaskDelay(1000 / portTICK_PERIOD_MS);
-                    esp_restart();
+                    ESP_LOGE(OTA_TAG, "OTA forced, signature verification skipped...");
+                    signatureValidated = true;
                 }
-                else
+                else // verify signature
                 {
-                    sendOtaMessage(OTA_MSG_DONE, OTA_ERR_COMPLETING);
+                    mbedtls_sha256_finish(&current_ota_data.sha256_ctx, current_ota_data.calculated_hash);
+                    mbedtls_sha256_free(&current_ota_data.sha256_ctx);
+                    current_ota_data.sha256_initialized = false;
+
+                    if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
+                    {
+                        signatureValidated = true;
+                    }
+                    else
+                    {
+                        ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
+                        trackleDisableUpdates(trackle_s);
+                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+                    }
+                }
+
+                if (signatureValidated)
+                {
+                    err = esp_https_ota_finish(https_ota_handle);
+                    if (err == ESP_OK)
+                    {
+                        ESP_LOGI(OTA_TAG, "OTA completed, now restarting....");
+                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_OK);
+                        vTaskDelay(1000 / portTICK_PERIOD_MS);
+                        esp_restart();
+                    }
+                    else
+                    {
+                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_COMPLETING);
+                    }
                 }
             }
             else
@@ -194,10 +259,34 @@ static void execute_ota_task(void *pvParameter)
         }
     }
 
+    if (current_ota_data.sha256_initialized)
+    {
+        mbedtls_sha256_free(&current_ota_data.sha256_ctx);
+        current_ota_data.sha256_initialized = false;
+    }
+
     ESP_LOGE(OTA_TAG, "ESP_HTTPS_OTA upgrade failed");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
     current_ota_data.start_timestamp = 0;
     esp_https_ota_abort(https_ota_handle);
     vTaskDelete(xOtaTaskHandle);
+}
+
+bool set_https_ota_certificate(const char *cert_pem)
+{
+    if (!cert_pem)
+    {
+        g_cert_set = false;
+        g_https_root_cert = NULL;
+        return true;
+    }
+
+    size_t len = strlen(cert_pem);
+    if (len >= MAX_CERT_LEN)
+        return false;
+
+    g_https_root_cert = cert_pem;
+    g_cert_set = true;
+    return true;
 }
