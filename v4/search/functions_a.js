@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nicfrommacaddress_0',['nicFromMacAddress',['../trackle__utils_8h.html#ad4ea3b6c4cf8b59b845f4679052143fe',1,'trackle_utils.h']]]
+  ['ouifrommacaddress_0',['ouiFromMacAddress',['../trackle__utils_8h.html#aee1fd84de6e2375952cd8308b5fb0ed4',1,'trackle_utils.h']]]
 ];

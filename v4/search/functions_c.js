@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['readconfigfromstorage_0',['readConfigFromStorage',['../trackle__utils__storage_8h.html#a4c74614bb8cadb981faf5d5b724ee97d',1,'trackle_utils_storage.h']]],
-  ['readdeviceinfofromstorage_1',['readDeviceInfoFromStorage',['../trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567',1,'trackle_utils_storage.h']]],
-  ['reboot_5fcb_2',['reboot_cb',['../trackle__esp32_8c.html#aaa51bc4eec593c39d843fdf1724ecd9d',1,'trackle_esp32.c']]],
-  ['receive_5fcb_5fudp_3',['receive_cb_udp',['../trackle__esp32_8c.html#a215d39f2f710df0bccdc53965adc008b',1,'trackle_esp32.c']]],
-  ['rssitopercentage_4',['rssiToPercentage',['../trackle__utils_8h.html#aa50ac73ca5fcb2410725def91f76cb11',1,'trackle_utils.h']]]
+  ['send_5fcb_5fudp_0',['send_cb_udp',['../trackle__esp32_8c.html#a68775577aa2c7d852f9c588d63ee3f70',1,'trackle_esp32.c']]],
+  ['set_5fhttps_5fota_5fcertificate_1',['set_https_ota_certificate',['../trackle__utils__ota_8h.html#a7fc6dd203ff02c60275b4fadbcd7b405',1,'trackle_utils_ota.h']]],
+  ['splitstring_2',['splitString',['../trackle__utils_8h.html#aa4389eec9f363a491d4b5679b26e3c3d',1,'trackle_utils.h']]],
+  ['stringtohex_3',['stringToHex',['../trackle__utils_8h.html#a1fc69e2dc8816830c378eb4881ac25f2',1,'trackle_utils.h']]]
 ];

@@ -9,6 +9,5 @@ var searchData=
   ['empty_5fv_6',['empty_v',['../trackle__esp32_8c.html#a7a5139433b2457666bd512a9de697197',1,'trackle_esp32.c']]],
   ['esp_20idf_20component_7',['trackle-esp-idf-component',['../md__r_e_a_d_m_e.html',1,'']]],
   ['esp32_5fcheck_5fdiagnostic_5fmillis_8',['esp32_check_diagnostic_millis',['../trackle__esp32_8c.html#a0dccd152752f139359cc813ffda69da3',1,'trackle_esp32.c']]],
-  ['esp32_5fdiagnostic_5ftime_9',['ESP32_DIAGNOSTIC_TIME',['../trackle__esp32_8c.html#a8935727175ac881f5ac69d90a58b2ffe',1,'trackle_esp32.c']]],
-  ['execute_5fota_5ftask_10',['execute_ota_task',['../trackle__utils__ota_8h.html#a3e5d7d8d7de8cc62c4d6a5e984be9eb1',1,'trackle_utils_ota.h']]]
+  ['esp32_5fdiagnostic_5ftime_9',['ESP32_DIAGNOSTIC_TIME',['../trackle__esp32_8c.html#a8935727175ac881f5ac69d90a58b2ffe',1,'trackle_esp32.c']]]
 ];

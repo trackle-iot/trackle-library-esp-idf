@@ -144,9 +144,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a26f189aafb239b1f2e5636b1af9704f2" id="r_a26f189aafb239b1f2e5636b1af9704f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a26f189aafb239b1f2e5636b1af9704f2">initStorage</a> (bool has_config_partition)</td></tr>
 <tr class="memdesc:a26f189aafb239b1f2e5636b1af9704f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens NVS partition that contains device ID and private key (and configuration partition if required).  <br /></td></tr>
 <tr class="separator:a26f189aafb239b1f2e5636b1af9704f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2356381872d16b92c5fe484ab5f567" id="r_acc2356381872d16b92c5fe484ab5f567"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567">readDeviceInfoFromStorage</a> ()</td></tr>
-<tr class="memdesc:acc2356381872d16b92c5fe484ab5f567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load Trackle device ID and private key from NVS. The credentials are then stored in the device_id and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables.  <br /></td></tr>
-<tr class="separator:acc2356381872d16b92c5fe484ab5f567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd602f67315616dbf6d75446131b084" id="r_aebd602f67315616dbf6d75446131b084"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> (void)</td></tr>
+<tr class="memdesc:aebd602f67315616dbf6d75446131b084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables.  <br /></td></tr>
+<tr class="separator:aebd602f67315616dbf6d75446131b084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c74614bb8cadb981faf5d5b724ee97d" id="r_a4c74614bb8cadb981faf5d5b724ee97d"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a4c74614bb8cadb981faf5d5b724ee97d">readConfigFromStorage</a> (void *out_value, size_t out_size, const char *key)</td></tr>
 <tr class="memdesc:a4c74614bb8cadb981faf5d5b724ee97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read firmware application-specific configuration structure from NVS.  <br /></td></tr>
 <tr class="separator:a4c74614bb8cadb981faf5d5b724ee97d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,8 +156,11 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:a9082aefe23f8ebe0e236aee92b38f153" id="r_a9082aefe23f8ebe0e236aee92b38f153"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> [12]</td></tr>
+<tr class="memdesc:a9082aefe23f8ebe0e236aee92b38f153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device ID read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS.  <br /></td></tr>
+<tr class="separator:a9082aefe23f8ebe0e236aee92b38f153"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6b5ac028f4c25b0f2a6bbd659886bd2" id="r_ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> [122]</td></tr>
-<tr class="memdesc:ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Private key read by <a class="el" href="trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567">readDeviceInfoFromStorage</a> from NVS.  <br /></td></tr>
+<tr class="memdesc:ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Private key read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS.  <br /></td></tr>
 <tr class="separator:ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f5c2bd285ab79cac4981636defa0a2b" id="r_a2f5c2bd285ab79cac4981636defa0a2b"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a2f5c2bd285ab79cac4981636defa0a2b">string_device_id</a> [12 *2+1]</td></tr>
 <tr class="separator:a2f5c2bd285ab79cac4981636defa0a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -288,8 +291,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="acc2356381872d16b92c5fe484ab5f567" name="acc2356381872d16b92c5fe484ab5f567"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc2356381872d16b92c5fe484ab5f567">&#9670;&#160;</a></span>readDeviceInfoFromStorage()</h2>
+<a id="aebd602f67315616dbf6d75446131b084" name="aebd602f67315616dbf6d75446131b084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd602f67315616dbf6d75446131b084">&#9670;&#160;</a></span>readDeviceInfoFromStorage()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -297,13 +300,14 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">esp_err_t readDeviceInfoFromStorage </td>
           <td>(</td>
+          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Load Trackle device ID and private key from NVS. The credentials are then stored in the device_id and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables. </p>
+<p>Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables. </p>
 <dl class="section return"><dt>Returns</dt><dd>ESP_OK on success, other value on error. </dd></dl>
 
 </div>
@@ -359,11 +363,19 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">nvs_handle_t config_handle</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -373,12 +385,44 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">nvs_handle_t device_handle</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9082aefe23f8ebe0e236aee92b38f153" name="a9082aefe23f8ebe0e236aee92b38f153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9082aefe23f8ebe0e236aee92b38f153">&#9670;&#160;</a></span>device_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t device_id[12]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Device ID read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS. </p>
 
 </div>
 </div>
@@ -387,14 +431,22 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">unsigned char private_key[122]</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Private key read by <a class="el" href="trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567">readDeviceInfoFromStorage</a> from NVS. </p>
+<p>Private key read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS. </p>
 
 </div>
 </div>
@@ -403,11 +455,19 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">char string_device_id[12 *2+1]</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

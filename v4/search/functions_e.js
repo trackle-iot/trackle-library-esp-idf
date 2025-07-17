@@ -1,20 +1,7 @@
 var searchData=
 [
-  ['time_5fcb_0',['time_cb',['../trackle__esp32_8c.html#aed0664192172e9882655c540ae1733c2',1,'trackle_esp32.c']]],
-  ['trackle_5fbtget_5fadd_1',['Trackle_BtGet_add',['../trackle__utils__bt__functions_8h.html#aeaa8cb33e84d21f66d2336cb39826ab0',1,'trackle_utils_bt_functions.h']]],
-  ['trackle_5fbtpost_5fadd_2',['Trackle_BtPost_add',['../trackle__utils__bt__functions_8h.html#acb468bd3ad26641f9072d671e309f5a9',1,'trackle_utils_bt_functions.h']]],
-  ['trackle_5floadclaimcode_3',['Trackle_loadClaimCode',['../trackle__utils__claimcode_8h.html#a3d531b222ce72d581a99f389d9fabc56',1,'trackle_utils_claimcode.h']]],
-  ['trackle_5fsaveclaimcode_4',['Trackle_saveClaimCode',['../trackle__utils__claimcode_8h.html#a76677cc9fd97c16baaf467495b91cce9',1,'trackle_utils_claimcode.h']]],
-  ['trackle_5ftask_5',['trackle_task',['../trackle__esp32_8c.html#a877b8146229c13c7791f8ad59cee8edf',1,'trackle_task(void *pvParameter):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a877b8146229c13c7791f8ad59cee8edf',1,'trackle_task(void *pvParameter):&#160;trackle_esp32.c']]],
-  ['trackle_5futils_5fbt_5fprovision_5finit_6',['trackle_utils_bt_provision_init',['../trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fbt_5fprovision_5floop_7',['trackle_utils_bt_provision_loop',['../trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fbt_5fprovision_5fset_5fdevice_5fname_8',['trackle_utils_bt_provision_set_device_name',['../trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fbt_5fprovision_5fset_5fmsd_9',['trackle_utils_bt_provision_set_msd',['../trackle__utils__bt__provision_8h.html#aa8fa91208d7de33045afc7723e060716',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fbt_5fprovision_5fset_5foption_10',['trackle_utils_bt_provision_set_option',['../trackle__utils__bt__provision_8h.html#a123c972a2e7c95af41c0a1b19efc0a0f',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fbt_5fprovision_5fset_5fuuid_11',['trackle_utils_bt_provision_set_uuid',['../trackle__utils__bt__provision_8h.html#aca0253e2c055ddf1f9386d4153dc09aa',1,'trackle_utils_bt_provision.h']]],
-  ['trackle_5futils_5fwifi_5floop_12',['trackle_utils_wifi_loop',['../trackle__utils__wifi_8h.html#a7e0c1523bc1ca08e141060a7c8635f0a',1,'trackle_utils_wifi.h']]],
-  ['tracklegetdeviceidasstr_13',['tracklegetdeviceidasstr',['../trackle__esp32_8h.html#a31bad0fd40057ff948e3399a8d1ee4fc',1,'trackleGetDeviceIdAsStr():&#160;trackle_esp32_cpp.cpp'],['../trackle__esp32__cpp_8cpp.html#a31bad0fd40057ff948e3399a8d1ee4fc',1,'trackleGetDeviceIdAsStr():&#160;trackle_esp32_cpp.cpp']]],
-  ['tracklepublishsecure_14',['tracklepublishsecure',['../trackle__esp32_8c.html#a513a3836b5eb1a404a5840e6fdb842f1',1,'tracklePublishSecure(const char *eventName, const char *data):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a513a3836b5eb1a404a5840e6fdb842f1',1,'tracklePublishSecure(const char *eventName, const char *data):&#160;trackle_esp32.c']]],
-  ['tracklepublishsecurewithparams_15',['tracklepublishsecurewithparams',['../trackle__esp32_8c.html#a010cb2352a708cb43c07f53f9996a1fe',1,'tracklePublishSecureWithParams(const char *eventName, const char *data, Event_Type eventType, Event_Flags eventFlag, uint32_t msg_key):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a010cb2352a708cb43c07f53f9996a1fe',1,'tracklePublishSecureWithParams(const char *eventName, const char *data, Event_Type eventType, Event_Flags eventFlag, uint32_t msg_key):&#160;trackle_esp32.c']]],
-  ['tracklesyncstatesecure_16',['tracklesyncstatesecure',['../trackle__esp32_8c.html#a7455ef0b93ef0e0412dc2bc1f52d9b34',1,'trackleSyncStateSecure(const char *data):&#160;trackle_esp32.c'],['../trackle__esp32_8h.html#a7455ef0b93ef0e0412dc2bc1f52d9b34',1,'trackleSyncStateSecure(const char *data):&#160;trackle_esp32.c']]]
+  ['wifi_5finit_0',['wifi_init',['../trackle__utils__wifi_8h.html#a7267cf9f0ba503d904709977c18a07ea',1,'trackle_utils_wifi.h']]],
+  ['wifi_5finit_5fsta_1',['wifi_init_sta',['../trackle__utils__wifi_8h.html#a720913f2342db3713ec3948cdfc16855',1,'trackle_utils_wifi.h']]],
+  ['wifi_5fis_5fprovisioned_2',['wifi_is_provisioned',['../trackle__utils__wifi_8h.html#a7bfbabe6c15848e26f9a2ae41669baa4',1,'trackle_utils_wifi.h']]],
+  ['writeconfigtostorage_3',['writeConfigToStorage',['../trackle__utils__storage_8h.html#aecf0c1df31c97b01b55382f718019ed3',1,'trackle_utils_storage.h']]]
 ];

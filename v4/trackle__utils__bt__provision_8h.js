@@ -13,14 +13,16 @@ var trackle__utils__bt__provision_8h =
       [ "DEINIT_ON_END", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1aa838879f3987001e3f54b56fa6e364ef", null ],
       [ "RESTART_ON_PROV_TIMEOUT", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ae0987be64f7d18f41ccb473e3c79e447", null ],
       [ "RESTART_ON_PROV_SUCCESS", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1adf3e241826f84d0290fe8b0c427dd055", null ],
-      [ "RESTART_ON_PROV_ERROR", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67", null ]
+      [ "RESTART_ON_PROV_ERROR", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67", null ],
+      [ "WIFI_PROV_TIMEOUT", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad9b2962a144ba8ca8f5031ad902e387f", null ]
     ] ],
-    [ "trackle_utils_bt_provision_init", "trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c", null ],
-    [ "trackle_utils_bt_provision_loop", "trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634", null ],
+    [ "trackle_utils_bt_provision_init", "trackle__utils__bt__provision_8h.html#acfb219485e09909e1e5071bc0600ad38", null ],
+    [ "trackle_utils_bt_provision_loop", "trackle__utils__bt__provision_8h.html#add4259affb0b6fd3290a5899bd0f1d8d", null ],
     [ "trackle_utils_bt_provision_set_device_name", "trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67", null ],
     [ "trackle_utils_bt_provision_set_msd", "trackle__utils__bt__provision_8h.html#aa8fa91208d7de33045afc7723e060716", null ],
     [ "trackle_utils_bt_provision_set_option", "trackle__utils__bt__provision_8h.html#a123c972a2e7c95af41c0a1b19efc0a0f", null ],
     [ "trackle_utils_bt_provision_set_uuid", "trackle__utils__bt__provision_8h.html#aca0253e2c055ddf1f9386d4153dc09aa", null ],
+    [ "trackle_utils_bt_provision_set_wifi_prov_timeout", "trackle__utils__bt__provision_8h.html#a68fc1cb50760a1d384e19150b5d56da3", null ],
     [ "bleAdvData", "trackle__utils__bt__provision_8h.html#a28194e9a940cac0852432d8de8c9362c", null ],
     [ "bleAdvDataLen", "trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a", null ],
     [ "bleProvDeviceName", "trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0", null ],
@@ -31,7 +33,10 @@ var trackle__utils__bt__provision_8h =
     [ "restart_on_provisioning_success", "trackle__utils__bt__provision_8h.html#a1eda2b1d1486b68ad6a71c55e9c89083", null ],
     [ "restart_on_provisioning_timeout", "trackle__utils__bt__provision_8h.html#a2560da36c4b86b23af50eb035650f82f", null ],
     [ "restart_start_millis", "trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58", null ],
+    [ "stop_on_wifi_prov_timeout", "trackle__utils__bt__provision_8h.html#a0bd277ea7b1e88945081846788b1070b", null ],
     [ "stop_start_millis", "trackle__utils__bt__provision_8h.html#a1c9e7f261793150abf88e7e11080bef7", null ],
     [ "wifi_prov_initialized", "trackle__utils__bt__provision_8h.html#aa886c0de0d9916f9f9bf0e9b445e4f3e", null ],
+    [ "wifi_prov_start_millis", "trackle__utils__bt__provision_8h.html#ab1744c34bb6f189aed2d30d298119071", null ],
+    [ "wifi_prov_timeout", "trackle__utils__bt__provision_8h.html#aed9758e335bcebca91796bc6ffd2aa82", null ],
     [ "wifiProvisioningEvents", "trackle__utils__bt__provision_8h.html#a8be5b6adf2003e591174ea853ec7b6ee", null ]
 ];
