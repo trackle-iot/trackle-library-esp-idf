@@ -351,6 +351,7 @@ void initTrackle()
 
     trackleSetOtaMethod(trackle_s, SEND_URL);
     trackleSetConnectionType(trackle_s, CONNECTION_TYPE_WIFI);
+    trackleDiagnosticNetwork(trackle_s, NETWORK_ACCESS_TECNHOLOGY, NET_ACCESS_TECHNOLOGY_WIFI);
 
     // configurazione delle callback
     trackleSetMillis(trackle_s, getMillis);
