@@ -151,7 +151,7 @@ time_t getGmTimestamp()
 int rssiToPercentage(int rssi)
 {
     int signalQualityPercent = 0;
-    if (rssi <= -100)
+    if (rssi == 0 || rssi <= -100)
     {
         signalQualityPercent = 0;
     }
