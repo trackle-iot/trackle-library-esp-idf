@@ -58,6 +58,14 @@ void wifi_init(void);
 void wifi_init_sta(void);
 
 /**
+ * @brief Sets SSID and password in the current WiFi configuration
+ * @param ssid SSID of the WiFi network
+ * @param password Password of the WiFi network
+ * @return ESP_OK if successful, otherwise error code
+ */
+esp_err_t wifi_set_credentials(const char *ssid, const char *password);
+
+/**
  * @brief Function to be called periodically in order to be able to connect to WiFi.
  */
 void trackle_utils_wifi_loop(void);

@@ -68,7 +68,7 @@ void wifi_init(void)
     sta_netif = esp_netif_create_default_wifi_sta();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-    esp_wifi_set_storage(WIFI_STORAGE_FLASH);
+    esp_wifi_set_storage(WIFI_STORAGE_RAM);
 }
 
 void wifi_init_sta(void)
@@ -77,6 +77,52 @@ void wifi_init_sta(void)
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_set_ps(WIFI_PS_NONE); // Disable powersave
     ESP_LOGI(WIFI_TAG, "wifi_init_sta finished.");
+}
+
+esp_err_t wifi_set_credentials(const char *ssid, const char *password)
+{
+    if (!ssid || !password)
+    {
+        ESP_LOGE(WIFI_TAG, "SSID or password is null");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Check lengths
+    if (strlen(ssid) >= sizeof(((wifi_config_t *)0)->sta.ssid))
+    {
+        ESP_LOGE(WIFI_TAG, "SSID is too long");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (strlen(password) >= sizeof(((wifi_config_t *)0)->sta.password))
+    {
+        ESP_LOGE(WIFI_TAG, "Password is too long");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Get current configuration
+    wifi_config_t config;
+    esp_err_t err = esp_wifi_get_config(ESP_IF_WIFI_STA, &config);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(WIFI_TAG, "Error reading WiFi configuration: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    // Set new credentials
+    strcpy((char *)config.sta.ssid, ssid);
+    strcpy((char *)config.sta.password, password);
+
+    // Apply configuration
+    err = esp_wifi_set_config(ESP_IF_WIFI_STA, &config);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(WIFI_TAG, "Error setting WiFi configuration: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    ESP_LOGI(WIFI_TAG, "WiFi configuration updated: SSID=%s", ssid);
+    return ESP_OK;
 }
 
 void trackle_utils_wifi_loop(void)
