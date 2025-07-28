@@ -42,4 +42,9 @@ void Trackle_saveClaimCode(const char *claimCode);
  */
 void Trackle_loadClaimCode();
 
+/**
+ * @brief Deletes the claim code saved in NVS.
+ */
+void Trackle_deleteClaimCode();
+
 #endif

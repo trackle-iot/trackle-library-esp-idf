@@ -11,7 +11,7 @@ static const char *TAG = "trackle_utils_claimcode";
 
 void Trackle_saveClaimCode(const char *claimCode)
 {
-    nvs_handle_t nvsHandle = NULL;
+    nvs_handle_t nvsHandle = 0;
     ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &nvsHandle));
     ESP_ERROR_CHECK(nvs_set_blob(nvsHandle, NVS_KEYNAME, claimCode, CLAIM_CODE_LENGTH));
     ESP_ERROR_CHECK(nvs_commit(nvsHandle));
@@ -20,7 +20,7 @@ void Trackle_saveClaimCode(const char *claimCode)
 
 void Trackle_loadClaimCode()
 {
-    nvs_handle_t nvsHandle = NULL;
+    nvs_handle_t nvsHandle = 0;
     ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &nvsHandle));
 
     char claimCode[CLAIM_CODE_LENGTH] = {0};
@@ -43,5 +43,26 @@ void Trackle_loadClaimCode()
     else
         ESP_LOGE(TAG, "No claim code found in NVS (2)");
 
+    nvs_close(nvsHandle);
+}
+
+void Trackle_deleteClaimCode()
+{
+    nvs_handle_t nvsHandle = 0;
+    ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &nvsHandle));
+    esp_err_t err = nvs_erase_key(nvsHandle, NVS_KEYNAME);
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Claim code removed from NVS");
+        ESP_ERROR_CHECK(nvs_commit(nvsHandle));
+    }
+    else if (err == ESP_ERR_NVS_NOT_FOUND)
+    {
+        ESP_LOGW(TAG, "No claim code found to remove");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Error during claim code removal: %d", err);
+    }
     nvs_close(nvsHandle);
 }
