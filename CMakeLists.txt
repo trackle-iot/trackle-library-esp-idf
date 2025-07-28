@@ -50,9 +50,10 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/src/trackle_utils_ota.c"
      "${COMPONENT_DIR}/src/trackle_utils_storage.c"
      "${COMPONENT_DIR}/src/trackle_utils_wifi.c"
+     "${COMPONENT_DIR}/src/trackle_utils_crypto.c"
 
      INCLUDE_DIRS "." "./trackle-library/include" "./trackle-library/lib/tinydtls" "./trackle-library/lib/tinydtls/aes" "./trackle-library/lib/tinydtls/sha2" "./trackle-library/lib/micro-ecc"
-     REQUIRES mbedtls nvs_flash esp_system app_update esp_http_client esp_https_ota wifi_provisioning)
+     REQUIRES efuse mbedtls nvs_flash esp_system app_update esp_http_client esp_https_ota wifi_provisioning)
 
 target_link_libraries(${COMPONENT_TARGET} "-u custom_app_desc")
 target_compile_definitions(${COMPONENT_TARGET} PUBLIC "-DWITH_ESPIDF")
