@@ -117,7 +117,7 @@ esp_err_t readWifiConfigFromStorage(char *ssid, char *password);
  *         - ESP_ERR_NVS_NOT_FOUND: SSID or password not found in NVS
  *         - Other ESP error codes from NVS operations
  */
-esp_err_t readWifiCredentialsFromStorage(char *ssid, size_t ssid_len, char *password, size_t password_len);
+esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password, size_t password_len);
 
 /**
  * @brief Clear WiFi credentials saved in NVS
@@ -128,7 +128,7 @@ esp_err_t readWifiCredentialsFromStorage(char *ssid, size_t ssid_len, char *pass
  * @return esp_err_t ESP_OK on success, error code otherwise
  *         - ESP_ERR_NVS_*: Various NVS error codes
  */
-esp_err_t clearWifiCredentialsFromStorage(void);
+esp_err_t clearLegacyWifiCredentials(void);
 
 // void dump_namespace(const char *namespace);
 

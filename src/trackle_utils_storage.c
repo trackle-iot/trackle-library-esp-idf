@@ -264,7 +264,7 @@ esp_err_t readWifiConfigFromStorage(char *ssid, char *password)
 #define WIFI_SSID_KEY "sta.ssid"
 #define WIFI_PASSWORD_KEY "sta.pswd"
 
-esp_err_t readWifiCredentialsFromStorage(char *ssid, size_t ssid_len, char *password, size_t password_len)
+esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password, size_t password_len)
 {
     nvs_handle_t nvs_handle;
     esp_err_t err;
@@ -372,7 +372,7 @@ esp_err_t readWifiCredentialsFromStorage(char *ssid, size_t ssid_len, char *pass
     return ESP_OK;
 }
 
-esp_err_t clearWifiCredentialsFromStorage(void)
+esp_err_t clearLegacyWifiCredentials(void)
 {
     nvs_handle_t nvs_handle;
     esp_err_t err;
