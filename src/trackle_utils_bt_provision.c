@@ -18,6 +18,7 @@
  */
 
 #include "trackle_utils_bt_provision.h"
+#include "trackle_utils_storage.h"
 #include <string.h>
 #include <esp_types.h>
 #include <esp_log.h>
@@ -283,6 +284,11 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
         case WIFI_PROV_CRED_SUCCESS:
             ESP_LOGI(BT_TAG, "Provisioning successful");
             prov_retry_num = 0;
+
+            wifi_config_t wifi_cfg;
+            esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg);
+            writeWifiConfigToStorage((char *)wifi_cfg.sta.ssid, (char *)wifi_cfg.sta.password);
+
             xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
             break;
