@@ -4,7 +4,6 @@ var searchData=
   ['bleadvdatalen_1',['bleAdvDataLen',['../trackle__utils__bt__provision_8h.html#a022dbea5b501fc5d49a519ac3208d96a',1,'trackle_utils_bt_provision.h']]],
   ['bleprovdevicename_2',['bleProvDeviceName',['../trackle__utils__bt__provision_8h.html#a5d9861d3152d0590c90243cab812e6f0',1,'trackle_utils_bt_provision.h']]],
   ['bleprovuuid_3',['bleProvUuid',['../trackle__utils__bt__provision_8h.html#a09849acf09d734a6b37e226663efa7e0',1,'trackle_utils_bt_provision.h']]],
-  ['bool_5fvalue_4',['bool_value',['../structudc__collected__data__t.html#aa6cf94a6620326c34e836146a2d41e96',1,'udc_collected_data_t']]],
-  ['btfunctionsendpointscreate_5',['btFunctionsEndpointsCreate',['../trackle__utils__bt__functions_8h.html#a8faf9bcc20248123159522c676d8fbc3',1,'trackle_utils_bt_functions.h']]],
-  ['btfunctionsendpointsregister_6',['btFunctionsEndpointsRegister',['../trackle__utils__bt__functions_8h.html#a4625feaca2e20f96816b7e278b9cf26f',1,'trackle_utils_bt_functions.h']]]
+  ['btfunctionsendpointscreate_4',['btFunctionsEndpointsCreate',['../trackle__utils__bt__functions_8h.html#a8faf9bcc20248123159522c676d8fbc3',1,'trackle_utils_bt_functions.h']]],
+  ['btfunctionsendpointsregister_5',['btFunctionsEndpointsRegister',['../trackle__utils__bt__functions_8h.html#a4625feaca2e20f96816b7e278b9cf26f',1,'trackle_utils_bt_functions.h']]]
 ];

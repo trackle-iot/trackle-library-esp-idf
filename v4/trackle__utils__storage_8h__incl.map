@@ -1,11 +1,9 @@
 <map id="trackle_utils_storage.h" name="trackle_utils_storage.h">
-<area shape="rect" id="Node000001" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="405,5,575,31"/>
+<area shape="rect" id="Node000001" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="339,5,510,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="313,79,408,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="470,33,395,74,393,69,468,28"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="416,33,382,70,378,67,412,29"/>
 <area shape="rect" id="Node000003" href="$trackle__utils_8h.html" title="Utility functions." alt="" coords="433,79,547,104"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="493,31,493,65,487,65,487,31"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="572,79,653,104"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="511,28,582,69,580,74,508,33"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="437,29,472,67,468,70,433,33"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="5,152,156,177"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="433,105,160,152,159,147,432,100"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="181,152,298,177"/>

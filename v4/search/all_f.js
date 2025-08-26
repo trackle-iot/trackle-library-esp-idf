@@ -1,19 +1,17 @@
 var searchData=
 [
-  ['platform_5fversion_0',['platform_version',['../struct____attribute____.html#a3462c6ad416138b03e75db0ef94d8755',1,'__attribute__']]],
-  ['platform_5fversion_5fv_1',['platform_version_v',['../trackle__esp32_8c.html#a4eb412a6bf756774a14dec1368fff5ca',1,'trackle_esp32.c']]],
-  ['private_5fkey_2',['private_key',['../trackle__utils__storage_8h.html#a1741a8241b515068b72a3a60b1fb72d2',1,'trackle_utils_storage.h']]],
-  ['product_5fid_3',['product_id',['../struct____attribute____.html#a215e5feaef08c77d8e9f17ab421e8a66',1,'__attribute__::product_id'],['../trackle__esp32_8c.html#a6b41096e44c646df97fba9581acb4b4a',1,'PRODUCT_ID:&#160;trackle_esp32.c']]],
-  ['product_5fid_5fv_4',['product_id_v',['../trackle__esp32_8c.html#a90a7f6f4636d26775286135d4a60fbd1',1,'trackle_esp32.c']]],
-  ['prompt_5',['prompt',['../structudc__data__request__t.html#a5c0a0d2a5f917da7806df3849670f95c',1,'udc_data_request_t']]],
-  ['prov_5ferror_5fstop_5fafter_6',['PROV_ERROR_STOP_AFTER',['../trackle__utils__bt__provision_8h.html#ac69984d8d4040283bd7156d94c00e098',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5fcred_7',['PROV_EVT_CRED',['../trackle__utils__bt__provision_8h.html#a20faf091267e75e819ef0d22c5d9ca02',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5fend_8',['PROV_EVT_END',['../trackle__utils__bt__provision_8h.html#ad2bef85d604dde6db8ae86f9a24b1128',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5ferr_9',['PROV_EVT_ERR',['../trackle__utils__bt__provision_8h.html#a166afcd249e678b887feb76e0f4482b7',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5fno_10',['PROV_EVT_NO',['../trackle__utils__bt__provision_8h.html#a35b50cc2bdb88fcbc5066578634b51d4',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5fok_11',['PROV_EVT_OK',['../trackle__utils__bt__provision_8h.html#a52ef89726ea5b47e6f9d2db4f651cbb8',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fevt_5frun_12',['PROV_EVT_RUN',['../trackle__utils__bt__provision_8h.html#acccbdb05adcc00c526abfc92dc74866b',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fmgr_5fmax_5fretry_5fcnt_13',['PROV_MGR_MAX_RETRY_CNT',['../trackle__utils__bt__provision_8h.html#ab5ad58d01d83caba9783d625f7eb1222',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5fretry_5fnum_14',['prov_retry_num',['../trackle__utils__bt__provision_8h.html#aed35ae8c893bfcbe26113761cda92385',1,'trackle_utils_bt_provision.h']]],
-  ['prov_5ftimeout_5frestart_5fafter_15',['PROV_TIMEOUT_RESTART_AFTER',['../trackle__utils__bt__provision_8h.html#a4aff98b16710c38d24a0e3858855eddb',1,'trackle_utils_bt_provision.h']]]
+  ['readconfigfromstorage_0',['readConfigFromStorage',['../trackle__utils__storage_8h.html#a4c74614bb8cadb981faf5d5b724ee97d',1,'trackle_utils_storage.h']]],
+  ['readdeviceinfofromstorage_1',['readDeviceInfoFromStorage',['../trackle__utils__storage_8h.html#acc2356381872d16b92c5fe484ab5f567',1,'trackle_utils_storage.h']]],
+  ['readme_2emd_2',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['reboot_5fcb_3',['reboot_cb',['../trackle__esp32_8c.html#aaa51bc4eec593c39d843fdf1724ecd9d',1,'trackle_esp32.c']]],
+  ['receive_5fcb_5fudp_4',['receive_cb_udp',['../trackle__esp32_8c.html#a215d39f2f710df0bccdc53965adc008b',1,'trackle_esp32.c']]],
+  ['restart_5',['RESTART',['../trackle__utils_8h.html#acfe2df1dab131d83f22efc4dcc9c6374',1,'trackle_utils.h']]],
+  ['restart_5fon_5fprov_5ferror_6',['RESTART_ON_PROV_ERROR',['../trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fon_5fprov_5fsuccess_7',['RESTART_ON_PROV_SUCCESS',['../trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1adf3e241826f84d0290fe8b0c427dd055',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fon_5fprov_5ftimeout_8',['RESTART_ON_PROV_TIMEOUT',['../trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ae0987be64f7d18f41ccb473e3c79e447',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fon_5fprovisioning_5ferror_9',['restart_on_provisioning_error',['../trackle__utils__bt__provision_8h.html#a7521100641563e4105478b13ed99c33a',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fon_5fprovisioning_5fsuccess_10',['restart_on_provisioning_success',['../trackle__utils__bt__provision_8h.html#a1eda2b1d1486b68ad6a71c55e9c89083',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fon_5fprovisioning_5ftimeout_11',['restart_on_provisioning_timeout',['../trackle__utils__bt__provision_8h.html#a2560da36c4b86b23af50eb035650f82f',1,'trackle_utils_bt_provision.h']]],
+  ['restart_5fstart_5fmillis_12',['restart_start_millis',['../trackle__utils__bt__provision_8h.html#a09ea3f5cfb422238d5ca5b9188778b58',1,'trackle_utils_bt_provision.h']]],
+  ['rssitopercentage_13',['rssiToPercentage',['../trackle__utils_8h.html#aa50ac73ca5fcb2410725def91f76cb11',1,'trackle_utils.h']]]
 ];

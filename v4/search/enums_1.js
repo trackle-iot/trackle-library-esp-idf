@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['storage_5finit_5fresult_5ft_0',['storage_init_result_t',['../trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbb',1,'trackle_utils_storage.h']]]
+  ['trackleutilsbtoption_0',['TrackleUtilsBtOption',['../trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1',1,'trackle_utils_bt_provision.h']]]
 ];

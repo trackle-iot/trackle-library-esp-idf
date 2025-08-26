@@ -7,9 +7,7 @@ var searchData=
   ['trackle_5futils_5fbt_5ffunctions_2eh_4',['trackle_utils_bt_functions.h',['../trackle__utils__bt__functions_8h.html',1,'']]],
   ['trackle_5futils_5fbt_5fprovision_2eh_5',['trackle_utils_bt_provision.h',['../trackle__utils__bt__provision_8h.html',1,'']]],
   ['trackle_5futils_5fclaimcode_2eh_6',['trackle_utils_claimcode.h',['../trackle__utils__claimcode_8h.html',1,'']]],
-  ['trackle_5futils_5fcrypto_2eh_7',['trackle_utils_crypto.h',['../trackle__utils__crypto_8h.html',1,'']]],
-  ['trackle_5futils_5fota_2eh_8',['trackle_utils_ota.h',['../trackle__utils__ota_8h.html',1,'']]],
-  ['trackle_5futils_5fprovisioning_2eh_9',['trackle_utils_provisioning.h',['../trackle__utils__provisioning_8h.html',1,'']]],
-  ['trackle_5futils_5fstorage_2eh_10',['trackle_utils_storage.h',['../trackle__utils__storage_8h.html',1,'']]],
-  ['trackle_5futils_5fwifi_2eh_11',['trackle_utils_wifi.h',['../trackle__utils__wifi_8h.html',1,'']]]
+  ['trackle_5futils_5fota_2eh_7',['trackle_utils_ota.h',['../trackle__utils__ota_8h.html',1,'']]],
+  ['trackle_5futils_5fstorage_2eh_8',['trackle_utils_storage.h',['../trackle__utils__storage_8h.html',1,'']]],
+  ['trackle_5futils_5fwifi_2eh_9',['trackle_utils_wifi.h',['../trackle__utils__wifi_8h.html',1,'']]]
 ];

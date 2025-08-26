@@ -16,8 +16,8 @@ var trackle__utils__bt__provision_8h =
       [ "RESTART_ON_PROV_ERROR", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad52504cbd5b15a106f8cc6d724c2fa67", null ],
       [ "WIFI_PROV_TIMEOUT", "trackle__utils__bt__provision_8h.html#ae7a66fa838f4310922031b0bb98f4da1ad9b2962a144ba8ca8f5031ad902e387f", null ]
     ] ],
-    [ "trackle_utils_bt_provision_init", "trackle__utils__bt__provision_8h.html#acfb219485e09909e1e5071bc0600ad38", null ],
-    [ "trackle_utils_bt_provision_loop", "trackle__utils__bt__provision_8h.html#add4259affb0b6fd3290a5899bd0f1d8d", null ],
+    [ "trackle_utils_bt_provision_init", "trackle__utils__bt__provision_8h.html#ae6ad309a638b1aaabc8a4e1f7a6df33c", null ],
+    [ "trackle_utils_bt_provision_loop", "trackle__utils__bt__provision_8h.html#a098ddae8c6f927c6e45a3be6ff8da634", null ],
     [ "trackle_utils_bt_provision_set_device_name", "trackle__utils__bt__provision_8h.html#a082f13ffc71cf067df0c68b6ce790c67", null ],
     [ "trackle_utils_bt_provision_set_msd", "trackle__utils__bt__provision_8h.html#aa8fa91208d7de33045afc7723e060716", null ],
     [ "trackle_utils_bt_provision_set_option", "trackle__utils__bt__provision_8h.html#a123c972a2e7c95af41c0a1b19efc0a0f", null ],

@@ -103,7 +103,7 @@ Collaboration diagram for ota_data:</div>
 <div class="dyncontent">
 <div class="center"><img src="structota__data__coll__graph.png" border="0" usemap="#aota__data_coll__map" alt="Collaboration graph"/></div>
 <map name="aota__data_coll__map" id="aota__data_coll__map">
-<area shape="rect" title=" " alt="" coords="5,5,163,191"/>
+<area shape="rect" title=" " alt="" coords="5,5,163,131"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -117,12 +117,6 @@ Data Fields</h2></td></tr>
 <tr class="separator:a45e4f2b3ae475481b256cb77e3273d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abea0c952c56b96d7d88914876d1b397b" id="r_abea0c952c56b96d7d88914876d1b397b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structota__data.html#abea0c952c56b96d7d88914876d1b397b">actual_crc32_ota</a></td></tr>
 <tr class="separator:abea0c952c56b96d7d88914876d1b397b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a992fd70f8cf9f7e73744281a370545ad" id="r_a992fd70f8cf9f7e73744281a370545ad"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structota__data.html#a992fd70f8cf9f7e73744281a370545ad">calculated_hash</a> [32]</td></tr>
-<tr class="separator:a992fd70f8cf9f7e73744281a370545ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66ab5c6d5d84af75f0cb88fb4009debd" id="r_a66ab5c6d5d84af75f0cb88fb4009debd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structota__data.html#a66ab5c6d5d84af75f0cb88fb4009debd">sha256_initialized</a></td></tr>
-<tr class="separator:a66ab5c6d5d84af75f0cb88fb4009debd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9ab46cb728280ecf4f0551af8293938" id="r_aa9ab46cb728280ecf4f0551af8293938"><td class="memItemLeft" align="right" valign="top">mbedtls_sha256_context&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structota__data.html#aa9ab46cb728280ecf4f0551af8293938">sha256_ctx</a></td></tr>
-<tr class="separator:aa9ab46cb728280ecf4f0551af8293938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Field Documentation</h2>
 <a id="abea0c952c56b96d7d88914876d1b397b" name="abea0c952c56b96d7d88914876d1b397b"></a>
@@ -139,20 +133,6 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a id="a992fd70f8cf9f7e73744281a370545ad" name="a992fd70f8cf9f7e73744281a370545ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a992fd70f8cf9f7e73744281a370545ad">&#9670;&#160;</a></span>calculated_hash</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t calculated_hash[32]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a45e4f2b3ae475481b256cb77e3273d12" name="a45e4f2b3ae475481b256cb77e3273d12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a45e4f2b3ae475481b256cb77e3273d12">&#9670;&#160;</a></span>firmware_crc32_ota</h2>
 
@@ -161,34 +141,6 @@ Data Fields</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">uint32_t firmware_crc32_ota</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aa9ab46cb728280ecf4f0551af8293938" name="aa9ab46cb728280ecf4f0551af8293938"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9ab46cb728280ecf4f0551af8293938">&#9670;&#160;</a></span>sha256_ctx</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">mbedtls_sha256_context sha256_ctx</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a66ab5c6d5d84af75f0cb88fb4009debd" name="a66ab5c6d5d84af75f0cb88fb4009debd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66ab5c6d5d84af75f0cb88fb4009debd">&#9670;&#160;</a></span>sha256_initialized</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool sha256_initialized</td>
         </tr>
       </table>
 </div><div class="memdoc">
