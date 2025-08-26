@@ -57,7 +57,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"annotated.html",
+"trackle__utils__wifi_8h.html#ac25ae8121b2931c92b0bbfc6da2fcdfd"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

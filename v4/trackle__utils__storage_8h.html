@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('trackle__utils__storage_8h.html',''); 
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">trackle_utils_storage.h File Reference</div></div>
@@ -103,16 +104,19 @@ $(document).ready(function(){initNavTree('trackle__utils__storage_8h.html',''); 
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;nvs_flash.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="trackle__utils_8h_source.html">trackle_utils.h</a>&quot;</code><br />
+<code>#include &quot;defines.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for trackle_utils_storage.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="trackle__utils__storage_8h__incl.png" border="0" usemap="#atrackle__utils__storage_8h" alt=""/></div>
 <map name="atrackle__utils__storage_8h" id="atrackle__utils__storage_8h">
-<area shape="rect" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="339,5,510,31"/>
+<area shape="rect" title="Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS." alt="" coords="405,5,575,31"/>
 <area shape="rect" title=" " alt="" coords="313,79,408,104"/>
-<area shape="poly" title=" " alt="" coords="416,33,382,70,378,67,412,29"/>
+<area shape="poly" title=" " alt="" coords="470,33,395,74,393,69,468,28"/>
 <area shape="rect" href="trackle__utils_8h.html" title="Utility functions." alt="" coords="433,79,547,104"/>
-<area shape="poly" title=" " alt="" coords="437,29,472,67,468,70,433,33"/>
+<area shape="poly" title=" " alt="" coords="493,31,493,65,487,65,487,31"/>
+<area shape="rect" title=" " alt="" coords="572,79,653,104"/>
+<area shape="poly" title=" " alt="" coords="511,28,582,69,580,74,508,33"/>
 <area shape="rect" title=" " alt="" coords="5,152,156,177"/>
 <area shape="poly" title=" " alt="" coords="433,105,160,152,159,147,432,100"/>
 <area shape="rect" title=" " alt="" coords="181,152,298,177"/>
@@ -139,13 +143,26 @@ Macros</h2></td></tr>
 <tr class="memitem:a7dc3f76e51d5ac24ce330ace7bd75b2d" id="r_a7dc3f76e51d5ac24ce330ace7bd75b2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a7dc3f76e51d5ac24ce330ace7bd75b2d">OLD_FACTORY_PARTITION</a>&#160;&#160;&#160;&quot;factory&quot;</td></tr>
 <tr class="separator:a7dc3f76e51d5ac24ce330ace7bd75b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa1e3a3fce3c0c585fc6d8d72dd1b9bbb" id="r_aa1e3a3fce3c0c585fc6d8d72dd1b9bbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbb">storage_init_result_t</a> { <br />
+&#160;&#160;<a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbba8d339813dc26a39e91c31fd921d22fe4">STORAGE_INIT_SUCCESS</a> = 0
+, <a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbba41e4111d6c3f1026fffea4882a12f3c0">STORAGE_INIT_NO_FACTORY</a> = -1
+, <a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbbac9d6d2562c6c7e7a0aeb5f26409ea3ba">STORAGE_INIT_DEVICE_OPEN_FAIL</a> = -2
+, <a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbba2f6b2b4dfa36c44b09e3bb0223d5d491">STORAGE_INIT_CONFIG_INIT_FAIL</a> = -3
+, <br />
+&#160;&#160;<a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbba31e9478be553f810227af7070d9e8570">STORAGE_INIT_CONFIG_OPEN_FAIL</a> = -4
+<br />
+ }</td></tr>
+<tr class="separator:aa1e3a3fce3c0c585fc6d8d72dd1b9bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a26f189aafb239b1f2e5636b1af9704f2" id="r_a26f189aafb239b1f2e5636b1af9704f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a26f189aafb239b1f2e5636b1af9704f2">initStorage</a> (bool has_config_partition)</td></tr>
 <tr class="memdesc:a26f189aafb239b1f2e5636b1af9704f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens NVS partition that contains device ID and private key (and configuration partition if required).  <br /></td></tr>
 <tr class="separator:a26f189aafb239b1f2e5636b1af9704f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd602f67315616dbf6d75446131b084" id="r_aebd602f67315616dbf6d75446131b084"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> (void)</td></tr>
-<tr class="memdesc:aebd602f67315616dbf6d75446131b084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables.  <br /></td></tr>
+<tr class="memdesc:aebd602f67315616dbf6d75446131b084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#aa015918bdff21ee6136f68f6a1444e40">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#a1741a8241b515068b72a3a60b1fb72d2">private_key</a> global variables.  <br /></td></tr>
 <tr class="separator:aebd602f67315616dbf6d75446131b084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c74614bb8cadb981faf5d5b724ee97d" id="r_a4c74614bb8cadb981faf5d5b724ee97d"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a4c74614bb8cadb981faf5d5b724ee97d">readConfigFromStorage</a> (void *out_value, size_t out_size, const char *key)</td></tr>
 <tr class="memdesc:a4c74614bb8cadb981faf5d5b724ee97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read firmware application-specific configuration structure from NVS.  <br /></td></tr>
@@ -153,21 +170,27 @@ Functions</h2></td></tr>
 <tr class="memitem:aecf0c1df31c97b01b55382f718019ed3" id="r_aecf0c1df31c97b01b55382f718019ed3"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aecf0c1df31c97b01b55382f718019ed3">writeConfigToStorage</a> (void *out_value, size_t out_size, const char *key)</td></tr>
 <tr class="memdesc:aecf0c1df31c97b01b55382f718019ed3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write firmware application-specific configuration structure to NVS.  <br /></td></tr>
 <tr class="separator:aecf0c1df31c97b01b55382f718019ed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3837a99e95bf897f73881378bab86a12" id="r_a3837a99e95bf897f73881378bab86a12"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a3837a99e95bf897f73881378bab86a12">writeWifiConfigToStorage</a> (const char *ssid, const char *password)</td></tr>
+<tr class="memdesc:a3837a99e95bf897f73881378bab86a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write encrypted WiFi credentials to NVS.  <br /></td></tr>
+<tr class="separator:a3837a99e95bf897f73881378bab86a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33ae7d8ab4ceb5845abcafca8d28d188" id="r_a33ae7d8ab4ceb5845abcafca8d28d188"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a33ae7d8ab4ceb5845abcafca8d28d188">readWifiConfigFromStorage</a> (char *ssid, char *password)</td></tr>
+<tr class="memdesc:a33ae7d8ab4ceb5845abcafca8d28d188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and decrypt WiFi credentials from NVS.  <br /></td></tr>
+<tr class="separator:a33ae7d8ab4ceb5845abcafca8d28d188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a022de0635a7b85609f648d6c4822b8d3" id="r_a022de0635a7b85609f648d6c4822b8d3"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a022de0635a7b85609f648d6c4822b8d3">readLegacyWifiCredentials</a> (char *ssid, size_t ssid_len, char *password, size_t password_len)</td></tr>
+<tr class="memdesc:a022de0635a7b85609f648d6c4822b8d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read WiFi SSID and password saved in NVS by WiFiManager.  <br /></td></tr>
+<tr class="separator:a022de0635a7b85609f648d6c4822b8d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea4f6e4c83fbc75c24c6aafdde4d3467" id="r_aea4f6e4c83fbc75c24c6aafdde4d3467"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aea4f6e4c83fbc75c24c6aafdde4d3467">clearLegacyWifiCredentials</a> (void)</td></tr>
+<tr class="memdesc:aea4f6e4c83fbc75c24c6aafdde4d3467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear WiFi credentials saved in NVS.  <br /></td></tr>
+<tr class="separator:aea4f6e4c83fbc75c24c6aafdde4d3467"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a9082aefe23f8ebe0e236aee92b38f153" id="r_a9082aefe23f8ebe0e236aee92b38f153"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> [12]</td></tr>
-<tr class="memdesc:a9082aefe23f8ebe0e236aee92b38f153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device ID read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS.  <br /></td></tr>
-<tr class="separator:a9082aefe23f8ebe0e236aee92b38f153"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6b5ac028f4c25b0f2a6bbd659886bd2" id="r_ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> [122]</td></tr>
-<tr class="memdesc:ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Private key read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS.  <br /></td></tr>
-<tr class="separator:ab6b5ac028f4c25b0f2a6bbd659886bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f5c2bd285ab79cac4981636defa0a2b" id="r_a2f5c2bd285ab79cac4981636defa0a2b"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a2f5c2bd285ab79cac4981636defa0a2b">string_device_id</a> [12 *2+1]</td></tr>
-<tr class="separator:a2f5c2bd285ab79cac4981636defa0a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdf2eff792e17c6a1b318200e3f67256" id="r_acdf2eff792e17c6a1b318200e3f67256"><td class="memItemLeft" align="right" valign="top">nvs_handle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#acdf2eff792e17c6a1b318200e3f67256">config_handle</a></td></tr>
-<tr class="separator:acdf2eff792e17c6a1b318200e3f67256"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bed4fde91aa06d674981f7d371f6db5" id="r_a0bed4fde91aa06d674981f7d371f6db5"><td class="memItemLeft" align="right" valign="top">nvs_handle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a0bed4fde91aa06d674981f7d371f6db5">device_handle</a></td></tr>
-<tr class="separator:a0bed4fde91aa06d674981f7d371f6db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa015918bdff21ee6136f68f6a1444e40" id="r_aa015918bdff21ee6136f68f6a1444e40"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#aa015918bdff21ee6136f68f6a1444e40">device_id</a> [DEVICE_ID_LENGTH]</td></tr>
+<tr class="separator:aa015918bdff21ee6136f68f6a1444e40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1741a8241b515068b72a3a60b1fb72d2" id="r_a1741a8241b515068b72a3a60b1fb72d2"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a1741a8241b515068b72a3a60b1fb72d2">private_key</a> [PRIVATE_KEY_LENGTH]</td></tr>
+<tr class="separator:a1741a8241b515068b72a3a60b1fb72d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45df849c7f2b9eff4f1ac4fe1c980850" id="r_a45df849c7f2b9eff4f1ac4fe1c980850"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="trackle__utils__storage_8h.html#a45df849c7f2b9eff4f1ac4fe1c980850">string_device_id</a> [DEVICE_ID_LENGTH *2+1]</td></tr>
+<tr class="separator:a45df849c7f2b9eff4f1ac4fe1c980850"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions and globals for reading/writing Trackle credentials and firmware configuration from/to NVS. </p>
@@ -218,7 +241,54 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbb" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1e3a3fce3c0c585fc6d8d72dd1b9bbb">&#9670;&#160;</a></span>storage_init_result_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="trackle__utils__storage_8h.html#aa1e3a3fce3c0c585fc6d8d72dd1b9bbb">storage_init_result_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba8d339813dc26a39e91c31fd921d22fe4" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba8d339813dc26a39e91c31fd921d22fe4"></a>STORAGE_INIT_SUCCESS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba41e4111d6c3f1026fffea4882a12f3c0" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba41e4111d6c3f1026fffea4882a12f3c0"></a>STORAGE_INIT_NO_FACTORY&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbbac9d6d2562c6c7e7a0aeb5f26409ea3ba" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbbac9d6d2562c6c7e7a0aeb5f26409ea3ba"></a>STORAGE_INIT_DEVICE_OPEN_FAIL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba2f6b2b4dfa36c44b09e3bb0223d5d491" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba2f6b2b4dfa36c44b09e3bb0223d5d491"></a>STORAGE_INIT_CONFIG_INIT_FAIL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba31e9478be553f810227af7070d9e8570" name="aa1e3a3fce3c0c585fc6d8d72dd1b9bbba31e9478be553f810227af7070d9e8570"></a>STORAGE_INIT_CONFIG_OPEN_FAIL&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="aea4f6e4c83fbc75c24c6aafdde4d3467" name="aea4f6e4c83fbc75c24c6aafdde4d3467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea4f6e4c83fbc75c24c6aafdde4d3467">&#9670;&#160;</a></span>clearLegacyWifiCredentials()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t clearLegacyWifiCredentials </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear WiFi credentials saved in NVS. </p>
+<p>This function removes both SSID and password from the NVS storage. Useful for resetting WiFi configuration or preparing for new setup.</p>
+<dl class="section return"><dt>Returns</dt><dd>esp_err_t ESP_OK on success, error code otherwise<ul>
+<li>ESP_ERR_NVS_*: Various NVS error codes </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
 <a id="a26f189aafb239b1f2e5636b1af9704f2" name="a26f189aafb239b1f2e5636b1af9704f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a26f189aafb239b1f2e5636b1af9704f2">&#9670;&#160;</a></span>initStorage()</h2>
 
@@ -307,7 +377,103 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#a9082aefe23f8ebe0e236aee92b38f153">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#ab6b5ac028f4c25b0f2a6bbd659886bd2">private_key</a> global variables. </p>
+<p>Load Trackle device ID and private key from NVS. The credentials are then stored in the <a class="el" href="trackle__utils__storage_8h.html#aa015918bdff21ee6136f68f6a1444e40">device_id</a> and <a class="el" href="trackle__utils__storage_8h.html#a1741a8241b515068b72a3a60b1fb72d2">private_key</a> global variables. </p>
+<dl class="section return"><dt>Returns</dt><dd>ESP_OK on success, other value on error. </dd></dl>
+
+</div>
+</div>
+<a id="a022de0635a7b85609f648d6c4822b8d3" name="a022de0635a7b85609f648d6c4822b8d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a022de0635a7b85609f648d6c4822b8d3">&#9670;&#160;</a></span>readLegacyWifiCredentials()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t readLegacyWifiCredentials </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>ssid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ssid_len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>password</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>password_len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read WiFi SSID and password saved in NVS by WiFiManager. </p>
+<p>This function reads the WiFi credentials from the standard NVS namespace used by ESP32 WiFi stack (nvs.net80211).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ssid</td><td>Buffer to store the SSID (must be at least 33 bytes) </td></tr>
+    <tr><td class="paramname">ssid_len</td><td>Size of the SSID buffer </td></tr>
+    <tr><td class="paramname">password</td><td>Buffer to store the password (must be at least 65 bytes) </td></tr>
+    <tr><td class="paramname">password_len</td><td>Size of the password buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>esp_err_t ESP_OK on success, error code otherwise<ul>
+<li>ESP_ERR_INVALID_ARG: Invalid parameters</li>
+<li>ESP_ERR_NVS_NOT_FOUND: SSID or password not found in NVS</li>
+<li>Other ESP error codes from NVS operations </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a33ae7d8ab4ceb5845abcafca8d28d188" name="a33ae7d8ab4ceb5845abcafca8d28d188"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ae7d8ab4ceb5845abcafca8d28d188">&#9670;&#160;</a></span>readWifiConfigFromStorage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t readWifiConfigFromStorage </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>ssid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>password</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read and decrypt WiFi credentials from NVS. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ssid</td><td>Buffer to store the SSID </td></tr>
+    <tr><td class="paramname">password</td><td>Buffer to store the password </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>ESP_OK on success, other value on error. </dd></dl>
 
 </div>
@@ -357,9 +523,47 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a3837a99e95bf897f73881378bab86a12" name="a3837a99e95bf897f73881378bab86a12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3837a99e95bf897f73881378bab86a12">&#9670;&#160;</a></span>writeWifiConfigToStorage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t writeWifiConfigToStorage </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>ssid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>password</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write encrypted WiFi credentials to NVS. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ssid</td><td>SSID to be saved </td></tr>
+    <tr><td class="paramname">password</td><td>Password to be saved </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ESP_OK on success, other value on error. </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="acdf2eff792e17c6a1b318200e3f67256" name="acdf2eff792e17c6a1b318200e3f67256"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acdf2eff792e17c6a1b318200e3f67256">&#9670;&#160;</a></span>config_handle</h2>
+<a id="aa015918bdff21ee6136f68f6a1444e40" name="aa015918bdff21ee6136f68f6a1444e40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa015918bdff21ee6136f68f6a1444e40">&#9670;&#160;</a></span>device_id</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -368,7 +572,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">nvs_handle_t config_handle</td>
+          <td class="memname">uint8_t device_id[DEVICE_ID_LENGTH]</td>
         </tr>
       </table>
   </td>
@@ -380,8 +584,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a0bed4fde91aa06d674981f7d371f6db5" name="a0bed4fde91aa06d674981f7d371f6db5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bed4fde91aa06d674981f7d371f6db5">&#9670;&#160;</a></span>device_handle</h2>
+<a id="a1741a8241b515068b72a3a60b1fb72d2" name="a1741a8241b515068b72a3a60b1fb72d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1741a8241b515068b72a3a60b1fb72d2">&#9670;&#160;</a></span>private_key</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -390,7 +594,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">nvs_handle_t device_handle</td>
+          <td class="memname">uint8_t private_key[PRIVATE_KEY_LENGTH]</td>
         </tr>
       </table>
   </td>
@@ -402,8 +606,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a9082aefe23f8ebe0e236aee92b38f153" name="a9082aefe23f8ebe0e236aee92b38f153"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9082aefe23f8ebe0e236aee92b38f153">&#9670;&#160;</a></span>device_id</h2>
+<a id="a45df849c7f2b9eff4f1ac4fe1c980850" name="a45df849c7f2b9eff4f1ac4fe1c980850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45df849c7f2b9eff4f1ac4fe1c980850">&#9670;&#160;</a></span>string_device_id</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -412,55 +616,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t device_id[12]</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Device ID read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS. </p>
-
-</div>
-</div>
-<a id="ab6b5ac028f4c25b0f2a6bbd659886bd2" name="ab6b5ac028f4c25b0f2a6bbd659886bd2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6b5ac028f4c25b0f2a6bbd659886bd2">&#9670;&#160;</a></span>private_key</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char private_key[122]</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Private key read by <a class="el" href="trackle__utils__storage_8h.html#aebd602f67315616dbf6d75446131b084">readDeviceInfoFromStorage</a> from NVS. </p>
-
-</div>
-</div>
-<a id="a2f5c2bd285ab79cac4981636defa0a2b" name="a2f5c2bd285ab79cac4981636defa0a2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f5c2bd285ab79cac4981636defa0a2b">&#9670;&#160;</a></span>string_device_id</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">char string_device_id[12 *2+1]</td>
+          <td class="memname">char string_device_id[DEVICE_ID_LENGTH *2+1]</td>
         </tr>
       </table>
   </td>

@@ -6,6 +6,7 @@ var trackle__utils__wifi_8h =
     [ "wifi_init", "trackle__utils__wifi_8h.html#a7267cf9f0ba503d904709977c18a07ea", null ],
     [ "wifi_init_sta", "trackle__utils__wifi_8h.html#a720913f2342db3713ec3948cdfc16855", null ],
     [ "wifi_is_provisioned", "trackle__utils__wifi_8h.html#a7bfbabe6c15848e26f9a2ae41669baa4", null ],
+    [ "wifi_set_credentials", "trackle__utils__wifi_8h.html#a2bca94b3699aea0eb9fe5d774f6f2825", null ],
     [ "ap", "trackle__utils__wifi_8h.html#ade9bf747825ab0f25162635a11f4c057", null ],
     [ "sta_netif", "trackle__utils__wifi_8h.html#a8475209c3d16d25790fc4b67e18f3f57", null ],
     [ "timeout_connect_wifi", "trackle__utils__wifi_8h.html#a4761d43b92b1ef8b6e00519d3d589ecf", null ],
