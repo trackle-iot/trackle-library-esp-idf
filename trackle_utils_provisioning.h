@@ -1,6 +1,7 @@
 /**
  ******************************************************************************
   Copyright (c) 2022 IOTREADY S.r.l.
+  Modified for ESP32/ESP32-S3 universal compatibility
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -20,17 +21,34 @@
 #ifndef UART_DATA_COLLECTOR_H
 #define UART_DATA_COLLECTOR_H
 
-#include "driver/uart.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_task_wdt.h"
+#include "nvs_flash.h"
+#include "nvs.h"
 #include <string.h>
 #include <ctype.h>
 
+// Auto-detect ESP32-S3 and USB Serial/JTAG availability
+#if defined(CONFIG_IDF_TARGET_ESP32S3) && defined(CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED)
+#define UDC_USE_USB_SERIAL_JTAG 1
+#include "driver/usb_serial_jtag.h"
+#define UDC_CONNECTION_TYPE "USB-Serial-JTAG"
+#else
+#define UDC_USE_USB_SERIAL_JTAG 0
+#include "driver/uart.h"
+#define UDC_CONNECTION_TYPE "UART"
+#endif
+
 // Configuration
+#if UDC_USE_USB_SERIAL_JTAG
+// USB-Serial-JTAG doesn't need UART port or pins
+#else
 #define UDC_UART_NUM UART_NUM_0
 #define UDC_UART_BAUD_RATE 115200
+#endif
+
 #define UDC_UART_BUF_SIZE 1024
 #define UDC_MAX_INPUT_LENGTH 512
 #define UDC_TAG "uart_collector"
@@ -93,14 +111,36 @@ static inline size_t udc_count_requests(const udc_data_request_t *requests)
     }
     return count;
 }
+
+// Universal send function
 static inline void udc_send(const char *str)
 {
+#if UDC_USE_USB_SERIAL_JTAG
+    usb_serial_jtag_write_bytes(str, strlen(str), portMAX_DELAY);
+#else
     uart_write_bytes(UDC_UART_NUM, str, strlen(str));
+#endif
 }
 
-// Initialize UART
+// Universal initialization
 static inline esp_err_t udc_init_uart(void)
 {
+#if UDC_USE_USB_SERIAL_JTAG
+    usb_serial_jtag_driver_config_t usb_serial_config = {
+        .tx_buffer_size = UDC_UART_BUF_SIZE,
+        .rx_buffer_size = UDC_UART_BUF_SIZE,
+    };
+
+    esp_err_t err = usb_serial_jtag_driver_install(&usb_serial_config);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(UDC_TAG, "Failed to install USB-Serial-JTAG driver: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    ESP_LOGI(UDC_TAG, "USB-Serial-JTAG initialized for data collection");
+    return ESP_OK;
+#else
     const uart_config_t uart_config = {
         .baud_rate = UDC_UART_BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
@@ -120,9 +160,10 @@ static inline esp_err_t udc_init_uart(void)
 
     ESP_LOGI(UDC_TAG, "UART initialized at %d 8N1", UDC_UART_BAUD_RATE);
     return ESP_OK;
+#endif
 }
 
-// Read line from UART with brief task delays
+// Universal read line function
 static inline int udc_read_line(char *buffer, size_t max_length, uint32_t timeout_ms)
 {
     int pos = 0;
@@ -142,7 +183,12 @@ static inline int udc_read_line(char *buffer, size_t max_length, uint32_t timeou
             return -1; // Return -1 to indicate timeout
         }
 
+#if UDC_USE_USB_SERIAL_JTAG
+        int len = usb_serial_jtag_read_bytes(&c, 1, pdMS_TO_TICKS(100));
+#else
         int len = uart_read_bytes(UDC_UART_NUM, &c, 1, pdMS_TO_TICKS(100));
+#endif
+
         if (len > 0)
         {
             if (c == '\n' || c == '\r')
@@ -160,7 +206,11 @@ static inline int udc_read_line(char *buffer, size_t max_length, uint32_t timeou
             else if (c >= 32 && c <= 126)
             {
                 buffer[pos++] = c;
+#if UDC_USE_USB_SERIAL_JTAG
+                usb_serial_jtag_write_bytes(&c, 1, portMAX_DELAY);
+#else
                 uart_write_bytes(UDC_UART_NUM, &c, 1);
+#endif
             }
         }
         else
@@ -412,11 +462,11 @@ static inline void udc_collection_task(void *pvParameters)
         return;
     }
 
-    ESP_LOGI(UDC_TAG, "Starting collection task with %zu requests", params->count);
+    ESP_LOGI(UDC_TAG, "Starting collection task with %zu requests via %s", params->count, UDC_CONNECTION_TYPE);
 
     if (udc_init_uart() != ESP_OK)
     {
-        ESP_LOGE(UDC_TAG, "UART init failed");
+        ESP_LOGE(UDC_TAG, "%s init failed", UDC_CONNECTION_TYPE);
         *params->result_code = UDC_FAILED;
         *params->done_flag = true;
         free(params);
@@ -427,6 +477,9 @@ static inline void udc_collection_task(void *pvParameters)
     vTaskDelay(pdMS_TO_TICKS(500));
 
     udc_send("\r\n=== DATA COLLECTION ===\r\n");
+    char connection_info[128];
+    snprintf(connection_info, sizeof(connection_info), "Connection: %s\r\n", UDC_CONNECTION_TYPE);
+    udc_send(connection_info);
     udc_send("Press CTRL+C to cancel\r\n\r\n");
 
     udc_result_t final_result = UDC_SUCCESS;
@@ -470,6 +523,7 @@ static inline udc_collected_data_t *udc_get_auto(const char *key, const udc_data
     }
     return NULL;
 }
+
 static inline udc_collected_data_t *udc_get(const char *key, const udc_data_request_t *requests, size_t count, udc_collected_data_t *results)
 {
     for (size_t i = 0; i < count; i++)
@@ -535,7 +589,7 @@ static inline esp_err_t udc_collect_async(const udc_data_request_t *requests,
         return ESP_FAIL;
     }
 
-    ESP_LOGI(UDC_TAG, "Collection task created");
+    ESP_LOGI(UDC_TAG, "Collection task created using %s", UDC_CONNECTION_TYPE);
     return ESP_OK;
 }
 
