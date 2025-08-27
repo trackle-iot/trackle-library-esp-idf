@@ -275,6 +275,12 @@ esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password,
         return ESP_ERR_INVALID_ARG;
     }
 
+    if (ssid_len == 0 || password_len == 0)
+    {
+        ESP_LOGE(STORAGE_TAG, "Invalid parameters: buffer lengths cannot be zero");
+        return ESP_ERR_INVALID_ARG;
+    }
+
     err = nvs_open(WIFI_NVS_NAMESPACE, NVS_READONLY, &nvs_handle);
     if (err != ESP_OK)
     {
@@ -301,10 +307,9 @@ esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password,
 
     ESP_LOGI(STORAGE_TAG, "SSID blob size: %d", ssid_blob_size);
 
-    // Read SSID blob (use fixed size buffer)
+    // Read SSID blob (use fixed size buffer) - FIXED: removed asterisk
     uint8_t ssid_blob[64]; // Fixed buffer, should be enough for any SSID blob
     size_t blob_read_size = (ssid_blob_size > sizeof(ssid_blob)) ? sizeof(ssid_blob) : ssid_blob_size;
-
     err = nvs_get_blob(nvs_handle, WIFI_SSID_KEY, ssid_blob, &blob_read_size);
     if (err != ESP_OK)
     {
@@ -324,12 +329,9 @@ esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password,
         }
     }
 
-    // Copy SSID from first printable character to end with memcpy
-    size_t copy_len = 32; // Standard SSID max length
-    if (copy_len > ssid_len - 1)
-    {
-        copy_len = ssid_len - 1;
-    }
+    // FIXED: Calculate actual SSID length and respect buffer limits
+    size_t actual_ssid_len = blob_read_size - ssid_start;
+    size_t copy_len = (actual_ssid_len < ssid_len - 1) ? actual_ssid_len : ssid_len - 1;
 
     memcpy(ssid, ssid_blob + ssid_start, copy_len);
     ssid[copy_len] = '\0';
@@ -353,8 +355,18 @@ esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password,
 
     ESP_LOGI(STORAGE_TAG, "Password blob size: %d", password_blob_size);
 
+    // FIXED: Check buffer overflow - data should already be null-terminated
+    if (password_blob_size > password_len)
+    {
+        ESP_LOGE(STORAGE_TAG, "Password blob too large for buffer (%d > %d)",
+                 password_blob_size, password_len);
+        nvs_close(nvs_handle);
+        return ESP_ERR_INVALID_SIZE;
+    }
+
     // Read password blob (direct copy, password has no padding)
-    err = nvs_get_blob(nvs_handle, WIFI_PASSWORD_KEY, password, &password_blob_size);
+    size_t actual_password_size = password_blob_size;
+    err = nvs_get_blob(nvs_handle, WIFI_PASSWORD_KEY, password, &actual_password_size);
     if (err != ESP_OK)
     {
         ESP_LOGE(STORAGE_TAG, "Error reading password from NVS: %s", esp_err_to_name(err));
@@ -362,12 +374,25 @@ esp_err_t readLegacyWifiCredentials(char *ssid, size_t ssid_len, char *password,
         return err;
     }
 
-    // Ensure password is null-terminated
-    password[password_blob_size] = '\0';
+    // FIXED: Only add null terminator if data is not already null-terminated
+    if (actual_password_size > 0 && password[actual_password_size - 1] != '\0')
+    {
+        if (actual_password_size < password_len)
+        {
+            password[actual_password_size] = '\0';
+        }
+        else
+        {
+            ESP_LOGE(STORAGE_TAG, "No space for null terminator");
+            nvs_close(nvs_handle);
+            return ESP_ERR_INVALID_SIZE;
+        }
+    }
 
     nvs_close(nvs_handle);
-
-    ESP_LOGI(STORAGE_TAG, "WiFi credentials loaded from NVS - SSID: %s, Password: %s", ssid, password);
+    ESP_LOGI(STORAGE_TAG, "WiFi credentials loaded from NVS - SSID: %s", ssid);
+    // FIXED: Don't log password for security reasons
+    ESP_LOGI(STORAGE_TAG, "Password length: %d", actual_password_size);
 
     return ESP_OK;
 }
