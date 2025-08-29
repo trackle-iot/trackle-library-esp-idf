@@ -486,8 +486,10 @@ static inline void udc_collection_task(void *pvParameters)
 
     for (size_t i = 0; i < params->count; i++)
     {
-        ESP_LOGI(UDC_TAG, "Collecting %zu/%zu: %s", i + 1, params->count, params->requests[i].key);
-
+        char log_message[128]; // Buffer per il messaggio di log
+        snprintf(log_message, sizeof(log_message), "Collecting %zu/%zu: %s\r\n", i + 1, params->count, params->requests[i].key);
+        udc_send(log_message);
+        
         if (udc_collect_single(&params->requests[i], &params->results[i]) != UDC_SUCCESS)
         {
             udc_send("Collection failed\r\n");
