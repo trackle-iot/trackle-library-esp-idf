@@ -36,3 +36,22 @@ You will basically just need a development host and an [ESP32 development board]
 * Click the button "Claim a device"
 * Select the link "I don't have a device id", then Continue
 * The Device Id will be shown on the screen and the private key file will be download with name <device_id>.der where <device_id> is Device ID taken from Trackle.
+
+## Generating Public/Private Key Pair for OTA Verification
+
+Trackle OTA verification uses an **ECC P-256 (secp256r1)** public/private key pair. The **private key** is used to sign the firmware, while the **public key** is embedded in your ESP32 firmware to verify the signature.
+
+### Steps to generate keys and configure OTA verification
+
+```bash
+# 1) Generate the private key
+openssl ecparam -name prime256v1 -genkey -noout -out private.pem
+
+# 2) Generate the public key (PEM format)
+openssl ec -in private.pem -pubout -out public.pem
+
+# 3) Export the public key in DER format
+openssl ec -in private.pem -pubout -outform DER -out public.der
+
+# 4) Convert the DER public key into a C array
+xxd -i public.der > firmware_key.c
