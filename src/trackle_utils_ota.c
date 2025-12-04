@@ -79,6 +79,31 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     {
     case HTTP_EVENT_ERROR:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ERROR");
+
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 5, 0)
+        esp_http_client_handle_t client = evt->client;
+
+        if (client != NULL)
+        {
+            int esp_tls_error_code = 0;
+            int esp_tls_flags = 0;
+
+            esp_http_client_get_and_clear_last_tls_error(
+                client,
+                &esp_tls_error_code,
+                &esp_tls_flags);
+
+            ESP_LOGI(OTA_TAG, "esp_tls_error_code 0x%X", esp_tls_error_code);
+
+            // certificate X.509 error
+            if ((esp_tls_error_code & 0xF000) == 0x2000)
+            {
+                current_ota_data.certificate_verification_error = true;
+                ESP_LOGI(OTA_TAG, "certificate_verification_error");
+            }
+        }
+#endif
+
         break;
     case HTTP_EVENT_ON_CONNECTED:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_CONNECTED");
@@ -138,6 +163,7 @@ static void execute_ota_task(void *pvParameter)
 {
     ESP_LOGI(OTA_TAG, "Starting OTA %s", current_ota_data.url);
     current_ota_data.start_timestamp = getMillis();
+    current_ota_data.certificate_verification_error = false;
 
     xEventGroupSetBits(s_wifi_event_group, OTA_UPDATING);
 
@@ -166,7 +192,7 @@ static void execute_ota_task(void *pvParameter)
 
     esp_https_ota_handle_t https_ota_handle = NULL;
     esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle);
-    ESP_LOGE(OTA_TAG, "Errore durante l'inizio dell'OTA: %s", esp_err_to_name(err));
+    ESP_LOGE(OTA_TAG, "Error during OTA start: %s", esp_err_to_name(err));
 
     if (err == ESP_ERR_INVALID_ARG || err == ESP_ERR_OTA_PARTITION_CONFLICT || err == ESP_ERR_OTA_SELECT_INFO_INVALID || err == ESP_ERR_INVALID_SIZE || err == ESP_ERR_OTA_ROLLBACK_INVALID_STATE || err == ESP_ERR_NOT_FOUND)
     {
@@ -178,9 +204,15 @@ static void execute_ota_task(void *pvParameter)
     }
     else if (err == ESP_ERR_HTTP_CONNECT)
     {
-        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
-        trackleDisableUpdates(trackle_s);
-
+        if (current_ota_data.certificate_verification_error)
+        {
+            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
+            trackleDisableUpdates(trackle_s);
+        }
+        else
+        {
+            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_HTTP_CONNECTION);
+        }
     }
     else if (err != ESP_OK)
     {
@@ -231,8 +263,8 @@ static void execute_ota_task(void *pvParameter)
                     else
                     {
                         ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
-                        trackleDisableUpdates(trackle_s);
                         sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+                        trackleDisableUpdates(trackle_s);
                     }
                 }
 

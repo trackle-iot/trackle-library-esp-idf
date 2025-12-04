@@ -52,6 +52,7 @@ typedef enum
     OTA_ERR_GENERIC,            /*!< all other errors */
     OTA_ERR_VALIDATE_CA_FAILED, /*!< error validating https server root CA */
     OTA_ERR_SIGNATURE_FAILED,   /*!< error validating firmware signature */
+    OTA_ERR_HTTP_CONNECTION,    /*!< error in HTTP or HTTPS connection */
 } Ota_Error;
 
 typedef enum
@@ -68,6 +69,7 @@ typedef struct
     uint32_t firmware_crc32_ota;
     uint32_t actual_crc32_ota;
     uint8_t calculated_hash[32];
+    bool certificate_verification_error;
     bool sha256_initialized;
     mbedtls_sha256_context sha256_ctx;
 } ota_data;
