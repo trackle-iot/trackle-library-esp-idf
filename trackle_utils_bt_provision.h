@@ -46,7 +46,7 @@
 
 // Protocomm events have been added in version 5.1.0 of ESP-IDF
 // If we are using such version or a newer one, enable code that uses such events.
-#if ESP_IDF_VERSION_MAJOR >= 5 && ESP_IDF_VERSION_MINOR >= 1
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 1, 0)
 #define PROTOCOMM_EVENTS_SUPPORTED
 #endif
 
