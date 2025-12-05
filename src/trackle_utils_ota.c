@@ -25,10 +25,17 @@
 #include <freertos/task.h>
 #include <freertos/semphr.h>
 #include <freertos/event_groups.h>
+#include <freertos/timers.h>
 
 // Global variables
 ota_data current_ota_data;
 TaskHandle_t xOtaTaskHandle = NULL;
+
+// Timeout in milliseconds for which updates remain disabled (4h)
+#define TRACKLE_DISABLE_UPDATES_TIMEOUT_MS (4 * 3600. * 1000)
+
+// Timer to automatically re-enable updates
+static TimerHandle_t xTrackleUpdatesReenableTimer = NULL;
 
 #define MAX_CERT_LEN 2048
 const char *g_https_root_cert = NULL;
@@ -40,6 +47,11 @@ static const char *OTA_TAG = "trackle-utils-ota";
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt);
 static void sendOtaMessage(uint8_t message_type, int value);
 static void execute_ota_task(void *pvParameter);
+
+// Wrapper around trackleDisableUpdates that saves the timestamp and
+// schedules an automatic re-enable after TRACKLE_DISABLE_UPDATES_TIMEOUT_MS.
+static void trackleDisableUpdates_with_timeout(void);
+static void trackleUpdatesReenableTimerCallback(TimerHandle_t xTimer);
 
 // Public function implementations
 int firmware_ota_url(const char *url, uint32_t crc)
@@ -159,6 +171,53 @@ static void sendOtaMessage(uint8_t message_type, int value)
     }
 }
 
+// Wrapper for trackleDisableUpdates:
+// - creates/restarts a one-shot timer that, on expiry,
+//   calls trackleEnableUpdates and resets the timestamp.
+static void trackleDisableUpdates_with_timeout(void)
+{
+    // Immediately disables updates
+    trackleDisableUpdates(trackle_s);
+
+    // Create the timer if it does not exist yet
+    if (xTrackleUpdatesReenableTimer == NULL)
+    {
+        xTrackleUpdatesReenableTimer = xTimerCreate(
+            "trk_upd_reen",
+            pdMS_TO_TICKS(TRACKLE_DISABLE_UPDATES_TIMEOUT_MS),
+            pdFALSE, // one-shot
+            NULL,
+            trackleUpdatesReenableTimerCallback);
+    }
+
+    if (xTrackleUpdatesReenableTimer != NULL)
+    {
+        // Stop any timer already running
+        xTimerStop(xTrackleUpdatesReenableTimer, 0);
+        // Set the period (in case it was changed via define)
+        xTimerChangePeriod(
+            xTrackleUpdatesReenableTimer,
+            pdMS_TO_TICKS(TRACKLE_DISABLE_UPDATES_TIMEOUT_MS),
+            0);
+        // Start the timer
+        xTimerStart(xTrackleUpdatesReenableTimer, 0);
+    }
+}
+
+// Callback invoked by the timer when the timeout expires
+static void trackleUpdatesReenableTimerCallback(TimerHandle_t xTimer)
+{
+    (void)xTimer;
+
+    ESP_LOGI(OTA_TAG, "Updates disable timeout expired, re-enabling updates");
+
+    // Re-enable updates if possible
+    if (trackle_s != NULL)
+    {
+        trackleEnableUpdates(trackle_s);
+    }
+}
+
 static void execute_ota_task(void *pvParameter)
 {
     ESP_LOGI(OTA_TAG, "Starting OTA %s", current_ota_data.url);
@@ -207,7 +266,7 @@ static void execute_ota_task(void *pvParameter)
         if (current_ota_data.certificate_verification_error)
         {
             sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
-            trackleDisableUpdates(trackle_s);
+            trackleDisableUpdates_with_timeout();
         }
         else
         {
@@ -264,7 +323,7 @@ static void execute_ota_task(void *pvParameter)
                     {
                         ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
                         sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
-                        trackleDisableUpdates(trackle_s);
+                        trackleDisableUpdates_with_timeout();
                     }
                 }
 
