@@ -23,7 +23,7 @@
 #include "esp_ota_ops.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
-#include "esp32/rom/crc.h"
+#include "esp_crc.h" 
 #include "mbedtls/sha256.h"
 
 #include "trackle_utils.h"
@@ -33,8 +33,8 @@
  * @brief Utilities to implement Over The Air firmware updates.
  */
 
-// Constants
-#define OTA_TIMEOUT (120 * 1000)
+// Global OTA timeout (includes download and HTTP operations)
+#define OTA_TIMEOUT (30 * 60 * 1000) // 30 minutes
 
 // Enums
 /**

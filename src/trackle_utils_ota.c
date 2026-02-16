@@ -128,7 +128,7 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
         break;
     case HTTP_EVENT_ON_DATA:
         ESP_LOGI(OTA_TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-        current_ota_data.actual_crc32_ota = crc32_le(current_ota_data.actual_crc32_ota, evt->data, evt->data_len);
+        current_ota_data.actual_crc32_ota = esp_crc32_le(current_ota_data.actual_crc32_ota, evt->data, evt->data_len);
 
         // Initialize SHA256 at the first packet
         if (!current_ota_data.sha256_initialized)
@@ -168,6 +168,10 @@ static void sendOtaMessage(uint8_t message_type, int value)
             ESP_LOGI(OTA_TAG, "sendMessage called with wrong message_type %d", message_type);
         }
         xSemaphoreGive(xTrackleSemaphore);
+    }
+    else
+    {
+        ESP_LOGE(OTA_TAG, "sendOtaMessage: failed to take xTrackleSemaphore");
     }
 }
 
@@ -237,6 +241,7 @@ static void execute_ota_task(void *pvParameter)
         .url = current_ota_data.url,
         .event_handler = _http_event_handler,
         .buffer_size = 1024,
+        .timeout_ms = (OTA_TIMEOUT - 10 * 1000), // 10 second less then global ota timeout
     };
 
     if (g_cert_set)
@@ -251,8 +256,12 @@ static void execute_ota_task(void *pvParameter)
 
     esp_https_ota_handle_t https_ota_handle = NULL;
     esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle);
-    ESP_LOGE(OTA_TAG, "Error during OTA start: %s", esp_err_to_name(err));
 
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(OTA_TAG, "Error during OTA start: %s", esp_err_to_name(err));
+    }
+    
     if (err == ESP_ERR_INVALID_ARG || err == ESP_ERR_OTA_PARTITION_CONFLICT || err == ESP_ERR_OTA_SELECT_INFO_INVALID || err == ESP_ERR_INVALID_SIZE || err == ESP_ERR_OTA_ROLLBACK_INVALID_STATE || err == ESP_ERR_NOT_FOUND)
     {
         sendOtaMessage(OTA_MSG_DONE, OTA_ERR_PARTITION);
@@ -279,11 +288,20 @@ static void execute_ota_task(void *pvParameter)
     }
     else
     {
+        uint32_t ota_perform_start = getMillis();
+
         while (1)
         {
             err = esp_https_ota_perform(https_ota_handle);
             if (err != ESP_ERR_HTTPS_OTA_IN_PROGRESS)
             {
+                break;
+            }
+
+            if (getMillis() - ota_perform_start >= OTA_TIMEOUT)
+            {
+                ESP_LOGE(OTA_TAG, "OTA perform timeout exceeded (%u ms)", OTA_TIMEOUT);
+                err = ESP_FAIL;
                 break;
             }
         }
@@ -360,7 +378,10 @@ static void execute_ota_task(void *pvParameter)
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     xEventGroupClearBits(s_wifi_event_group, OTA_UPDATING); // stop updating
     current_ota_data.start_timestamp = 0;
-    esp_https_ota_abort(https_ota_handle);
+    if (https_ota_handle != NULL)
+    {
+        esp_https_ota_abort(https_ota_handle);
+    }
     vTaskDelete(xOtaTaskHandle);
 }
 
