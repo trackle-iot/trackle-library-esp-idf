@@ -22,6 +22,11 @@
 #include <string.h>
 #include <esp_types.h>
 #include <esp_log.h>
+#include <esp_wifi.h>
+
+/* Access wifi_provisioning internal scan API without modifying the component */
+extern uint16_t wifi_prov_mgr_wifi_scan_result_count(void);
+extern const wifi_ap_record_t *wifi_prov_mgr_wifi_scan_result(uint16_t index);
 
 // Global variables
 char bleProvDeviceName[21] = {0};
@@ -245,7 +250,68 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
                              "\n\tSSID     : %s\n\tPassword : %s",
                      (const char *)wifi_sta_cfg->ssid,
                      (const char *)wifi_sta_cfg->password);
-            xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
+
+            /* If BSSID was not set by the provisioning layer, look it up in
+             * the local scan results (sorted by RSSI) and inject it before
+             * esp_wifi_connect() is called (1-second timer in the manager) */
+            if (!wifi_sta_cfg->bssid_set)
+            {
+                uint16_t count = wifi_prov_mgr_wifi_scan_result_count();
+                ESP_LOGI(BT_TAG, "Scan results (%d networks):", count);
+                for (uint16_t i = 0; i < count; i++)
+                {
+                    const wifi_ap_record_t *r = wifi_prov_mgr_wifi_scan_result(i);
+                    if (r)
+                    {
+                        ESP_LOGI(BT_TAG, "  [%2d] SSID: %-32s  BSSID: %02X:%02X:%02X:%02X:%02X:%02X  ch: %2d  rssi: %d",
+                                 i, (const char *)r->ssid,
+                                 r->bssid[0], r->bssid[1], r->bssid[2],
+                                 r->bssid[3], r->bssid[4], r->bssid[5],
+                                 r->primary, r->rssi);
+                    }
+                }
+                bool found = false;
+                for (uint16_t i = 0; i < count; i++)
+                {
+                    const wifi_ap_record_t *record = wifi_prov_mgr_wifi_scan_result(i);
+                    if (record && strncmp((const char *)record->ssid,
+                                          (const char *)wifi_sta_cfg->ssid,
+                                          sizeof(record->ssid)) == 0)
+                    {
+                        wifi_config_t wifi_cfg;
+                        if (esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg) == ESP_OK)
+                        {
+                            memcpy(wifi_cfg.sta.bssid, record->bssid, sizeof(record->bssid));
+                            wifi_cfg.sta.bssid_set = true;
+                            wifi_cfg.sta.channel = record->primary;
+
+                            esp_err_t set_err = esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg);
+                            if (set_err != ESP_OK)
+                                ESP_LOGE(BT_TAG, "Failed to set WiFi config with resolved BSSID: %s", esp_err_to_name(set_err));
+
+                            ESP_LOGI(BT_TAG, "BSSID resolved from scan: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d, rssi: %d)",
+                                     record->bssid[0], record->bssid[1], record->bssid[2],
+                                     record->bssid[3], record->bssid[4], record->bssid[5],
+                                     record->primary, record->rssi);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    ESP_LOGW(BT_TAG, "SSID '%s' not found in scan results, connecting by SSID only",
+                             (const char *)wifi_sta_cfg->ssid);
+                }
+
+                xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
+            }
+            else
+            {
+                ESP_LOGI(BT_TAG, "BSSID already set by client: %02X:%02X:%02X:%02X:%02X:%02X",
+                         wifi_sta_cfg->bssid[0], wifi_sta_cfg->bssid[1], wifi_sta_cfg->bssid[2],
+                         wifi_sta_cfg->bssid[3], wifi_sta_cfg->bssid[4], wifi_sta_cfg->bssid[5]);
+            }
 
             // disconnect wifi and trackle
             esp_wifi_disconnect();
@@ -287,6 +353,18 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
 
             wifi_config_t wifi_cfg;
             esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg);
+            if (wifi_cfg.sta.bssid_set)
+            {
+                ESP_LOGI(BT_TAG, "Connected with BSSID: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d)",
+                         wifi_cfg.sta.bssid[0], wifi_cfg.sta.bssid[1], wifi_cfg.sta.bssid[2],
+                         wifi_cfg.sta.bssid[3], wifi_cfg.sta.bssid[4], wifi_cfg.sta.bssid[5],
+                         wifi_cfg.sta.channel);
+            }
+            else
+            {
+                ESP_LOGW(BT_TAG, "Connected without BSSID lock (SSID-only)");
+            }
+
             writeWifiConfigToStorage((char *)wifi_cfg.sta.ssid, (char *)wifi_cfg.sta.password);
 
             xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
