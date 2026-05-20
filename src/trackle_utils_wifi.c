@@ -161,6 +161,13 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 {
     EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
 
+    // If it's in provisioning, ignore all events
+    if (bits & IS_PROVISIONING)
+    {
+        ESP_LOGI(WIFI_TAG, "In provisioning, ignoring event");
+        return;
+    }
+
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
     {
         ESP_LOGI(WIFI_TAG, "Wifi started.....");
@@ -190,10 +197,21 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 
             // reset connections attemps for new cloud session
             trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ATTEMPTS, 0);
+            trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTION_REASON, event->reason);
+        }
+        else
+        {
+            // Was not connected: counting as failure
+            trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ERROR_CODE, event->reason);
         }
 
         timeout_connect_wifi = getMillis() + CHECK_WIFI_TIMEOUT;
         xEventGroupClearBits(s_wifi_event_group, NETWORK_CONNECTED_BIT);
+    }
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
+    {
+        wifi_event_sta_connected_t *event = (wifi_event_sta_connected_t *)event_data;
+        trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_STATUS, event->authmode);
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
