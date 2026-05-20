@@ -310,8 +310,10 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
             {
                 // Threshold reached: scan and apply 2.4GHz BSSID
                 ESP_LOGW(WIFI_TAG, "Threshold reached, trying scan + 2.4GHz BSSID");
-                trackleDiagnosticNetwork(trackle_s, NETWORK_FLAGS, 1);
-                try_apply_24ghz_bssid();
+                if (try_apply_24ghz_bssid())
+                {
+                    trackleDiagnosticNetwork(trackle_s, NETWORK_FLAGS, 1);
+                }
             }
             else if (connect_failure_count >= BSSID_FALLBACK_THRESHOLD * 2)
             {
