@@ -23,6 +23,9 @@
 #include <esp_types.h>
 #include <esp_log.h>
 #include <esp_wifi.h>
+#ifdef PROTOCOMM_EVENTS_SUPPORTED
+#include <protocomm_ble.h>
+#endif
 
 /* Access wifi_provisioning internal scan API without modifying the component */
 extern uint16_t wifi_prov_mgr_wifi_scan_result_count(void);
@@ -111,6 +114,9 @@ void trackle_utils_bt_provision_init(void)
     wifiProvisioningEvents = xEventGroupCreate();
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
+#ifdef PROTOCOMM_EVENTS_SUPPORTED
+    ESP_ERROR_CHECK(esp_event_handler_register(PROTOCOMM_TRANSPORT_BLE_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
+#endif
     Trackle_BtPost_add("set", btPostCbClaimCode);
     Trackle_BtPost_add("end", btPostEnd);
     Trackle_BtGet_add("deviceInfo", btGetCbDeviceInfo, VAR_JSON);
