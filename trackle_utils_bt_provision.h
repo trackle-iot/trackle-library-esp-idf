@@ -68,7 +68,6 @@
 #endif
 
 #define PROV_MGR_MAX_RETRY_CNT 3
-#define PROV_TIMEOUT_RESTART_AFTER 30000
 #define PROV_ERROR_STOP_AFTER 5000
 
 // Enums

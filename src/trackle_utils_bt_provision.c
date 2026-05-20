@@ -43,7 +43,6 @@ bool restart_on_provisioning_timeout = true;
 bool restart_on_provisioning_success = true;
 bool restart_on_provisioning_error = true;
 bool stop_on_wifi_prov_timeout = true;
-uint32_t restart_start_millis = 0;
 uint32_t stop_start_millis = 0;
 uint32_t wifi_prov_start_millis = 0;
 
@@ -166,24 +165,6 @@ void trackle_utils_bt_provision_loop(void)
         esp_err_t prov_err = wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, bleProvDeviceName, NULL);
         ESP_LOGI(BT_TAG, "wifi_prov_mgr_start_provisioning %" PRIi16, prov_err);
         btFunctionsEndpointsRegister();
-    }
-
-    // check timout for restart
-    if (restart_start_millis > 0)
-    {
-        if (trackleConnected(trackle_s))
-        {
-            restart_start_millis = 0;
-            ESP_LOGI(BT_TAG, "cloud connected, restarting...");
-            xEventGroupSetBits(s_wifi_event_group, RESTART);
-        }
-
-        if (getMillis() - restart_start_millis >= PROV_TIMEOUT_RESTART_AFTER)
-        {
-            restart_start_millis = 0;
-            ESP_LOGI(BT_TAG, "timeout, restarting...");
-            xEventGroupSetBits(s_wifi_event_group, RESTART);
-        }
     }
 
     // check timeout for stop
@@ -392,9 +373,8 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
             }
             else if (restart_on_provisioning_success && (wifiprov_bits & PROV_EVT_OK))
             {
-                trackleConnect(trackle_s); // restart trackle connection
-                ESP_LOGI(BT_TAG, "provisioning success, restarting after %d", PROV_TIMEOUT_RESTART_AFTER);
-                restart_start_millis = getMillis();
+                ESP_LOGI(BT_TAG, "provisioning success, restart");
+                xEventGroupSetBits(s_wifi_event_group, RESTART);
             }
             else if (restart_on_provisioning_timeout && !(wifiprov_bits & PROV_EVT_ERR) && !(wifiprov_bits & PROV_EVT_OK))
             {
