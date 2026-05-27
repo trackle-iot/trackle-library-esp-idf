@@ -20,7 +20,7 @@
 #ifndef TRACKLE_ESP32_H
 #define TRACKLE_ESP32_H
 
-#define TRACKLE_ESP32_VERSION "5.1.1"
+#define TRACKLE_ESP32_VERSION "5.2.0"
 
 #include "trackle_interface.h"
 #include "trackle_utils.h"
@@ -110,5 +110,21 @@ esp_log_level_t get_espidf_log_level(const char *level_name);
  * @return String representation of the Trackle device ID.
  */
 const char *trackleGetDeviceIdAsStr();
+
+/**
+ * @brief Enable or disable the BSSID fallback mechanism for WiFi connectivity.
+ *
+ * When enabled:
+ * - After a configurable number of consecutive connection failures, the driver
+ *   scans for the configured SSID and locks onto the best 2.4 GHz AP found.
+ * - During BT provisioning, the BSSID resolved from the manager scan is
+ *   injected into the WiFi configuration before the first connection attempt.
+ *
+ * Disabled by default. Call this before \ref connectTrackle() or before
+ * starting BT provisioning.
+ *
+ * @param enabled true to enable BSSID usage, false to disable.
+ */
+void trackleSetBssidEnabled(bool enabled);
 
 #endif /* TRACKLE_ESP32_H */

@@ -1,4 +1,5 @@
 #include "trackle_esp32.h"
+#include "trackle_utils_wifi.h"
 
 #include "lwip/err.h"
 #include "lwip/sockets.h"
@@ -409,4 +410,9 @@ esp_log_level_t get_espidf_log_level(const char *level_name)
     {
         return ESP_LOG_INFO;
     }
+}
+
+void trackleSetBssidEnabled(bool enabled)
+{
+    trackle_utils_wifi_set_bssid_enabled(enabled);
 }

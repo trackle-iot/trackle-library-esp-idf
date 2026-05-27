@@ -29,13 +29,123 @@ wifi_ap_record_t ap;
 
 static const char *WIFI_TAG = "trackle-utils-wifi";
 
+// Number of consecutive failures before attempting scan + BSSID
+#define BSSID_FALLBACK_THRESHOLD 3
+
+// Consecutive failure counter (RAM only, resets on reboot or successful connection)
+static int connect_failure_count = 0;
+
+// BSSID fallback enabled flag (default: disabled)
+static bool s_bssid_enabled = false;
+
+void trackle_utils_wifi_set_bssid_enabled(bool enabled)
+{
+    s_bssid_enabled = enabled;
+    ESP_LOGI(WIFI_TAG, "BSSID fallback %s", enabled ? "enabled" : "disabled");
+}
+
+bool trackle_utils_wifi_is_bssid_enabled(void)
+{
+    return s_bssid_enabled;
+}
+
 // Private function declarations
+static bool try_apply_24ghz_bssid(void);
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
+// ---------------------------------------------------------------------------
+// Scan and BSSID application for 2.4GHz (RAM only)
+// ---------------------------------------------------------------------------
+
+static bool try_apply_24ghz_bssid(void)
+{
+    wifi_config_t current_cfg;
+    if (esp_wifi_get_config(WIFI_IF_STA, &current_cfg) != ESP_OK)
+        return false;
+
+    ESP_LOGI(WIFI_TAG, "Scanning for 2.4GHz BSSID of '%s'...", current_cfg.sta.ssid);
+
+    wifi_scan_config_t scan_config = {
+        .ssid = current_cfg.sta.ssid,
+        .bssid = NULL,
+        .channel = 0,
+        .show_hidden = false,
+        .scan_type = WIFI_SCAN_TYPE_ACTIVE,
+    };
+
+    if (esp_wifi_scan_start(&scan_config, true) != ESP_OK)
+    {
+        ESP_LOGE(WIFI_TAG, "Scan failed");
+        return false;
+    }
+
+    uint16_t ap_count = 0;
+    esp_wifi_scan_get_ap_num(&ap_count);
+    if (ap_count == 0)
+    {
+        ESP_LOGW(WIFI_TAG, "No AP found");
+        return false;
+    }
+
+    wifi_ap_record_t *ap_list = malloc(sizeof(wifi_ap_record_t) * ap_count);
+    if (!ap_list)
+        return false;
+
+    esp_wifi_scan_get_ap_records(&ap_count, ap_list);
+
+    // Find best 2.4GHz AP (channels 1-13) by RSSI
+    int best_rssi = -200;
+    int best_idx = -1;
+    for (int i = 0; i < ap_count; i++)
+    {
+        ESP_LOGI(WIFI_TAG, "  AP: %s | BSSID: %02X:%02X:%02X:%02X:%02X:%02X | CH: %d | RSSI: %d",
+                 ap_list[i].ssid,
+                 ap_list[i].bssid[0], ap_list[i].bssid[1], ap_list[i].bssid[2],
+                 ap_list[i].bssid[3], ap_list[i].bssid[4], ap_list[i].bssid[5],
+                 ap_list[i].primary, ap_list[i].rssi);
+
+        if (ap_list[i].primary >= 1 && ap_list[i].primary <= 13)
+        {
+            if (ap_list[i].rssi > best_rssi)
+            {
+                best_rssi = ap_list[i].rssi;
+                best_idx = i;
+            }
+        }
+    }
+
+    bool bssid_applied = false;
+
+    if (best_idx >= 0)
+    {
+        ESP_LOGI(WIFI_TAG, "Applying 2.4GHz BSSID in RAM: %02X:%02X:%02X:%02X:%02X:%02X",
+                 ap_list[best_idx].bssid[0], ap_list[best_idx].bssid[1],
+                 ap_list[best_idx].bssid[2], ap_list[best_idx].bssid[3],
+                 ap_list[best_idx].bssid[4], ap_list[best_idx].bssid[5]);
+
+        memcpy(current_cfg.sta.bssid, ap_list[best_idx].bssid, 6);
+        current_cfg.sta.bssid_set = true;
+        esp_err_t set_err = esp_wifi_set_config(WIFI_IF_STA, &current_cfg);
+        if (set_err == ESP_OK)
+            bssid_applied = true;
+        else
+            ESP_LOGE(WIFI_TAG, "Failed to set WiFi config with 2.4GHz BSSID: %s", esp_err_to_name(set_err));
+    }
+    else
+    {
+        ESP_LOGW(WIFI_TAG, "No 2.4GHz AP found, continuing without BSSID");
+    }
+
+    free(ap_list);
+    return bssid_applied;
+}
+
+// ---------------------------------------------------------------------------
 // Public function implementations
+// ---------------------------------------------------------------------------
+
 esp_err_t wifi_is_provisioned(void)
 {
-    /* Get Wi-Fi Station configuration */
     wifi_config_t wifi_cfg;
     if (esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg) != ESP_OK)
     {
@@ -87,7 +197,6 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
         return ESP_ERR_INVALID_ARG;
     }
 
-    // Check lengths
     if (strlen(ssid) >= sizeof(((wifi_config_t *)0)->sta.ssid))
     {
         ESP_LOGE(WIFI_TAG, "SSID is too long");
@@ -113,6 +222,11 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
     strcpy((char *)config.sta.ssid, ssid);
     strcpy((char *)config.sta.password, password);
 
+    // New SSID: reset any fixed BSSID and failure counter
+    config.sta.bssid_set = false;
+    memset(config.sta.bssid, 0, sizeof(config.sta.bssid));
+    connect_failure_count = 0;
+
     // Apply configuration
     err = esp_wifi_set_config(ESP_IF_WIFI_STA, &config);
     if (err != ESP_OK)
@@ -130,7 +244,6 @@ void trackle_utils_wifi_loop(void)
     EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
     uint32_t loop_millis = getMillis();
 
-    // check connessione wifi
     if (timeout_connect_wifi > 0 && timeout_connect_wifi < loop_millis)
     {
         timeout_connect_wifi = 0;
@@ -143,7 +256,6 @@ void trackle_utils_wifi_loop(void)
         }
     }
 
-    // updating diagnostic
     if (getMillis() - utility_check_diagnostic_millis >= UTILITY_DIAGNOSTIC_TIME)
     {
         utility_check_diagnostic_millis = getMillis();
@@ -156,7 +268,10 @@ void trackle_utils_wifi_loop(void)
     }
 }
 
+// ---------------------------------------------------------------------------
 // Private function implementations
+// ---------------------------------------------------------------------------
+
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     EventBits_t bits = xEventGroupGetBits(s_wifi_event_group);
@@ -177,13 +292,13 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
         if (currentMode == WIFI_MODE_STA)
         {
             ESP_LOGI(WIFI_TAG, "Connecting to the AP");
-            xEventGroupSetBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT); // connettiti
+            xEventGroupSetBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT);
             timeout_connect_wifi = getMillis();
         }
         else if (currentMode == WIFI_MODE_APSTA)
         {
             ESP_LOGI(WIFI_TAG, "APMode, not connecting....");
-            xEventGroupClearBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT); // non cercare di riconnetterti
+            xEventGroupClearBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT);
         }
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
@@ -204,7 +319,36 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
         else
         {
             // Was not connected: counting as failure
+            connect_failure_count++;
+            ESP_LOGW(WIFI_TAG, "Consecutive failures: %d/%d", connect_failure_count, BSSID_FALLBACK_THRESHOLD);
             trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ERROR_CODE, event->reason);
+
+            if (s_bssid_enabled && connect_failure_count == BSSID_FALLBACK_THRESHOLD)
+            {
+                // Threshold reached: scan and apply 2.4GHz BSSID
+                ESP_LOGW(WIFI_TAG, "Threshold reached, trying scan + 2.4GHz BSSID");
+                if (try_apply_24ghz_bssid())
+                {
+                    trackleDiagnosticNetwork(trackle_s, NETWORK_FLAGS, 1);
+                }
+            }
+            else if (s_bssid_enabled && connect_failure_count >= BSSID_FALLBACK_THRESHOLD * 2)
+            {
+                // Fixed BSSID did not help either: revert to normal connection and restart counter
+                ESP_LOGW(WIFI_TAG, "Fixed BSSID did not help, reverting to normal connection");
+                trackleDiagnosticNetwork(trackle_s, NETWORK_FLAGS, 0);
+
+                wifi_config_t cfg;
+                if (esp_wifi_get_config(WIFI_IF_STA, &cfg) == ESP_OK)
+                {
+                    cfg.sta.bssid_set = false;
+                    memset(cfg.sta.bssid, 0, sizeof(cfg.sta.bssid));
+                    esp_err_t revert_err = esp_wifi_set_config(WIFI_IF_STA, &cfg);
+                    if (revert_err != ESP_OK)
+                        ESP_LOGE(WIFI_TAG, "Failed to revert WiFi config (clear BSSID): %s", esp_err_to_name(revert_err));
+                }
+                connect_failure_count = 0;
+            }
         }
 
         timeout_connect_wifi = getMillis() + CHECK_WIFI_TIMEOUT;
@@ -213,6 +357,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
     {
         wifi_event_sta_connected_t *event = (wifi_event_sta_connected_t *)event_data;
+        ESP_LOGW(WIFI_TAG, "Wifi connected to bssid: %02X:%02X:%02X:%02X:%02X:%02X...", event->bssid[0], event->bssid[1], event->bssid[2], event->bssid[3], event->bssid[4], event->bssid[5]);
         trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_STATUS, event->authmode);
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
@@ -220,6 +365,9 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         ESP_LOGW(WIFI_TAG, "Got ip:" IPSTR, IP2STR(&event->ip_info.ip));
         xEventGroupSetBits(s_wifi_event_group, NETWORK_CONNECTED_BIT);
+
+        // Connection successful: resetting failure counter
+        connect_failure_count = 0;
 
         // diagnostic
         esp_wifi_sta_get_ap_info(&ap);

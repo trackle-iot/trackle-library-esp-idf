@@ -70,4 +70,25 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password);
  */
 void trackle_utils_wifi_loop(void);
 
+/**
+ * @brief Enable or disable the BSSID fallback mechanism.
+ *
+ * When enabled, after a number of consecutive connection failures the driver
+ * scans for the configured SSID and locks onto the best 2.4 GHz BSSID found.
+ * When enabled during BT provisioning, the BSSID resolved from the scan is
+ * injected into the WiFi configuration before the first connection attempt.
+ *
+ * Disabled by default.
+ *
+ * @param enabled true to enable, false to disable.
+ */
+void trackle_utils_wifi_set_bssid_enabled(bool enabled);
+
+/**
+ * @brief Query whether the BSSID fallback mechanism is currently enabled.
+ *
+ * @return true if enabled, false otherwise.
+ */
+bool trackle_utils_wifi_is_bssid_enabled(void);
+
 #endif /* TRACKLE_UTILS_WIFI_H */
