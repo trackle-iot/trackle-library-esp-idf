@@ -194,10 +194,12 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
         if (bits & NETWORK_CONNECTED_BIT)
         {
             trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTS, 1);
-
-            // reset connections attemps for new cloud session
             trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ATTEMPTS, 0);
             trackleDiagnosticNetwork(trackle_s, NETWORK_DISCONNECTION_REASON, event->reason);
+            trackleDiagnosticNetwork(trackle_s, NETWORK_CONNECTION_ERROR_CODE, 0);
+
+            // Was connected: not a connection failure, resetting counter
+            connect_failure_count = 0;
         }
         else
         {
