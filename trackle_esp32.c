@@ -262,34 +262,52 @@ void reboot_cb(const char *data)
 
 void trackle_task(void *pvParameter)
 {
+    ESP_LOGI(TRACKLE_TAG, "trackle_task started");
+
     multi_heap_info_t info;
     heap_caps_get_info(&info, MALLOC_CAP_INTERNAL);
     total_ram = info.total_free_bytes + info.total_allocated_bytes;
+    ESP_LOGI(TRACKLE_TAG, "Total RAM: %u", total_ram);
+
     trackleDiagnosticSystem(trackle_s, SYSTEM_TOTAL_RAM, total_ram);
     trackleDiagnosticSystem(trackle_s, SYSTEM_LAST_RESET_REASON, esp_reset_reason());
 
-    trackleConnect(trackle_s);
+    ESP_LOGI(TRACKLE_TAG, "Calling trackleConnect...");
+    int connect_result = trackleConnect(trackle_s);
+    ESP_LOGI(TRACKLE_TAG, "trackleConnect result: %d", connect_result);
 
     while (1)
     {
+        ESP_LOGV(TRACKLE_TAG, "trackle_task loop tick");
         if (xSemaphoreTake(xTrackleSemaphore, xTrackleSemaphoreWait) == pdTRUE)
         {
+            ESP_LOGV(TRACKLE_TAG, "Semaphore taken, calling trackleLoop");
             trackleLoop(trackle_s); // da chiamare nel loop per far funzionare la libreria
             xSemaphoreGive(xTrackleSemaphore);
+            ESP_LOGV(TRACKLE_TAG, "Semaphore released after trackleLoop");
+        }
+        else
+        {
+            ESP_LOGW(TRACKLE_TAG, "Failed to take xTrackleSemaphore in trackle_task");
         }
 
         // updating diagnostic
         if (getMillis() - esp32_check_diagnostic_millis >= ESP32_DIAGNOSTIC_TIME)
         {
             esp32_check_diagnostic_millis = getMillis();
-            trackleDiagnosticSystem(trackle_s, SYSTEM_UPTIME, getMillis() / 1000);
-            trackleDiagnosticSystem(trackle_s, SYSTEM_FREE_MEMORY, esp_get_free_heap_size());
-            trackleDiagnosticSystem(trackle_s, SYSTEM_USED_RAM, (total_ram - esp_get_free_heap_size()));
+            uint32_t uptime = getMillis() / 1000;
+            uint32_t free_mem = esp_get_free_heap_size();
+            uint32_t used_ram = total_ram - free_mem;
+            ESP_LOGI(TRACKLE_TAG, "Diagnostics: uptime=%u, free_mem=%u, used_ram=%u", uptime, free_mem, used_ram);
+            trackleDiagnosticSystem(trackle_s, SYSTEM_UPTIME, uptime);
+            trackleDiagnosticSystem(trackle_s, SYSTEM_FREE_MEMORY, free_mem);
+            trackleDiagnosticSystem(trackle_s, SYSTEM_USED_RAM, used_ram);
         }
 
         vTaskDelay(20 / portTICK_PERIOD_MS);
     }
 
+    ESP_LOGI(TRACKLE_TAG, "trackle_task ending, deleting self");
     vTaskDelete(NULL);
 }
 
