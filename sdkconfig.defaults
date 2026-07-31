@@ -25,6 +25,7 @@ CONFIG_MBEDTLS_ECP_DP_SECP384R1_ENABLED=y # for new 384bit LetsEncrypt certifica
 
 
 #
-# Wi-Fi Provisioning Manager
+# Network Provisioning Manager
 #
-CONFIG_WIFI_PROV_BLE_FORCE_ENCRYPTION=n # do not show pop up durin BT provision
+CONFIG_NETWORK_PROV_BLE_FORCE_ENCRYPTION=n # do not show pop up during BT provision
+CONFIG_ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_1=y

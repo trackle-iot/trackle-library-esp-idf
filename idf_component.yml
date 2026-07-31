@@ -1,0 +1,13 @@
+version: "5.2.0"
+description: Trackle cloud connectivity framework for ESP32 (ESP-IDF)
+url: https://github.com/trackle-iot/trackle-library-esp-idf
+repository: https://github.com/trackle-iot/trackle-library-esp-idf.git
+documentation: https://trackle-iot.github.io/trackle-library-esp-idf/v4
+issues: https://github.com/trackle-iot/trackle-library-esp-idf/issues
+dependencies:
+  idf: ">=6.0"
+  espressif/network_provisioning:
+    version: "^1.1.0"
+sbom:
+  supplier: 'Organization: IOTREADY S.r.l.'
+  originator: 'Organization: IOTREADY S.r.l.'

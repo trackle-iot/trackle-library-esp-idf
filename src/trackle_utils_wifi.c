@@ -211,7 +211,7 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
 
     // Get current configuration
     wifi_config_t config;
-    esp_err_t err = esp_wifi_get_config(ESP_IF_WIFI_STA, &config);
+    esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &config);
     if (err != ESP_OK)
     {
         ESP_LOGE(WIFI_TAG, "Error reading WiFi configuration: %s", esp_err_to_name(err));
@@ -228,7 +228,7 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
     connect_failure_count = 0;
 
     // Apply configuration
-    err = esp_wifi_set_config(ESP_IF_WIFI_STA, &config);
+    err = esp_wifi_set_config(WIFI_IF_STA, &config);
     if (err != ESP_OK)
     {
         ESP_LOGE(WIFI_TAG, "Error setting WiFi configuration: %s", esp_err_to_name(err));

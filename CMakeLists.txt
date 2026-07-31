@@ -53,7 +53,11 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/src/trackle_utils_crypto.c"
 
      INCLUDE_DIRS "." "./trackle-library/include" "./trackle-library/lib/tinydtls" "./trackle-library/lib/tinydtls/aes" "./trackle-library/lib/tinydtls/sha2" "./trackle-library/lib/micro-ecc"
-     REQUIRES efuse mbedtls nvs_flash esp_system app_update esp_http_client esp_https_ota wifi_provisioning)
+     REQUIRES efuse mbedtls nvs_flash esp_system app_update esp_http_client esp_https_ota network_provisioning esp_wifi esp_driver_uart)
+
+if(IDF_VERSION_MAJOR LESS 6)
+     message(FATAL_ERROR "trackle-library-esp-idf requires ESP-IDF >= 6.0.0 (found ${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}.${IDF_VERSION_PATCH})")
+endif()
 
 target_link_libraries(${COMPONENT_TARGET} "-u custom_app_desc")
 target_compile_definitions(${COMPONENT_TARGET} PUBLIC "-DWITH_ESPIDF")
