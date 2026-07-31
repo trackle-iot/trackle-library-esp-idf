@@ -43,6 +43,7 @@ static bool g_cert_set = false;
 
 static const char *OTA_TAG = "trackle-utils-ota";
 
+
 // Private function declarations
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt);
 static void sendOtaMessage(uint8_t message_type, int value);
@@ -133,14 +134,21 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
         // Initialize SHA256 at the first packet
         if (!current_ota_data.sha256_initialized)
         {
-            mbedtls_sha256_init(&current_ota_data.sha256_ctx);
-            mbedtls_sha256_starts(&current_ota_data.sha256_ctx, 0);
+            current_ota_data.sha256_ctx = psa_hash_operation_init();
+            if (psa_hash_setup(&current_ota_data.sha256_ctx, PSA_ALG_SHA_256) != PSA_SUCCESS)
+            {
+                ESP_LOGE(OTA_TAG, "psa_hash_setup failed");
+                break;
+            }
             current_ota_data.sha256_initialized = true;
-            ESP_LOGI(OTA_TAG, "SHA256 calculation started (mbedtls)");
+            ESP_LOGI(OTA_TAG, "SHA256 calculation started (psa)");
         }
 
         // update SHA256
-        mbedtls_sha256_update(&current_ota_data.sha256_ctx, evt->data, evt->data_len);
+        if (psa_hash_update(&current_ota_data.sha256_ctx, evt->data, evt->data_len) != PSA_SUCCESS)
+        {
+            ESP_LOGE(OTA_TAG, "psa_hash_update failed");
+        }
 
         break;
     case HTTP_EVENT_ON_FINISH:
@@ -329,19 +337,28 @@ static void execute_ota_task(void *pvParameter)
                 }
                 else // verify signature
                 {
-                    mbedtls_sha256_finish(&current_ota_data.sha256_ctx, current_ota_data.calculated_hash);
-                    mbedtls_sha256_free(&current_ota_data.sha256_ctx);
-                    current_ota_data.sha256_initialized = false;
-
-                    if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
+                    size_t hash_len = 0;
+                    if (psa_hash_finish(&current_ota_data.sha256_ctx, current_ota_data.calculated_hash,
+                                        sizeof(current_ota_data.calculated_hash), &hash_len) != PSA_SUCCESS)
                     {
-                        signatureValidated = true;
+                        ESP_LOGE(OTA_TAG, "psa_hash_finish failed");
+                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+                        trackleDisableUpdates_with_timeout();
                     }
                     else
                     {
-                        ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
-                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
-                        trackleDisableUpdates_with_timeout();
+                        current_ota_data.sha256_initialized = false;
+
+                        if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
+                        {
+                            signatureValidated = true;
+                        }
+                        else
+                        {
+                            ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
+                            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+                            trackleDisableUpdates_with_timeout();
+                        }
                     }
                 }
 
@@ -370,7 +387,7 @@ static void execute_ota_task(void *pvParameter)
 
     if (current_ota_data.sha256_initialized)
     {
-        mbedtls_sha256_free(&current_ota_data.sha256_ctx);
+        psa_hash_abort(&current_ota_data.sha256_ctx);
         current_ota_data.sha256_initialized = false;
     }
 

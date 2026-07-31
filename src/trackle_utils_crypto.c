@@ -1,8 +1,8 @@
 #include "trackle_utils_crypto.h"
 #include "esp_efuse.h"
 #include "esp_log.h"
-#include "mbedtls/aes.h"
 #include "esp_random.h"
+#include "psa/crypto.h"
 #include <string.h>
 
 #define TAG "trackle_crypto"
@@ -11,7 +11,7 @@
 #define EFUSE_KEY_OFFSET 0         // Start at bit 0
 #define EFUSE_KEY_BITS 128         // 128-bit key
 
-static uint8_t g_aes_key[AES_KEY_SIZE]; // Fixed: removed incorrect *type* syntax
+static uint8_t g_aes_key[AES_KEY_SIZE];
 static bool g_key_loaded = false;
 
 unsigned char TRACKLE_IV[16] = {
@@ -21,7 +21,7 @@ unsigned char TRACKLE_IV[16] = {
 /**
  * @brief Loads the AES key from eFuse.
  */
-static esp_err_t load_key_from_efuse(uint8_t *key) // Fixed: corrected syntax
+static esp_err_t load_key_from_efuse(uint8_t *key)
 {
     esp_err_t err = esp_efuse_read_block(EFUSE_KEY_FIELD, key, EFUSE_KEY_OFFSET, EFUSE_KEY_BITS);
     if (err != ESP_OK)
@@ -34,7 +34,7 @@ static esp_err_t load_key_from_efuse(uint8_t *key) // Fixed: corrected syntax
     for (int i = 0; i < AES_KEY_SIZE; i++)
     {
         if (key[i] != 0)
-        { // Fixed: removed incorrect syntax
+        {
             key_is_empty = false;
             break;
         }
@@ -52,12 +52,12 @@ static esp_err_t load_key_from_efuse(uint8_t *key) // Fixed: corrected syntax
 /**
  * @brief Writes the AES key to eFuse (irreversible).
  */
-static esp_err_t write_key_to_efuse(const uint8_t *key) // Fixed: corrected syntax
+static esp_err_t write_key_to_efuse(const uint8_t *key)
 {
     return esp_efuse_write_block(EFUSE_KEY_FIELD, key, EFUSE_KEY_OFFSET, EFUSE_KEY_BITS);
 }
 
-esp_err_t trackle_crypto_init(void) // Fixed: removed incorrect syntax
+esp_err_t trackle_crypto_init(void)
 {
     esp_err_t err;
 
@@ -94,43 +94,91 @@ esp_err_t trackle_crypto_init(void) // Fixed: removed incorrect syntax
     return ESP_OK;
 }
 
-esp_err_t trackle_crypto_encrypt(const uint8_t *input, size_t length, uint8_t *output) // Fixed: corrected syntax
+static psa_status_t import_aes_ctr_key(psa_key_id_t *key_id)
+{
+    psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    psa_set_key_usage_flags(&attributes, PSA_KEY_USAGE_ENCRYPT);
+    psa_set_key_algorithm(&attributes, PSA_ALG_CTR);
+    psa_set_key_type(&attributes, PSA_KEY_TYPE_AES);
+    psa_set_key_bits(&attributes, 128);
+
+    psa_status_t status = psa_import_key(&attributes, g_aes_key, AES_KEY_SIZE, key_id);
+    psa_reset_key_attributes(&attributes);
+    return status;
+}
+
+static psa_status_t run_aes_ctr(psa_key_id_t key_id, const uint8_t *input, size_t length, uint8_t *output)
+{
+    psa_cipher_operation_t operation = PSA_CIPHER_OPERATION_INIT;
+    size_t output_len = 0;
+    size_t finish_len = 0;
+    psa_status_t status;
+
+    status = psa_cipher_encrypt_setup(&operation, key_id, PSA_ALG_CTR);
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_cipher_encrypt_setup failed: %d", (int)status);
+        goto done;
+    }
+
+    status = psa_cipher_set_iv(&operation, TRACKLE_IV, sizeof(TRACKLE_IV));
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_cipher_set_iv failed: %d", (int)status);
+        goto done;
+    }
+
+    status = psa_cipher_update(&operation, input, length, output, length, &output_len);
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_cipher_update failed: %d", (int)status);
+        goto done;
+    }
+
+    status = psa_cipher_finish(&operation, output + output_len, length - output_len, &finish_len);
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_cipher_finish failed: %d", (int)status);
+    }
+
+done:
+    psa_cipher_abort(&operation);
+    return status;
+}
+
+static esp_err_t aes_ctr_crypt(const uint8_t *input, size_t length, uint8_t *output)
+{
+    psa_key_id_t key_id = 0;
+    psa_status_t status = psa_crypto_init();
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_crypto_init failed: %d", (int)status);
+        return ESP_FAIL;
+    }
+
+    status = import_aes_ctr_key(&key_id);
+    if (status != PSA_SUCCESS)
+    {
+        ESP_LOGE(TAG, "psa_import_key failed: %d", (int)status);
+        return ESP_FAIL;
+    }
+
+    status = run_aes_ctr(key_id, input, length, output);
+    psa_destroy_key(key_id);
+    return (status == PSA_SUCCESS) ? ESP_OK : ESP_FAIL;
+}
+
+esp_err_t trackle_crypto_encrypt(const uint8_t *input, size_t length, uint8_t *output)
 {
     if (!g_key_loaded)
         return ESP_ERR_INVALID_STATE;
 
-    mbedtls_aes_context ctx; // Fixed: removed incorrect syntax
-    mbedtls_aes_init(&ctx);
-
-    size_t nc_off = 0;              // Fixed: removed incorrect syntax
-    uint8_t stream_block[16] = {0}; // Fixed: proper initialization
-
-    // Create a working copy of IV since CTR mode modifies it
-    uint8_t working_iv[16];
-    memcpy(working_iv, TRACKLE_IV, 16);
-
-    int ret = mbedtls_aes_setkey_enc(&ctx, g_aes_key, 128);
-    if (ret != 0)
-    {
-        ESP_LOGE(TAG, "Failed to set encryption key: %d", ret);
-        mbedtls_aes_free(&ctx);
-        return ESP_FAIL;
-    }
-
-    ret = mbedtls_aes_crypt_ctr(&ctx, length, &nc_off, working_iv, stream_block, input, output); // Fixed: corrected parameters
-    if (ret != 0)
-    {
-        ESP_LOGE(TAG, "Encryption failed: %d", ret);
-        mbedtls_aes_free(&ctx);
-        return ESP_FAIL;
-    }
-
-    mbedtls_aes_free(&ctx);
-    return ESP_OK;
+    return aes_ctr_crypt(input, length, output);
 }
 
-esp_err_t trackle_crypto_decrypt(const uint8_t *input, size_t length, uint8_t *output) // Fixed: corrected syntax
+esp_err_t trackle_crypto_decrypt(const uint8_t *input, size_t length, uint8_t *output)
 {
     // AES-CTR decryption is identical to encryption
-    return trackle_crypto_encrypt(input, length, output); // Fixed: corrected parameters
+    return trackle_crypto_encrypt(input, length, output);
 }

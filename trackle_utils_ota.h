@@ -23,8 +23,8 @@
 #include "esp_ota_ops.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
-#include "esp_crc.h" 
-#include "mbedtls/sha256.h"
+#include "esp_crc.h"
+#include "psa/crypto.h"
 
 #include "trackle_utils.h"
 
@@ -71,7 +71,7 @@ typedef struct
     uint8_t calculated_hash[32];
     bool certificate_verification_error;
     bool sha256_initialized;
-    mbedtls_sha256_context sha256_ctx;
+    psa_hash_operation_t sha256_ctx;
 } ota_data;
 
 /**
