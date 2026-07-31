@@ -43,6 +43,18 @@ static bool g_cert_set = false;
 
 static const char *OTA_TAG = "trackle-utils-ota";
 
+static trackle_ota_dut_event_cb_t s_ota_dut_event_cb = NULL;
+
+void trackle_ota_set_dut_event_callback(trackle_ota_dut_event_cb_t cb)
+{
+    s_ota_dut_event_cb = cb;
+}
+
+static void ota_dut_emit(const char *msg)
+{
+    if (s_ota_dut_event_cb != NULL && msg != NULL)
+        s_ota_dut_event_cb(msg);
+}
 
 // Private function declarations
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt);
@@ -327,12 +339,18 @@ static void execute_ota_task(void *pvParameter)
 
             if (current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota)
             {
+                if (current_ota_data.firmware_crc32_ota == 0)
+                    ota_dut_emit("crc32_not_checked");
+                else
+                    ota_dut_emit("crc32_correct");
+
                 // if forced, do not verify signature
                 bool signatureValidated = false;
 
                 if (trackleUpdatesForced(trackle_s))
                 {
                     ESP_LOGE(OTA_TAG, "OTA forced, signature verification skipped...");
+                    ota_dut_emit("signature_skipped");
                     signatureValidated = true;
                 }
                 else // verify signature
@@ -342,6 +360,7 @@ static void execute_ota_task(void *pvParameter)
                                         sizeof(current_ota_data.calculated_hash), &hash_len) != PSA_SUCCESS)
                     {
                         ESP_LOGE(OTA_TAG, "psa_hash_finish failed");
+                        ota_dut_emit("signature_failed");
                         sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
                         trackleDisableUpdates_with_timeout();
                     }
@@ -351,11 +370,13 @@ static void execute_ota_task(void *pvParameter)
 
                         if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
                         {
+                            ota_dut_emit("signature_verified");
                             signatureValidated = true;
                         }
                         else
                         {
                             ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
+                            ota_dut_emit("signature_failed");
                             sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
                             trackleDisableUpdates_with_timeout();
                         }
@@ -380,6 +401,7 @@ static void execute_ota_task(void *pvParameter)
             }
             else
             {
+                ota_dut_emit("crc32_mismatch");
                 sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_FAILED);
             }
         }

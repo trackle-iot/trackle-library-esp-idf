@@ -90,4 +90,15 @@ int firmware_ota_url(const char *url, uint32_t crc);
  */
 bool set_https_ota_certificate(const char *cert_pem);
 
+/**
+ * @brief Optional callback for DUT/test harness to observe CRC/signature decisions.
+ *
+ * When set, firmware_ota_url emits messages such as
+ * crc32_not_checked, crc32_correct, crc32_mismatch,
+ * signature_verified, signature_failed, signature_skipped.
+ * Production apps leave this unset (no-op).
+ */
+typedef void (*trackle_ota_dut_event_cb_t)(const char *msg);
+void trackle_ota_set_dut_event_callback(trackle_ota_dut_event_cb_t cb);
+
 #endif /* TRACKLE_UTILS_OTA_H */
