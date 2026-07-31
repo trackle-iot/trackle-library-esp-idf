@@ -4,3 +4,10 @@
 /doxygen-awesome-css
 /trackle-library
 /.trackle_developer
+/test/esp-idf/.env
+/test/esp-idf/firmware/.pio
+/test/esp-idf/firmware/managed_components
+/test/esp-idf/firmware/sdkconfig
+/test/esp-idf/firmware/sdkconfig.old
+/test/esp-idf/firmware/dependencies.lock
+/.codacy
