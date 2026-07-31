@@ -6,6 +6,8 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 #include "esp_mac.h"
+#include <errno.h>
+#include <inttypes.h>
 
 #include "hal_platform.h"
 
@@ -79,7 +81,16 @@ const __attribute__((section(".rodata_custom_desc"))) esp_custom_app_desc_t cust
 
 // cloud socket
 struct sockaddr_in cloud_addr;
-int cloud_socket;
+int cloud_socket = -1;
+
+static void close_cloud_socket(void)
+{
+    if (cloud_socket >= 0)
+    {
+        close(cloud_socket);
+        cloud_socket = -1;
+    }
+}
 
 /**
  * @brief Sets the time. Time is given in milliseconds since the epoch, UCT.
@@ -147,6 +158,9 @@ int connect_cb_udp(const char *address, int port)
     ip_protocol = IPPROTO_IP;
     inet_ntoa_r(cloud_addr.sin_addr, addr_str, sizeof(addr_str) - 1);
 
+    // A reconnect must never leave the previous UDP socket (and port) alive.
+    close_cloud_socket();
+
     cloud_socket = socket(addr_family, SOCK_DGRAM, ip_protocol);
     if (cloud_socket < 0)
     {
@@ -171,8 +185,7 @@ int connect_cb_udp(const char *address, int port)
  */
 int disconnect_cb()
 {
-    if (cloud_socket)
-        close(cloud_socket);
+    close_cloud_socket();
     return 1;
 }
 
@@ -188,13 +201,25 @@ int disconnect_cb()
  */
 int send_cb_udp(const unsigned char *buf, uint32_t buflen, void *tmp)
 {
-    size_t sent = sendto(cloud_socket, (const char *)buf, buflen, 0, (struct sockaddr *)&cloud_addr, sizeof(cloud_addr));
-    if ((int)sent > 0)
+    if (cloud_socket < 0)
     {
-        ESP_LOGD(TRACKLE_TAG, "send_cb_udp sent %d", sent);
-        ESP_LOG_BUFFER_HEX_LEVEL(TRACKLE_TAG, buf, sent, ESP_LOG_VERBOSE);
+        ESP_LOGW(TRACKLE_TAG, "UDP TX skipped: socket not open");
+        return -1;
     }
 
+    ESP_LOGD(TRACKLE_TAG, "UDP TX: socket=%d, length=%" PRIu32 " bytes",
+             cloud_socket, buflen);
+    ESP_LOG_BUFFER_HEX_LEVEL(TRACKLE_TAG, buf, buflen, ESP_LOG_VERBOSE);
+
+    ssize_t sent = sendto(cloud_socket, (const char *)buf, buflen, 0,
+                          (struct sockaddr *)&cloud_addr, sizeof(cloud_addr));
+    if (sent < 0)
+    {
+        ESP_LOGE(TRACKLE_TAG, "UDP TX failed: errno=%d", errno);
+        return -1;
+    }
+
+    ESP_LOGD(TRACKLE_TAG, "UDP TX complete: sent=%d bytes", (int)sent);
     return (int)sent;
 }
 
@@ -210,20 +235,32 @@ int send_cb_udp(const unsigned char *buf, uint32_t buflen, void *tmp)
  */
 int receive_cb_udp(unsigned char *buf, uint32_t buflen, void *tmp)
 {
-    size_t res = recvfrom(cloud_socket, (char *)buf, buflen, 0, (struct sockaddr *)NULL, NULL);
-    if ((int)res > 0)
+    if (cloud_socket < 0)
     {
-        ESP_LOGD(TRACKLE_TAG, "receive_cb_udp received %d", res);
-        ESP_LOG_BUFFER_HEX_LEVEL(TRACKLE_TAG, buf, res, ESP_LOG_VERBOSE);
+        return -1;
     }
 
-    // on timeout error, set bytes received to 0
-    if ((int)res < 0 && errno == 11)
+    ssize_t res = recvfrom(cloud_socket, (char *)buf, buflen, 0, (struct sockaddr *)NULL, NULL);
+    if (res > 0)
     {
-        res = 0;
+        ESP_LOGD(TRACKLE_TAG, "receive_cb_udp received %d", (int)res);
+        ESP_LOG_BUFFER_HEX_LEVEL(TRACKLE_TAG, buf, (size_t)res, ESP_LOG_VERBOSE);
+        return (int)res;
     }
 
-    return (int)res;
+    // timeout / would-block: treat as no data
+    if (res < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+    {
+        return 0;
+    }
+
+    if (res < 0)
+    {
+        ESP_LOGE(TRACKLE_TAG, "UDP RX failed: errno=%d", errno);
+        return -1;
+    }
+
+    return 0;
 }
 
 /**
