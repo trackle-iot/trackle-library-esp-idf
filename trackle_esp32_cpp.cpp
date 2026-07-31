@@ -1,8 +1,6 @@
-#include <string>
-
-extern std::string string_device_id;
+#include "trackle_utils_storage.h"
 
 extern "C" const char *trackleGetDeviceIdAsStr()
 {
-    return string_device_id.c_str();
+    return string_device_id;
 }

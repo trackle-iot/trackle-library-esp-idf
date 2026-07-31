@@ -38,6 +38,7 @@
 extern uint8_t device_id[DEVICE_ID_LENGTH];
 extern uint8_t private_key[PRIVATE_KEY_LENGTH];
 extern char string_device_id[DEVICE_ID_LENGTH * 2 + 1];
+extern nvs_handle_t config_handle;
 
 // Enum per i risultati di initStorage
 typedef enum

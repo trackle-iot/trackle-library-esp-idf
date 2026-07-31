@@ -4,6 +4,8 @@
 #include <freertos/event_groups.h>
 
 #include <esp_log.h>
+#include <string.h>
+#include <time.h>
 
 EventGroupHandle_t s_wifi_event_group;
 
