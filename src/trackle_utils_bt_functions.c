@@ -5,7 +5,7 @@
 #include <inttypes.h>
 
 #include <esp_log.h>
-#include <wifi_provisioning/manager.h>
+#include <network_provisioning/manager.h>
 
 typedef struct
 {

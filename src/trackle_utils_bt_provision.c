@@ -27,9 +27,9 @@
 #include <protocomm_ble.h>
 #endif
 
-/* Access wifi_provisioning internal scan API without modifying the component */
-extern uint16_t wifi_prov_mgr_wifi_scan_result_count(void);
-extern const wifi_ap_record_t *wifi_prov_mgr_wifi_scan_result(uint16_t index);
+/* Access network_provisioning internal scan API without modifying the component */
+extern uint16_t network_prov_mgr_wifi_scan_result_count(void);
+extern const wifi_ap_record_t *network_prov_mgr_wifi_scan_result(uint16_t index);
 
 // Global variables
 char bleProvDeviceName[21] = {0};
@@ -113,7 +113,7 @@ void trackle_utils_bt_provision_init(void)
 {
     wifiProvisioningEvents = xEventGroupCreate();
     xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_NO);
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(NETWORK_PROV_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
 #ifdef PROTOCOMM_EVENTS_SUPPORTED
     ESP_ERROR_CHECK(esp_event_handler_register(PROTOCOMM_TRANSPORT_BLE_EVENT, ESP_EVENT_ANY_ID, &bt_event_handler, NULL));
 #endif
@@ -141,21 +141,21 @@ void trackle_utils_bt_provision_loop(void)
             wifi_prov_initialized = true;
 
             // Configuration for the provisioning manager
-            wifi_prov_mgr_config_t config = {
-                .scheme = wifi_prov_scheme_ble,
-                .scheme_event_handler = WIFI_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM,
+            network_prov_mgr_config_t config = {
+                .scheme = network_prov_scheme_ble,
+                .scheme_event_handler = NETWORK_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM,
             };
 
             // Initialize provisioning manager
-            wifi_prov_mgr_init(config);
+            network_prov_mgr_init(config);
             btFunctionsEndpointsCreate();
         }
 
-        wifi_prov_scheme_ble_set_service_uuid(bleProvUuid);
+        network_prov_scheme_ble_set_service_uuid(bleProvUuid);
 
         if (bleAdvDataLen > 0)
         {
-            const esp_err_t e = wifi_prov_scheme_ble_set_mfg_data(bleAdvData, bleAdvDataLen);
+            const esp_err_t e = network_prov_scheme_ble_set_mfg_data(bleAdvData, bleAdvDataLen);
             ESP_LOGE("", "ERROR REG ADV: %s", esp_err_to_name(e));
         }
 
@@ -168,8 +168,8 @@ void trackle_utils_bt_provision_loop(void)
             trackle_utils_bt_provision_set_device_name(default_name);
         }
 
-        esp_err_t prov_err = wifi_prov_mgr_start_provisioning(WIFI_PROV_SECURITY_1, NULL, bleProvDeviceName, NULL);
-        ESP_LOGI(BT_TAG, "wifi_prov_mgr_start_provisioning %" PRIi16, prov_err);
+        esp_err_t prov_err = network_prov_mgr_start_provisioning(NETWORK_PROV_SECURITY_1, NULL, bleProvDeviceName, NULL);
+        ESP_LOGI(BT_TAG, "network_prov_mgr_start_provisioning %" PRIi16, prov_err);
         btFunctionsEndpointsRegister();
     }
 
@@ -180,7 +180,7 @@ void trackle_utils_bt_provision_loop(void)
         {
             stop_start_millis = 0;
             ESP_LOGI(BT_TAG, "stopping provision...");
-            wifi_prov_mgr_stop_provisioning();
+            network_prov_mgr_stop_provisioning();
         }
     }
 
@@ -191,7 +191,7 @@ void trackle_utils_bt_provision_loop(void)
         {
             wifi_prov_start_millis = 0;
             ESP_LOGI(BT_TAG, "wifi provisioning timeout, stopping...");
-            wifi_prov_mgr_stop_provisioning();
+            network_prov_mgr_stop_provisioning();
         }
     }
 }
@@ -221,16 +221,16 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
         }
     }
 #endif
-    if (event_base == WIFI_PROV_EVENT)
+    if (event_base == NETWORK_PROV_EVENT)
     {
         switch (event_id)
         {
-        case WIFI_PROV_START:
+        case NETWORK_PROV_START:
             ESP_LOGI(BT_TAG, "Provisioning started");
             xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_RUN);
             break;
-        case WIFI_PROV_CRED_RECV:
+        case NETWORK_PROV_WIFI_CRED_RECV:
         {
             wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
             ESP_LOGI(BT_TAG, "Received Wi-Fi credentials"
@@ -243,11 +243,11 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
              * it before esp_wifi_connect() is called (1-second timer in the manager). */
             if (trackle_utils_wifi_is_bssid_enabled() && !wifi_sta_cfg->bssid_set)
             {
-                uint16_t count = wifi_prov_mgr_wifi_scan_result_count();
+                uint16_t count = network_prov_mgr_wifi_scan_result_count();
                 ESP_LOGI(BT_TAG, "Scan results (%d networks):", count);
                 for (uint16_t i = 0; i < count; i++)
                 {
-                    const wifi_ap_record_t *r = wifi_prov_mgr_wifi_scan_result(i);
+                    const wifi_ap_record_t *r = network_prov_mgr_wifi_scan_result(i);
                     if (r)
                     {
                         ESP_LOGI(BT_TAG, "  [%2d] SSID: %-32s  BSSID: %02X:%02X:%02X:%02X:%02X:%02X  ch: %2d  rssi: %d",
@@ -260,7 +260,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
                 bool found = false;
                 for (uint16_t i = 0; i < count; i++)
                 {
-                    const wifi_ap_record_t *record = wifi_prov_mgr_wifi_scan_result(i);
+                    const wifi_ap_record_t *record = network_prov_mgr_wifi_scan_result(i);
                     if (record && strncmp((const char *)record->ssid,
                                           (const char *)wifi_sta_cfg->ssid,
                                           sizeof(record->ssid)) == 0)
@@ -312,13 +312,13 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
 
             break;
         }
-        case WIFI_PROV_CRED_FAIL:
+        case NETWORK_PROV_WIFI_CRED_FAIL:
         {
-            wifi_prov_sta_fail_reason_t *reason = (wifi_prov_sta_fail_reason_t *)event_data;
+            network_prov_wifi_sta_fail_reason_t *reason = (network_prov_wifi_sta_fail_reason_t *)event_data;
             ESP_LOGE(BT_TAG, "Provisioning failed!\n\tReason : %s",
-                     (*reason == WIFI_PROV_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
+                     (*reason == NETWORK_PROV_WIFI_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
 
-            wifi_prov_mgr_reset_sm_state_on_failure();
+            network_prov_mgr_reset_wifi_sm_state_on_failure();
 
             prov_retry_num++;
             if (prov_retry_num >= PROV_MGR_MAX_RETRY_CNT)
@@ -339,7 +339,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
 
             break;
         }
-        case WIFI_PROV_CRED_SUCCESS:
+        case NETWORK_PROV_WIFI_CRED_SUCCESS:
             ESP_LOGI(BT_TAG, "Provisioning successful");
             prov_retry_num = 0;
 
@@ -362,7 +362,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
             xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
             break;
-        case WIFI_PROV_END:
+        case NETWORK_PROV_END:
             // De-initialize manager once provisioning is finished and restart
             ESP_LOGI(BT_TAG, "Provisioning end, status: %" PRIu32, wifiprov_bits);
 
@@ -373,7 +373,7 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
             // clear bluetooth memory
             if (deinit_on_provisioning_end)
             {
-                wifi_prov_mgr_deinit();
+                network_prov_mgr_deinit();
             }
 
             // restart on timeout, error or success
@@ -456,5 +456,7 @@ static void *btGetCbDeviceInfo(const char *args)
     jsonPtr += sprintf(jsonPtr, "\"firmwareVersion\":%u", 0);
 #endif
     jsonPtr += sprintf(jsonPtr, "}");
+
+    ESP_LOGI(BT_TAG, "btGetCbDeviceInfo: %s", json);
     return json;
 }

@@ -37,8 +37,8 @@
 #include "trackle_utils_claimcode.h"
 #include "trackle_esp32.h"
 
-#include <wifi_provisioning/manager.h>
-#include <wifi_provisioning/scheme_ble.h>
+#include <network_provisioning/manager.h>
+#include <network_provisioning/scheme_ble.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
 #include <esp_bt.h>
