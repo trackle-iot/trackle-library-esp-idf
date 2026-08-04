@@ -557,6 +557,99 @@ esp_err_t udc_start_auto(const udc_data_request_t *requests,
     return udc_collect_async(requests, count, results, done_flag, result_code, 8192, 5);
 }
 
+static esp_err_t udc_write_one(nvs_handle_t h, udc_data_type_t type,
+                               const char *key, const udc_collected_data_t *data,
+                               size_t *write_count)
+{
+    esp_err_t err = ESP_OK;
+
+    switch (type)
+    {
+    case UDC_TYPE_STRING:
+        if (strlen(data->string_value) > 0)
+        {
+            err = nvs_set_str(h, key, data->string_value);
+            if (err == ESP_OK)
+            {
+                ESP_LOGI(UDC_TAG, "Written string '%s': %s", key, data->string_value);
+                (*write_count)++;
+            }
+            else
+            {
+                ESP_LOGE(UDC_TAG, "Failed to write string '%s': %s", key, esp_err_to_name(err));
+            }
+        }
+        break;
+
+    case UDC_TYPE_HEX:
+        if (data->hex_length > 0)
+        {
+            err = nvs_set_blob(h, key, data->hex_buffer, data->hex_length);
+            if (err == ESP_OK)
+            {
+                ESP_LOGI(UDC_TAG, "Written hex blob '%s': %zu bytes", key, data->hex_length);
+                ESP_LOG_BUFFER_HEX(UDC_TAG, data->hex_buffer, data->hex_length);
+                (*write_count)++;
+            }
+            else
+            {
+                ESP_LOGE(UDC_TAG, "Failed to write hex blob '%s': %s", key, esp_err_to_name(err));
+            }
+        }
+        break;
+
+    case UDC_TYPE_INT:
+        err = nvs_set_i32(h, key, data->int_value);
+        if (err == ESP_OK)
+        {
+            ESP_LOGI(UDC_TAG, "Written int '%s': %d", key, data->int_value);
+            (*write_count)++;
+        }
+        else
+        {
+            ESP_LOGE(UDC_TAG, "Failed to write int '%s': %s", key, esp_err_to_name(err));
+        }
+        break;
+
+    case UDC_TYPE_FLOAT:
+    {
+        // Store float as string to avoid precision issues
+        char float_str[32];
+        snprintf(float_str, sizeof(float_str), "%.6f", data->float_value);
+        err = nvs_set_str(h, key, float_str);
+        if (err == ESP_OK)
+        {
+            ESP_LOGI(UDC_TAG, "Written float '%s': %s", key, float_str);
+            (*write_count)++;
+        }
+        else
+        {
+            ESP_LOGE(UDC_TAG, "Failed to write float '%s': %s", key, esp_err_to_name(err));
+        }
+        break;
+    }
+
+    case UDC_TYPE_BOOL:
+        err = nvs_set_u8(h, key, data->bool_value ? 1 : 0);
+        if (err == ESP_OK)
+        {
+            ESP_LOGI(UDC_TAG, "Written bool '%s': %s", key, data->bool_value ? "true" : "false");
+            (*write_count)++;
+        }
+        else
+        {
+            ESP_LOGE(UDC_TAG, "Failed to write bool '%s': %s", key, esp_err_to_name(err));
+        }
+        break;
+
+    default:
+        ESP_LOGW(UDC_TAG, "Unknown data type for key '%s', skipping", key);
+        break;
+    }
+
+    return err;
+}
+
 /**
  * @brief Write collected data to factory_data partition
  * @param requests Array of data requests (null-terminated)
@@ -574,7 +667,6 @@ esp_err_t udc_write_to_factory(const udc_data_request_t *requests, const udc_col
         return ESP_ERR_INVALID_ARG;
     }
 
-    // Open factory_data partition in read-write mode
     nvs_handle_t factory_handle;
     esp_err_t err = nvs_open_from_partition(FACTORY_PARTITION, FACTORY_NAMESPACE, NVS_READWRITE, &factory_handle);
     if (err != ESP_OK)
@@ -585,96 +677,10 @@ esp_err_t udc_write_to_factory(const udc_data_request_t *requests, const udc_col
 
     ESP_LOGI(UDC_TAG, "Writing collected data to factory_data partition");
 
-    // Write all collected data
     size_t write_count = 0;
     for (size_t i = 0; requests[i].prompt != NULL; i++)
     {
-        const char *key = requests[i].key;
-        const udc_collected_data_t *data = &results[i];
-
-        switch (requests[i].type)
-        {
-        case UDC_TYPE_STRING:
-            if (strlen(data->string_value) > 0)
-            {
-                err = nvs_set_str(factory_handle, key, data->string_value);
-                if (err == ESP_OK)
-                {
-                    ESP_LOGI(UDC_TAG, "Written string '%s': %s", key, data->string_value);
-                    write_count++;
-                }
-                else
-                {
-                    ESP_LOGE(UDC_TAG, "Failed to write string '%s': %s", key, esp_err_to_name(err));
-                }
-            }
-            break;
-
-        case UDC_TYPE_HEX:
-            if (data->hex_length > 0)
-            {
-                err = nvs_set_blob(factory_handle, key, data->hex_buffer, data->hex_length);
-                if (err == ESP_OK)
-                {
-                    ESP_LOGI(UDC_TAG, "Written hex blob '%s': %zu bytes", key, data->hex_length);
-                    ESP_LOG_BUFFER_HEX(UDC_TAG, data->hex_buffer, data->hex_length);
-                    write_count++;
-                }
-                else
-                {
-                    ESP_LOGE(UDC_TAG, "Failed to write hex blob '%s': %s", key, esp_err_to_name(err));
-                }
-            }
-            break;
-
-        case UDC_TYPE_INT:
-            err = nvs_set_i32(factory_handle, key, data->int_value);
-            if (err == ESP_OK)
-            {
-                ESP_LOGI(UDC_TAG, "Written int '%s': %d", key, data->int_value);
-                write_count++;
-            }
-            else
-            {
-                ESP_LOGE(UDC_TAG, "Failed to write int '%s': %s", key, esp_err_to_name(err));
-            }
-            break;
-
-        case UDC_TYPE_FLOAT:
-            // Store float as string to avoid precision issues
-            char float_str[32];
-            snprintf(float_str, sizeof(float_str), "%.6f", data->float_value);
-            err = nvs_set_str(factory_handle, key, float_str);
-            if (err == ESP_OK)
-            {
-                ESP_LOGI(UDC_TAG, "Written float '%s': %s", key, float_str);
-                write_count++;
-            }
-            else
-            {
-                ESP_LOGE(UDC_TAG, "Failed to write float '%s': %s", key, esp_err_to_name(err));
-            }
-            break;
-
-        case UDC_TYPE_BOOL:
-            err = nvs_set_u8(factory_handle, key, data->bool_value ? 1 : 0);
-            if (err == ESP_OK)
-            {
-                ESP_LOGI(UDC_TAG, "Written bool '%s': %s", key, data->bool_value ? "true" : "false");
-                write_count++;
-            }
-            else
-            {
-                ESP_LOGE(UDC_TAG, "Failed to write bool '%s': %s", key, esp_err_to_name(err));
-            }
-            break;
-
-        default:
-            ESP_LOGW(UDC_TAG, "Unknown data type for key '%s', skipping", key);
-            break;
-        }
-
-        // Stop on first write error (optional - you can continue if preferred)
+        err = udc_write_one(factory_handle, requests[i].type, requests[i].key, &results[i], &write_count);
         if (err != ESP_OK)
         {
             ESP_LOGE(UDC_TAG, "Stopping writes due to error");
@@ -682,7 +688,6 @@ esp_err_t udc_write_to_factory(const udc_data_request_t *requests, const udc_col
         }
     }
 
-    // Commit all changes
     if (err == ESP_OK)
     {
         err = nvs_commit(factory_handle);
@@ -696,7 +701,6 @@ esp_err_t udc_write_to_factory(const udc_data_request_t *requests, const udc_col
         }
     }
 
-    // Close handle
     nvs_close(factory_handle);
 
     return err;
