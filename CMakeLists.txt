@@ -21,6 +21,8 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/trackle-library/src/dtls_protocol.cpp"
      "${COMPONENT_DIR}/trackle-library/src/events.cpp"
      "${COMPONENT_DIR}/trackle-library/src/trackle.cpp"
+     "${COMPONENT_DIR}/trackle-library/src/trackle_cloud_api.cpp"
+     "${COMPONENT_DIR}/trackle-library/src/trackle_cloud_events.cpp"
      "${COMPONENT_DIR}/trackle-library/src/trackle_interface.cpp"
      "${COMPONENT_DIR}/trackle-library/src/logging.cpp"
      "${COMPONENT_DIR}/trackle-library/src/diagnostic.cpp"
