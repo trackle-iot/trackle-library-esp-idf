@@ -106,6 +106,14 @@ class _EspDeviceSession:
         self.ser.flush()
         log.debug("TX %s", line.strip())
 
+    def send_raw(self, text: str) -> None:
+        """Write a raw line (no TRK_CMD prefix) — used for UDC interactive answers."""
+        assert self.ser is not None
+        data = text if text.endswith("\n") else text + "\n"
+        self.ser.write(data.encode("utf-8"))
+        self.ser.flush()
+        log.debug("TX RAW %s", data.strip())
+
     def wait_event(self, msg: str, timeout: float = 30.0) -> dict:
         assert self.to_tester is not None
         deadline = time.time() + timeout
@@ -161,7 +169,10 @@ class _EspDeviceSession:
             if not isinstance(msg, dict):
                 continue
             # Map kill to device; configure/connect are handled in attach()
-            self.send_cmd(msg)
+            if msg.get("msg") == "__raw__":
+                self.send_raw(str(msg.get("data", "")))
+            else:
+                self.send_cmd(msg)
 
 
 _session: Optional[_EspDeviceSession] = None
@@ -307,7 +318,8 @@ def attach(from_tester: queue.Queue, to_tester: queue.Queue, startup_params: Dev
     # configure may block on WiFi association + DHCP (up to ~30s on DUT)
     cfg_res = _session.wait_event("configure_result", timeout=45)
     if cfg_res.get("ok") is False:
-        raise RuntimeError(f"DUT configure failed: {cfg_res}")
+        reason = cfg_res.get("reason", "?")
+        raise RuntimeError(f"DUT configure failed ({reason}): {cfg_res}")
     _session.send_cmd({"msg": "connect"})
 
 
@@ -317,60 +329,70 @@ def hard_reset_dut() -> None:
         _session.hard_reset()
 
 
-def wait_ready_and_reconfigure(
+def _wait_serial_port(timeout: float = 30.0) -> str:
+    """Wait until the DUT USB-serial port reappears (CDC drop on esp_restart)."""
+    deadline = time.time() + timeout
+    last_err: Optional[Exception] = None
+    while time.time() < deadline:
+        try:
+            return _default_port()
+        except Exception as exc:  # noqa: BLE001 — port enumeration races
+            last_err = exc
+            time.sleep(0.5)
+    raise TimeoutError(f"DUT serial port not back within {timeout}s: {last_err}")
+
+
+def wait_ready_after_reboot(
     from_tester: queue.Queue,
     to_tester: queue.Queue,
-    startup_params: DeviceStartupParams,
     ready_timeout: float = 90.0,
 ) -> None:
-    """After DUT self-reboot (e.g. OTA success), wait for ready and re-configure.
+    """Re-open UART after esp_restart, hard-reset, wait for a fresh ``ready``.
 
-    Does not pulse hard_reset — the device is expected to reboot on its own.
-    Reuses the open serial session when possible; re-opens if the port dropped.
+    USB-CDC often drops on reboot; ``ready`` can be printed before the host
+    re-attaches, so we always hard-reset once the port is back.
     """
     global _session
 
-    port = _default_port()
+    time.sleep(2.0)
+    port = _wait_serial_port(timeout=30.0)
     baud = int(os.environ.get("TRACKLE_DUT_BAUD", "115200"))
 
-    need_open = (
-        _session is None
-        or _session.ser is None
-        or not _session.ser.is_open
-        or _session.port != port
-    )
-    if need_open:
-        if _session is not None:
-            _session.close()
-        _session = _EspDeviceSession(port, baud)
-        _session.open()
-        _session._stop.clear()
-        _session._line_buf = ""
-        _session._rx_thread = threading.Thread(
-            target=_session._rx_loop, name="dut-rx", daemon=True
-        )
-        _session._tx_thread = threading.Thread(
-            target=_session._tx_loop, name="dut-tx", daemon=True
-        )
-        _session._rx_thread.start()
-        _session._tx_thread.start()
-
+    if _session is not None:
+        _session.close()
+    _session = _EspDeviceSession(port, baud)
+    _session.open()
     _session.to_tester = to_tester
     _session.from_tester = from_tester
+    _session._stop.clear()
+    _session._line_buf = ""
+    _session._rx_thread = threading.Thread(
+        target=_session._rx_loop, name="dut-rx", daemon=True
+    )
+    _session._tx_thread = threading.Thread(
+        target=_session._tx_loop, name="dut-tx", daemon=True
+    )
+    _session._rx_thread.start()
+    _session._tx_thread.start()
 
-    # Drain stale events from the previous boot, but keep an early "ready"
-    # (OTA reboot may emit it before this helper is called).
-    got_ready = False
     while True:
         try:
-            evt = to_tester.get_nowait()
+            to_tester.get_nowait()
         except queue.Empty:
             break
-        if isinstance(evt, dict) and evt.get("msg") == "ready":
-            got_ready = True
 
+    log.info("post-reboot: hard_reset to capture a fresh ready")
+    _session.hard_reset()
+
+    while True:
+        try:
+            to_tester.get_nowait()
+        except queue.Empty:
+            break
+
+    got_ready = False
     deadline = time.time() + ready_timeout
-    while not got_ready and time.time() < deadline:
+    while time.time() < deadline:
         try:
             evt = to_tester.get(timeout=0.2)
         except queue.Empty:
@@ -380,19 +402,57 @@ def wait_ready_and_reconfigure(
             break
     if not got_ready:
         raise TimeoutError(
-            f"DUT did not emit ready within {ready_timeout}s after reboot"
+            f"DUT did not emit ready within {ready_timeout}s after post-reboot reset"
         )
 
+
+def configure_and_connect(
+    from_tester: queue.Queue,
+    to_tester: queue.Queue,
+    startup_params: DeviceStartupParams,
+) -> None:
+    """Send configure + connect on the already-open session (retries configure)."""
+    global _session
+    if _session is None or _session.ser is None or not _session.ser.is_open:
+        raise RuntimeError("serial session not open")
+
+    _session.to_tester = to_tester
+    _session.from_tester = from_tester
+
+    time.sleep(1.0)
     cfg = _params_to_configure(startup_params)
     if not cfg.get("wifi_ssid"):
         raise RuntimeError("Set TRACKLE_DUT_WIFI_SSID / TRACKLE_DUT_WIFI_PASS")
 
-    _session.send_cmd(cfg)
-    cfg_res = _session.wait_event("configure_result", timeout=45)
-    if cfg_res.get("ok") is False:
-        raise RuntimeError(f"DUT configure failed after reboot: {cfg_res}")
+    cfg_res = None
+    for attempt in range(3):
+        _session.send_cmd(cfg)
+        cfg_res = _session.wait_event("configure_result", timeout=45)
+        if cfg_res.get("ok") is not False:
+            break
+        reason = cfg_res.get("reason", "?")
+        log.warning(
+            "configure failed (attempt %d/3, reason=%s): %s",
+            attempt + 1,
+            reason,
+            cfg_res,
+        )
+        time.sleep(2.0 * (attempt + 1))
+    if cfg_res is None or cfg_res.get("ok") is False:
+        reason = (cfg_res or {}).get("reason", "?")
+        raise RuntimeError(f"DUT configure failed ({reason}): {cfg_res}")
     _session.send_cmd({"msg": "connect"})
 
+
+def wait_ready_and_reconfigure(
+    from_tester: queue.Queue,
+    to_tester: queue.Queue,
+    startup_params: DeviceStartupParams,
+    ready_timeout: float = 90.0,
+) -> None:
+    """wait_ready_after_reboot + configure_and_connect."""
+    wait_ready_after_reboot(from_tester, to_tester, ready_timeout=ready_timeout)
+    configure_and_connect(from_tester, to_tester, startup_params)
 
 def device_code(from_tester, to_tester, startup_params: DeviceStartupParams):
     """API compatibility shim (posix used this as Process target)."""

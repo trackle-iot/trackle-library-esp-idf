@@ -9,6 +9,16 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 POSIX = os.path.normpath(os.path.join(HERE, "..", "..", "trackle-library", "test", "posix"))
 
+# Load test/esp-idf/.env into os.environ (does not override already-set vars).
+_env_path = os.path.join(HERE, ".env")
+if os.path.isfile(_env_path):
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(_env_path, override=False)
+    except ImportError:
+        pass
+
 sys.path.insert(0, POSIX)
 sys.path.insert(0, HERE)
 

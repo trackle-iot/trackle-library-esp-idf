@@ -1,54 +1,72 @@
 # ESP-IDF DUT — test suite for trackle-library-esp-idf
 
-Il firmware DUT è un **progetto PlatformIO autonomo** in [`firmware/`](firmware/).
-L’harness Python sta in questa cartella e parla con la board via UART.
+The DUT firmware is a **standalone PlatformIO project** under [`firmware/`](firmware/).
+The Python harness in this folder talks to the board over UART.
 
-Questa cartella testa il **wrapper ESP-IDF**, non la matrice protocollo della library
-(che resta in `trackle-library/test/posix`).
+This suite exercises the **ESP-IDF wrapper**, not the library protocol matrix
+(that stays in `trackle-library/test/posix`). None of these tests run in CI.
 
-| Runner | Contenuto |
-|--------|-----------|
-| `test_esp.py` | Smoke integrazione (3): connect, publish, get_time |
-| `test_wrapper.py` | Ownership wrapper (12): publish/sync secure, ID, log level, BSSID, WiFi, claimcode, storage, OTA |
+| Runner | Contents |
+|--------|----------|
+| `test_esp.py` | Integration smoke (3): connect, publish, get_time |
+| `test_wrapper.py` | Full wrapper suite. OTA cases are **always last**. |
+| `ble_prov_client.py` | Mac BLE client (esp_prov + Security1) for custom endpoints |
 
-## Flash (progetto autonomo)
+## Flash (standalone project)
 
 ```bash
 cd firmware
 pio run -t upload
 ```
 
-Il componente `trackle-library-esp-idf` è collegato via symlink:
+The `trackle-library-esp-idf` component is linked via symlink:
 
-`firmware/components/trackle-library-esp-idf` → `../../../..` (root del wrapper)
+`firmware/components/trackle-library-esp-idf` → `../../../..` (wrapper root)
 
 ## Run tests
 
-Board connessa, WiFi con internet:
+Board connected, WiFi with internet:
 
 ```bash
-export TRACKLE_ID_LIB_TEST=...
-export TRACKLE_PRIVATE_KEY_LIB_TEST=...
-export TRACKLE_CLIENT_ID_LIB_TEST=...
-export TRACKLE_CLIENT_SECRET_LIB_TEST=...
-export TRACKLE_DUT_WIFI_SSID=...
-export TRACKLE_DUT_WIFI_PASS=...
-export TRACKLE_DUT_PORT=/dev/cu.usbserial-XXXX   # opzionale
-
-pip install -r requirements.txt
-python3 test_esp.py       # smoke
-python3 test_wrapper.py   # wrapper
-python3 test_wrapper.py TrackleEspWrapperTest.test_ota_success_restart
+# Fill secrets in .env (gitignored), then:
+source .venv/bin/activate   # or: pip install -r requirements.txt
+python test_esp.py          # smoke
+python test_wrapper.py      # full suite (OTA at the end)
 ```
 
-## OTA success — preparare il bin v2 (manuale)
+`harness.py` loads `.env` automatically via `python-dotenv` (`override=False`:
+already-exported shell variables win). Shell alternative:
+`set -a && source .env && set +a`.
 
-Il case `test_ota_success_restart` scarica un firmware DUT con `FIRMWARE_VERSION=2`
-in development mode (firma skippata). Devi preparare e hostare il bin una volta.
+Optional `.env` flags (case is skipped if unset):
 
-### 1. Build v2 (senza flash sulla board di test)
+| Env | Case |
+|-----|------|
+| `TRACKLE_DUT_BT=1` | BLE custom endpoints + BLE WiFi credentials |
+| `TRACKLE_DUT_CRYPTO=1` | crypto roundtrip (**may program eFuse**) |
+| `TRACKLE_DUT_NVS_ERASE=1` | erase NVS + UDC (destructive) |
 
-In [`firmware/platformio.ini`](firmware/platformio.ini) imposta temporaneamente:
+Order in `test_wrapper.py`: cloud/utils → BT → crypto → NVS/UDC → **all OTA**
+with success absolute last (leaves the board on Spaces v2). After a full run,
+reflash `FIRMWARE_VERSION=1` before running again.
+
+Standalone BLE client:
+
+```bash
+python ble_prov_client.py --name TRK_DUT_BT \
+  --call deviceInfo \
+  --call 'set:cc,'"$(python3 -c 'print("A"*63)')" \
+  --call end
+```
+
+## OTA success — prepare the v2 binary (manual)
+
+`test_ota_success_restart` downloads a DUT firmware with `FIRMWARE_VERSION=2`
+in development mode (signature skipped). Build and host the binary once.
+
+### 1. Build v2 (do not flash the board under test)
+
+In [`firmware/platformio.ini`](firmware/platformio.ini) temporarily set:
 
 ```ini
 -D FIRMWARE_VERSION=2
@@ -59,43 +77,52 @@ cd firmware
 pio run
 ```
 
-File da caricare: `firmware/.pio/build/esp32dev/firmware.bin`
+File to upload: `firmware/.pio/build/esp32dev/firmware.bin`
 
-### 2. Upload su DigitalOcean Spaces
+### 2. Upload to DigitalOcean Spaces
 
-Path CDN già usato dalla suite:
+Spaces origin (no CDN):
 
-`https://iotready.fra1.cdn.digitaloceanspaces.com/Iotready/`
+`https://iotready.fra1.digitaloceanspaces.com/Iotready/`
 
-Nome file **fisso**:
+Fixed file names:
 
-`dut_esp_idf_ota_v2.bin`
+| Local fixture | Spaces object |
+|---|---|
+| (build) `firmware/.pio/build/esp32dev/firmware.bin` with `FIRMWARE_VERSION=2` | `dut_esp_idf_ota_v2.bin` |
+| `fixtures/ota_invalid.bin` | `ota_invalid.bin` |
 
-URL completo:
+Full URLs:
 
-`https://iotready.fra1.cdn.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin`
+`https://iotready.fra1.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin`  
+`https://iotready.fra1.digitaloceanspaces.com/Iotready/ota_invalid.bin`
 
-Il file deve essere pubblico in lettura via HTTPS. Verifica:
+(Use the origin host, not `*.cdn.*`, so uploads are visible without CDN lag.)
+
+Both must be publicly readable over HTTPS. Check:
 
 ```bash
-curl -I "https://iotready.fra1.cdn.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin"
-# atteso: HTTP 200
+curl -I "https://iotready.fra1.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin"
+curl -I "https://iotready.fra1.digitaloceanspaces.com/Iotready/ota_invalid.bin"
+# expected: HTTP 200
 ```
 
-### 3. Board sotto test = v1
+### 3. Board under test = v1
 
-Rimetti `-D FIRMWARE_VERSION=1` e flasha:
+Restore `-D FIRMWARE_VERSION=1` and flash:
 
 ```bash
 pio run -t upload
 ```
 
-Poi esegui il test. Dopo un success la board resta su **v2**: per rieseguire
-lo stesso case, riflash di nuovo con `FIRMWARE_VERSION=1`.
+Then run the test. After success the board stays on **v2**: reflash with
+`FIRMWARE_VERSION=1` before running the suite again.
 
-Se il bin non è raggiungibile, il test viene **skipped** (HEAD != 200).
+In the full suite all OTA cases are at the end; `test_ota_success_restart` is last.
 
-## Architettura
+If the binary is unreachable, the test is **skipped** (HEAD != 200).
+
+## Architecture
 
 ```
 test_esp.py / test_wrapper.py
@@ -103,27 +130,35 @@ test_esp.py / test_wrapper.py
   <-> firmware/ (PlatformIO standalone + wrapper via symlink)
 ```
 
-- Product ID cloud: **1000** (come suite POSIX).
-- `proxy_on/off`: callback UDP del DUT (non i `send_cb_udp` di produzione).
-- Eventi OTA CRC/signature: emessi da `trackle_utils_ota` via callback DUT.
-- Dopo OTA reboot: `esp_device.wait_ready_and_reconfigure` (no hard_reset).
+- Cloud product ID: **1000** (same as the POSIX suite).
+- `proxy_on/off`: DUT UDP callbacks (not production `send_cb_udp`).
+- OTA CRC/signature events: emitted by `trackle_utils_ota` via the DUT callback.
+- After OTA reboot: `esp_device.wait_ready_and_reconfigure` (no hard_reset).
 
-## Protocollo
+## Protocol
 
 - Host → DUT: `TRK_CMD:{"msg":"configure",...}`
 - DUT → Host: `TRK_EVT:{"msg":"ready"}`
 
-Comandi: `configure`, `connect`, `kill_device`, `publish`, `publish_secure`,
+Commands: `configure`, `connect`, `kill_device`, `publish`, `publish_secure`,
 `sync_state_secure`, `get_device_id_str`, `get_fw_version`, `get_log_level`,
 `set_bssid_enabled`, `get_bssid_enabled`, `wifi_is_provisioned`, `claimcode_save`,
 `claimcode_read`, `claimcode_delete`, `storage_roundtrip`, `multipublish`,
-`multipublish_long`, `get_time`, `proxy_on`, `proxy_off`, `was_private_post_executed`.
+`multipublish_long`, `get_time`, `proxy_on`, `proxy_off`, `was_private_post_executed`,
+`bt_init`, `bt_start`, `bt_status`, `bt_add_endpoints`, `bt_claim_apply`,
+`bt_post_add`, `bt_get_add`, `crypto_init`, `crypto_roundtrip`, `nvs_erase_all`,
+`udc_start`, `udc_write_factory`, `udc_read_factory`.
 
-## Secrets extra
+## Extra secrets
 
 | Env | Meaning |
 |-----|---------|
 | TRACKLE_DUT_WIFI_SSID | WiFi SSID |
 | TRACKLE_DUT_WIFI_PASS | WiFi password |
-| TRACKLE_DUT_PORT | Porta seriale (opzionale) |
+| TRACKLE_DUT_PORT | Serial port (optional) |
 | TRACKLE_DUT_BAUD | Default 115200 |
+| TRACKLE_DUT_BT | `1` to enable BLE tests |
+| TRACKLE_DUT_BT_NAME | BLE advertise name (default `TRK_DUT_BT`) |
+| TRACKLE_DUT_CRYPTO | `1` to enable crypto roundtrip (may burn eFuse) |
+| TRACKLE_DUT_NVS_ERASE | `1` to enable NVS erase + UDC |
+| ESP_PROV_PATH | Path to `tools/esp_prov` (optional) |

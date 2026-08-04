@@ -3,8 +3,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import os
 import queue
+import string
 import time
 import unittest
 
@@ -70,11 +73,17 @@ _ESP_LOG_WARN = 2
 _ESP_LOG_INFO = 3
 _ESP_LOG_DEBUG = 4
 
-# DUT firmware v2 hosted on the same Spaces path as other suite bins.
+# Prefer origin URL (not CDN) so a freshly uploaded v2 is visible immediately.
 _DUT_OTA_V2_URL = (
-    "https://iotready.fra1.cdn.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin"
+    "https://iotready.fra1.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin"
+)
+# Cloud rejects unreachable URLs at PUT time and requires path to end with
+# ".bin". Host a tiny non-ESP image on Spaces (see README fixtures/).
+_BAD_OTA_PAYLOAD_URL = (
+    "https://iotready.fra1.digitaloceanspaces.com/Iotready/ota_invalid.bin"
 )
 
+# Order: NVS erase before OTA; all OTA last; success absolute last (board → v2).
 _WRAPPER_TESTS = (
     "test_publish_secure",
     "test_publish_secure_default",
@@ -85,10 +94,41 @@ _WRAPPER_TESTS = (
     "test_wifi_is_provisioned",
     "test_claimcode_nvs_roundtrip",
     "test_storage_config_roundtrip",
+    "test_bt_negative_paths",
+    "test_bt_custom_endpoints",
+    "test_bt_wifi_credentials",
+    "test_crypto_roundtrip",
+    "test_nvs_erase_then_udc",
     "test_ota_fail_injection",
     "test_ota_signature_failed_events",
+    "test_ota_bad_payload",
     "test_ota_success_restart",
 )
+
+BT_RESULT = msgs.QueueMessage(
+    "bt_result",
+    "Couldn't receive bt_result from DUT within %d seconds.",
+)
+BT_STATUS = msgs.QueueMessage(
+    "bt_status",
+    "Couldn't receive bt_status from DUT within %d seconds.",
+)
+CRYPTO_RESULT = msgs.QueueMessage(
+    "crypto_result",
+    "Couldn't receive crypto_result from DUT within %d seconds.",
+)
+NVS_RESULT = msgs.QueueMessage(
+    "nvs_result",
+    "Couldn't receive nvs_result from DUT within %d seconds.",
+)
+UDC_RESULT = msgs.QueueMessage(
+    "udc_result",
+    "Couldn't receive udc_result from DUT within %d seconds.",
+)
+
+
+def _env_truthy(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes"}
 
 # Structurally valid SPKI-like blob so setOtaVerificationKey accepts it
 # (needs length >= 90 and 0x04 at offset 26), but wrong EC XY → verify fails.
@@ -291,6 +331,23 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
         self.fail(
             f"Expected flash/status data {expected!r}, last={last!r} within {timeout}s"
         )
+
+    def _wait_flash_status_failed(self, timeout: int = 120):
+        """Wait until flash/status is any ``failed,<code>`` (real OTA path)."""
+        deadline = time.time() + timeout
+        last = None
+        while time.time() < deadline:
+            remaining = max(0.5, deadline - time.time())
+            try:
+                last = wait_sse_event(
+                    self.sse_client, "trackle/flash/status", int(remaining) + 1, None
+                )
+            except TimeoutError:
+                break
+            data = last.get("data") or ""
+            if isinstance(data, str) and data.startswith("failed,"):
+                return last
+        self.fail(f"Expected flash/status failed,*, last={last!r} within {timeout}s")
 
     def _await_cloud_online(self, timeout: int = 15):
         """Wait until cloud SSE reports the device online (needed before OTA PUT)."""
@@ -539,7 +596,15 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
 
         self._wait_flash_status_data("success", timeout=60)
 
-        # Device reboots into v2; re-attach without hard_reset.
+        # CDC drops on esp_restart: reopen + hard_reset, then check version
+        # *before* WiFi configure (configure is orthogonal to OTA success).
+        esp_device.wait_ready_after_reboot(
+            self.to_device, self.from_device, ready_timeout=90.0
+        )
+        self.to_device.put({"msg": "get_fw_version"})
+        ver = wait_queue_message(self.from_device, FW_VERSION_RESULT, self, 15)
+        self.assertEqual(ver.get("version"), 2, ver)
+
         params_v2 = esp_device.DeviceStartupParams(
             cred.TRACKLE_PRIVATE_KEY_LIST,
             SERVER_ADDRESS,
@@ -547,16 +612,300 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
             True,
             fw_version=2,
         )
-        esp_device.wait_ready_and_reconfigure(
-            self.to_device, self.from_device, params_v2, ready_timeout=90.0
+        esp_device.configure_and_connect(
+            self.to_device, self.from_device, params_v2
         )
         res = wait_queue_message(self.from_device, msgs.CONNECT_RESULT, self, 45)
         self.assertTrue(res["return"])
         wait_queue_message(self.from_device, msgs.CONNECTED, self, 45)
 
-        self.to_device.put({"msg": "get_fw_version"})
-        ver = wait_queue_message(self.from_device, FW_VERSION_RESULT, self)
-        self.assertEqual(ver.get("version"), 2)
+    def _require_bt_host(self):
+        """Skip unless TRACKLE_DUT_BT=1 and bleak / esp_prov are available."""
+        if not _env_truthy("TRACKLE_DUT_BT"):
+            self.skipTest("Set TRACKLE_DUT_BT=1 to run BLE provisioning tests")
+        import importlib.util
+
+        if importlib.util.find_spec("bleak") is None:
+            self.skipTest("bleak not installed (pip install -r requirements.txt)")
+        try:
+            import ble_prov_client as bpc
+            bpc.find_esp_prov_root()
+        except Exception as exc:  # noqa: BLE001 — surface path / import issues
+            self.skipTest(f"esp_prov unavailable: {exc}")
+
+    def _bt_init(self, name: str = "TRK_DUT_BT"):
+        self.to_device.put({"msg": "bt_init", "name": name, "timeout_s": 600})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertTrue(res.get("ok"), res)
+        self.assertEqual(res.get("op"), "init")
+
+    def _wait_bt_run(self, timeout: float = 20.0):
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            self.to_device.put({"msg": "bt_status"})
+            st = wait_queue_message(self.from_device, BT_STATUS, self, 5)
+            if st.get("run"):
+                return st
+            time.sleep(0.5)
+        self.fail("PROV_EVT_RUN not set within timeout")
+
+    def test_bt_negative_paths(self):
+        """UART: bad claim args + long/duplicate BT endpoint names."""
+        self._connect()
+        self._bt_init()
+
+        cases = (
+            ("", -1),
+            ("xx,abc", -1),
+            ("cc,short", -1),
+            ("cc," + "x" * 62, -1),
+            ("cc," + "y" * 64, -1),
+        )
+        for args, expect_rc in cases:
+            self.to_device.put({"msg": "bt_claim_apply", "args": args})
+            res = wait_queue_message(self.from_device, BT_RESULT, self)
+            self.assertEqual(res.get("op"), "claim")
+            self.assertFalse(res.get("ok"), args)
+            self.assertEqual(res.get("rc"), expect_rc, args)
+
+        alphabet = string.ascii_letters + string.digits
+        good = "".join(alphabet[i % len(alphabet)] for i in range(63))
+        self.to_device.put({"msg": "bt_claim_apply", "args": f"cc,{good}"})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertTrue(res.get("ok"))
+        self.assertEqual(res.get("rc"), 1)
+
+        self.to_device.put({"msg": "bt_post_add", "name": "set"})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertEqual(res.get("op"), "post_add")
+        self.assertFalse(res.get("ok"))
+
+        long_name = "n" * 32
+        self.to_device.put({"msg": "bt_post_add", "name": long_name})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertFalse(res.get("ok"), "32-char name has no room for NUL")
+
+        self.to_device.put({"msg": "bt_post_add", "name": "negEcho"})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertTrue(res.get("ok"))
+        self.to_device.put({"msg": "bt_post_add", "name": "negEcho"})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertFalse(res.get("ok"))
+
+        self.to_device.put({"msg": "bt_get_add", "name": "deviceInfo"})
+        res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertFalse(res.get("ok"), "duplicate GET name")
+
+    def test_bt_custom_endpoints(self):
+        """BLE Security1 session + deviceInfo / set / dutEcho / end (Mac host)."""
+        self._require_bt_host()
+        import ble_prov_client as bpc
+
+        self._connect()
+
+        self.to_device.put({"msg": "claimcode_delete"})
+        wait_queue_message(self.from_device, CLAIMCODE_RESULT, self)
+
+        ble_name = os.environ.get("TRACKLE_DUT_BT_NAME", "TRK_DUT_BT")
+        self._bt_init(ble_name)
+
+        self.to_device.put({"msg": "bt_add_endpoints"})
+        add_res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertTrue(add_res.get("ok"), f"add_ep failed: {add_res}")
+
+        self.to_device.put({"msg": "bt_start"})
+        start_res = wait_queue_message(self.from_device, BT_RESULT, self)
+        self.assertTrue(start_res.get("ok"))
+        self._wait_bt_run()
+
+        alphabet = string.ascii_letters + string.digits
+        claim = "".join(alphabet[i % len(alphabet)] for i in range(63))
+        echo_payload = "hello-bt"
+
+        results = asyncio.run(
+            bpc.run_calls(
+                ble_name,
+                [
+                    ("deviceInfo", ""),
+                    ("set", f"cc,{claim}"),
+                    ("dutEcho", echo_payload),
+                    ("dutEchoGet", echo_payload),
+                    ("end", "done"),
+                ],
+            )
+        )
+        by_ep = {r["endpoint"]: r for r in results}
+
+        info = by_ep["deviceInfo"]
+        self.assertIn("json", info, f"deviceInfo not JSON: {info.get('response')!r}")
+        self.assertEqual(
+            info["json"].get("deviceID"),
+            cred.TRACKLE_ID_STRING,
+            info["json"],
+        )
+        self.assertEqual(info["json"].get("productID"), 1000)
+        self.assertEqual(info["json"].get("firmwareVersion"), 1)
+
+        self.assertEqual(by_ep["set"]["response"].strip(), "1")
+        self.assertEqual(by_ep["dutEcho"]["response"].strip(), str(len(echo_payload)))
+        self.assertEqual(
+            by_ep["dutEchoGet"]["response"].strip(),
+            f"echo:{echo_payload}",
+        )
+        self.assertEqual(by_ep["end"]["response"].strip(), "1")
+
+        self.to_device.put({"msg": "claimcode_read"})
+        cc = wait_queue_message(self.from_device, CLAIMCODE_RESULT, self)
+        self.assertTrue(cc.get("ok"))
+        self.assertEqual(cc.get("code"), claim)
+
+    def test_bt_wifi_credentials(self):
+        """BLE Security1 + prov-config Wi-Fi; DUT often reboots after apply."""
+        self._require_bt_host()
+        import ble_prov_client as bpc
+
+        ssid = os.environ.get("TRACKLE_DUT_WIFI_SSID", "")
+        password = os.environ.get("TRACKLE_DUT_WIFI_PASS", "")
+        if not ssid:
+            self.skipTest("TRACKLE_DUT_WIFI_SSID required")
+
+        self._connect()
+        ble_name = os.environ.get("TRACKLE_DUT_BT_NAME", "TRK_DUT_BT")
+        self._bt_init(ble_name)
+        self.to_device.put({"msg": "bt_start"})
+        wait_queue_message(self.from_device, BT_RESULT, self)
+        self._wait_bt_run()
+        time.sleep(3)
+
+        # Applying creds typically drops BLE / reboots the DUT — do not wait
+        # for wifi-connected over the same GATT session.
+        wifi = asyncio.run(
+            bpc.provision_wifi(ble_name, ssid, password, wait_connected=False)
+        )
+        self.assertTrue(wifi.get("set_config"), wifi)
+        self.assertTrue(
+            wifi.get("apply") or wifi.get("rebooting"),
+            f"expected apply or reboot-after-creds: {wifi}",
+        )
+
+        saw_cred = False
+        deadline = time.time() + 45
+        while time.time() < deadline:
+            try:
+                evt = self.from_device.get(timeout=0.4)
+            except queue.Empty:
+                if wifi.get("rebooting"):
+                    break
+                try:
+                    self.to_device.put({"msg": "bt_status"})
+                    st = wait_queue_message(self.from_device, BT_STATUS, self, 2)
+                    saw_cred = saw_cred or bool(st.get("cred") or st.get("ok"))
+                    if saw_cred:
+                        break
+                except Exception:
+                    # UART gone → reboot in progress
+                    break
+                continue
+            if not isinstance(evt, dict):
+                continue
+            if evt.get("msg") == "ready":
+                break
+            if evt.get("msg") == "bt_status":
+                saw_cred = saw_cred or bool(evt.get("cred") or evt.get("ok"))
+                if saw_cred:
+                    break
+
+        self.assertTrue(
+            saw_cred or wifi.get("rebooting") or wifi.get("apply"),
+            "expected PROV_EVT_CRED/OK, apply ack, or DUT reboot after creds",
+        )
+
+    def test_crypto_roundtrip(self):
+        """eFuse AES-CTR encrypt/decrypt (first run may program eFuse BLK3)."""
+        if not _env_truthy("TRACKLE_DUT_CRYPTO"):
+            self.skipTest("Set TRACKLE_DUT_CRYPTO=1 (may burn eFuse key)")
+        self._connect()
+        self.to_device.put({"msg": "crypto_init"})
+        res = wait_queue_message(self.from_device, CRYPTO_RESULT, self, 30)
+        self.assertEqual(res.get("op"), "init")
+        self.assertTrue(res.get("ok"), res)
+
+        payload = "48656c6c6f547261636b6c6521"  # HelloTrackle!
+        self.to_device.put({"msg": "crypto_roundtrip", "hex": payload})
+        res = wait_queue_message(self.from_device, CRYPTO_RESULT, self)
+        self.assertEqual(res.get("op"), "roundtrip")
+        self.assertTrue(res.get("ok"), res)
+        self.assertTrue(res.get("cipher"))
+        self.assertNotEqual(res.get("cipher"), payload.lower())
+
+    def test_nvs_erase_then_udc(self):
+        """Erase NVS (+ factory_data), then interactive UDC → factory write."""
+        if not _env_truthy("TRACKLE_DUT_NVS_ERASE"):
+            self.skipTest("Set TRACKLE_DUT_NVS_ERASE=1 (destructive)")
+
+        self._connect()
+        self.to_device.put({"msg": "nvs_erase_all"})
+        res = wait_queue_message(self.from_device, NVS_RESULT, self, 60)
+        self.assertTrue(res.get("ok"), res)
+
+        self.to_device.put({"msg": "claimcode_read"})
+        cc = wait_queue_message(self.from_device, CLAIMCODE_RESULT, self)
+        self.assertFalse(cc.get("ok"), "claim code NVS should be empty")
+
+        self.to_device.put({"msg": "udc_start"})
+        start = wait_queue_message(self.from_device, UDC_RESULT, self, 15)
+        self.assertEqual(start.get("op"), "start")
+        self.assertTrue(start.get("ok"), start)
+
+        time.sleep(1.0)
+        self.to_device.put({"msg": "__raw__", "data": "udc-hello"})
+        time.sleep(0.8)
+        self.to_device.put({"msg": "__raw__", "data": "42"})
+
+        done = wait_queue_message(self.from_device, UDC_RESULT, self, 60)
+        self.assertEqual(done.get("op"), "done")
+        self.assertTrue(done.get("ok"), done)
+        self.assertEqual(done.get("str"), "udc-hello")
+        self.assertEqual(done.get("int"), 42)
+
+        self.to_device.put({"msg": "udc_write_factory"})
+        wr = wait_queue_message(self.from_device, UDC_RESULT, self)
+        self.assertEqual(wr.get("op"), "write")
+        self.assertTrue(wr.get("ok"), wr)
+
+        self.to_device.put({"msg": "udc_read_factory", "key": "dut_str"})
+        rd = wait_queue_message(self.from_device, UDC_RESULT, self)
+        self.assertTrue(rd.get("ok"), rd)
+        self.assertEqual(rd.get("value"), "udc-hello")
+
+        self.to_device.put({"msg": "udc_read_factory", "key": "dut_int"})
+        rd = wait_queue_message(self.from_device, UDC_RESULT, self)
+        self.assertTrue(rd.get("ok"), rd)
+        self.assertEqual(rd.get("int"), 42)
+
+    def test_ota_bad_payload(self):
+        """OTA of Spaces ota_invalid.bin → cloud flash/status failed.
+
+        Real OTA reports errors via trackleSetOtaUpdateDone (SSE), not the
+        numeric UART msgs used only by reason_for_ota_failure injection.
+        """
+        self.switch_development_mode(True)
+        params = esp_device.DeviceStartupParams(
+            cred.TRACKLE_PRIVATE_KEY_LIST,
+            SERVER_ADDRESS,
+            SERVER_PORT,
+            True,
+        )
+        self.spawn_device(params)
+        res = wait_queue_message(self.from_device, msgs.CONNECT_RESULT, self)
+        self.assertTrue(res["return"])
+        wait_queue_message(self.from_device, msgs.CONNECTED, self)
+        self._await_cloud_online()
+
+        self._put_firmware_url(_BAD_OTA_PAYLOAD_URL)
+        wait_queue_message(self.from_device, msgs.OTA_URL_RECEIVED, self, 30)
+        failed = self._wait_flash_status_failed(timeout=120)
+        self.assertTrue(str(failed.get("data", "")).startswith("failed,"), failed)
 
 
 def load_tests(loader, standard_tests, pattern):
