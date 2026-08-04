@@ -53,6 +53,7 @@ idf_component_register(SRCS
      "${COMPONENT_DIR}/src/trackle_utils_storage.c"
      "${COMPONENT_DIR}/src/trackle_utils_wifi.c"
      "${COMPONENT_DIR}/src/trackle_utils_crypto.c"
+     "${COMPONENT_DIR}/src/trackle_utils_provisioning.c"
 
      INCLUDE_DIRS "." "./trackle-library/include" "./trackle-library/lib/tinydtls" "./trackle-library/lib/tinydtls/aes" "./trackle-library/lib/tinydtls/sha2" "./trackle-library/lib/micro-ecc"
      REQUIRES efuse mbedtls nvs_flash esp_system app_update esp_http_client esp_https_ota network_provisioning esp_wifi esp_driver_uart)

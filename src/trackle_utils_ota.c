@@ -60,6 +60,10 @@ static void ota_dut_emit(const char *msg)
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt);
 static void sendOtaMessage(uint8_t message_type, int value);
 static void execute_ota_task(void *pvParameter);
+static bool handle_ota_begin_error(esp_err_t err);
+static esp_err_t ota_perform_until_done(esp_https_ota_handle_t https_ota_handle);
+static bool verify_ota_integrity(void);
+static bool finish_ota_and_restart(esp_https_ota_handle_t https_ota_handle);
 
 // Wrapper around trackleDisableUpdates that saves the timestamp and
 // schedules an automatic re-enable after TRACKLE_DISABLE_UPDATES_TIMEOUT_MS.
@@ -242,6 +246,129 @@ static void trackleUpdatesReenableTimerCallback(TimerHandle_t xTimer)
     }
 }
 
+// Returns true if begin failed and the error was already reported to the cloud.
+static bool handle_ota_begin_error(esp_err_t err)
+{
+    if (err == ESP_OK)
+        return false;
+
+    ESP_LOGE(OTA_TAG, "Error during OTA start: %s", esp_err_to_name(err));
+
+    if (err == ESP_ERR_INVALID_ARG || err == ESP_ERR_OTA_PARTITION_CONFLICT || err == ESP_ERR_OTA_SELECT_INFO_INVALID || err == ESP_ERR_INVALID_SIZE || err == ESP_ERR_OTA_ROLLBACK_INVALID_STATE || err == ESP_ERR_NOT_FOUND)
+    {
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_PARTITION);
+    }
+    else if (err == ESP_ERR_NO_MEM)
+    {
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_MEMORY);
+    }
+    else if (err == ESP_ERR_HTTP_CONNECT)
+    {
+        if (current_ota_data.certificate_verification_error)
+        {
+            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
+            trackleDisableUpdates_with_timeout();
+        }
+        else
+        {
+            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_HTTP_CONNECTION);
+        }
+    }
+    else
+    {
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_GENERIC);
+    }
+    return true;
+}
+
+static esp_err_t ota_perform_until_done(esp_https_ota_handle_t https_ota_handle)
+{
+    uint32_t ota_perform_start = getMillis();
+    esp_err_t err;
+
+    while (1)
+    {
+        err = esp_https_ota_perform(https_ota_handle);
+        if (err != ESP_ERR_HTTPS_OTA_IN_PROGRESS)
+            break;
+
+        if (getMillis() - ota_perform_start >= OTA_TIMEOUT)
+        {
+            ESP_LOGE(OTA_TAG, "OTA perform timeout exceeded (%u ms)", OTA_TIMEOUT);
+            return ESP_FAIL;
+        }
+    }
+    return err;
+}
+
+// Returns true if CRC/signature checks passed (caller may finish OTA).
+static bool verify_ota_integrity(void)
+{
+    ESP_LOGI(OTA_TAG, "current_ota_data.actual_crc32_ota %" PRIu32, current_ota_data.actual_crc32_ota);
+    ESP_LOGI(OTA_TAG, "current_ota_data.firmware_crc32_ota %" PRIu32, current_ota_data.firmware_crc32_ota);
+
+    if (!(current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota))
+    {
+        ota_dut_emit("crc32_mismatch");
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_FAILED);
+        return false;
+    }
+
+    if (current_ota_data.firmware_crc32_ota == 0)
+        ota_dut_emit("crc32_not_checked");
+    else
+        ota_dut_emit("crc32_correct");
+
+    if (trackleUpdatesForced(trackle_s))
+    {
+        ESP_LOGE(OTA_TAG, "OTA forced, signature verification skipped...");
+        ota_dut_emit("signature_skipped");
+        return true;
+    }
+
+    size_t hash_len = 0;
+    if (psa_hash_finish(&current_ota_data.sha256_ctx, current_ota_data.calculated_hash,
+                        sizeof(current_ota_data.calculated_hash), &hash_len) != PSA_SUCCESS)
+    {
+        ESP_LOGE(OTA_TAG, "psa_hash_finish failed");
+        ota_dut_emit("signature_failed");
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+        trackleDisableUpdates_with_timeout();
+        return false;
+    }
+
+    current_ota_data.sha256_initialized = false;
+
+    if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
+    {
+        ota_dut_emit("signature_verified");
+        return true;
+    }
+
+    ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
+    ota_dut_emit("signature_failed");
+    sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
+    trackleDisableUpdates_with_timeout();
+    return false;
+}
+
+// Returns true if finish succeeded and the device is restarting (does not return).
+static bool finish_ota_and_restart(esp_https_ota_handle_t https_ota_handle)
+{
+    esp_err_t err = esp_https_ota_finish(https_ota_handle);
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(OTA_TAG, "OTA completed, now restarting....");
+        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_OK);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        esp_restart();
+        return true;
+    }
+
+    sendOtaMessage(OTA_MSG_DONE, OTA_ERR_COMPLETING);
+    return false;
+}
+
 static void execute_ota_task(void *pvParameter)
 {
     ESP_LOGI(OTA_TAG, "Starting OTA %s", current_ota_data.url);
@@ -277,133 +404,18 @@ static void execute_ota_task(void *pvParameter)
     esp_https_ota_handle_t https_ota_handle = NULL;
     esp_err_t err = esp_https_ota_begin(&ota_config, &https_ota_handle);
 
-    if (err != ESP_OK)
+    if (!handle_ota_begin_error(err))
     {
-        ESP_LOGE(OTA_TAG, "Error during OTA start: %s", esp_err_to_name(err));
-    }
-    
-    if (err == ESP_ERR_INVALID_ARG || err == ESP_ERR_OTA_PARTITION_CONFLICT || err == ESP_ERR_OTA_SELECT_INFO_INVALID || err == ESP_ERR_INVALID_SIZE || err == ESP_ERR_OTA_ROLLBACK_INVALID_STATE || err == ESP_ERR_NOT_FOUND)
-    {
-        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_PARTITION);
-    }
-    else if (err == ESP_ERR_NO_MEM)
-    {
-        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_MEMORY);
-    }
-    else if (err == ESP_ERR_HTTP_CONNECT)
-    {
-        if (current_ota_data.certificate_verification_error)
-        {
-            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_CA_FAILED);
-            trackleDisableUpdates_with_timeout();
-        }
-        else
-        {
-            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_HTTP_CONNECTION);
-        }
-    }
-    else if (err != ESP_OK)
-    {
-        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_GENERIC);
-    }
-    else
-    {
-        uint32_t ota_perform_start = getMillis();
-
-        while (1)
-        {
-            err = esp_https_ota_perform(https_ota_handle);
-            if (err != ESP_ERR_HTTPS_OTA_IN_PROGRESS)
-            {
-                break;
-            }
-
-            if (getMillis() - ota_perform_start >= OTA_TIMEOUT)
-            {
-                ESP_LOGE(OTA_TAG, "OTA perform timeout exceeded (%u ms)", OTA_TIMEOUT);
-                err = ESP_FAIL;
-                break;
-            }
-        }
+        err = ota_perform_until_done(https_ota_handle);
 
         if (err != ESP_OK || https_ota_handle == NULL || esp_https_ota_is_complete_data_received(https_ota_handle) != true)
         {
             ESP_LOGE(OTA_TAG, "Complete data was not received.");
             sendOtaMessage(OTA_MSG_DONE, OTA_ERR_INCOMPLETE);
         }
-        else
+        else if (verify_ota_integrity())
         {
-            // check crc
-            ESP_LOGI(OTA_TAG, "current_ota_data.actual_crc32_ota %" PRIu32, current_ota_data.actual_crc32_ota);
-            ESP_LOGI(OTA_TAG, "current_ota_data.firmware_crc32_ota %" PRIu32, current_ota_data.firmware_crc32_ota);
-
-            if (current_ota_data.firmware_crc32_ota == 0 || current_ota_data.firmware_crc32_ota == current_ota_data.actual_crc32_ota)
-            {
-                if (current_ota_data.firmware_crc32_ota == 0)
-                    ota_dut_emit("crc32_not_checked");
-                else
-                    ota_dut_emit("crc32_correct");
-
-                // if forced, do not verify signature
-                bool signatureValidated = false;
-
-                if (trackleUpdatesForced(trackle_s))
-                {
-                    ESP_LOGE(OTA_TAG, "OTA forced, signature verification skipped...");
-                    ota_dut_emit("signature_skipped");
-                    signatureValidated = true;
-                }
-                else // verify signature
-                {
-                    size_t hash_len = 0;
-                    if (psa_hash_finish(&current_ota_data.sha256_ctx, current_ota_data.calculated_hash,
-                                        sizeof(current_ota_data.calculated_hash), &hash_len) != PSA_SUCCESS)
-                    {
-                        ESP_LOGE(OTA_TAG, "psa_hash_finish failed");
-                        ota_dut_emit("signature_failed");
-                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
-                        trackleDisableUpdates_with_timeout();
-                    }
-                    else
-                    {
-                        current_ota_data.sha256_initialized = false;
-
-                        if (trackleVerifyOtaSignature(trackle_s, current_ota_data.calculated_hash, sizeof(current_ota_data.calculated_hash)) == 1)
-                        {
-                            ota_dut_emit("signature_verified");
-                            signatureValidated = true;
-                        }
-                        else
-                        {
-                            ESP_LOGE(OTA_TAG, "OTA signature verification failed...");
-                            ota_dut_emit("signature_failed");
-                            sendOtaMessage(OTA_MSG_DONE, OTA_ERR_SIGNATURE_FAILED);
-                            trackleDisableUpdates_with_timeout();
-                        }
-                    }
-                }
-
-                if (signatureValidated)
-                {
-                    err = esp_https_ota_finish(https_ota_handle);
-                    if (err == ESP_OK)
-                    {
-                        ESP_LOGI(OTA_TAG, "OTA completed, now restarting....");
-                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_OK);
-                        vTaskDelay(1000 / portTICK_PERIOD_MS);
-                        esp_restart();
-                    }
-                    else
-                    {
-                        sendOtaMessage(OTA_MSG_DONE, OTA_ERR_COMPLETING);
-                    }
-                }
-            }
-            else
-            {
-                ota_dut_emit("crc32_mismatch");
-                sendOtaMessage(OTA_MSG_DONE, OTA_ERR_VALIDATE_FAILED);
-            }
+            finish_ota_and_restart(https_ota_handle);
         }
     }
 

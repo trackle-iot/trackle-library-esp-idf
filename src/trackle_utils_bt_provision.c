@@ -53,6 +53,11 @@ static const char *BT_TAG = "trackle-utils-bt-provision";
 
 // Private function declarations
 static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
+static void resolve_bssid_from_scan(wifi_sta_config_t *wifi_sta_cfg);
+static void handle_wifi_cred_recv(wifi_sta_config_t *wifi_sta_cfg);
+static void handle_wifi_cred_fail(network_prov_wifi_sta_fail_reason_t *reason);
+static void handle_wifi_cred_success(void);
+static void handle_prov_end(EventBits_t wifiprov_bits);
 static void get_device_service_name(char *service_name, size_t max);
 static int btPostCbClaimCode(const char *args);
 static int btPostEnd(const char *args);
@@ -196,6 +201,171 @@ void trackle_utils_bt_provision_loop(void)
     }
 }
 
+static void resolve_bssid_from_scan(wifi_sta_config_t *wifi_sta_cfg)
+{
+    uint16_t count = network_prov_mgr_wifi_scan_result_count();
+    ESP_LOGI(BT_TAG, "Scan results (%d networks):", count);
+    for (uint16_t i = 0; i < count; i++)
+    {
+        const wifi_ap_record_t *r = network_prov_mgr_wifi_scan_result(i);
+        if (r)
+        {
+            ESP_LOGI(BT_TAG, "  [%2d] SSID: %-32s  BSSID: %02X:%02X:%02X:%02X:%02X:%02X  ch: %2d  rssi: %d",
+                     i, (const char *)r->ssid,
+                     r->bssid[0], r->bssid[1], r->bssid[2],
+                     r->bssid[3], r->bssid[4], r->bssid[5],
+                     r->primary, r->rssi);
+        }
+    }
+
+    bool found = false;
+    for (uint16_t i = 0; i < count; i++)
+    {
+        const wifi_ap_record_t *record = network_prov_mgr_wifi_scan_result(i);
+        if (record && strncmp((const char *)record->ssid,
+                              (const char *)wifi_sta_cfg->ssid,
+                              sizeof(record->ssid)) == 0)
+        {
+            wifi_config_t wifi_cfg;
+            if (esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg) == ESP_OK)
+            {
+                memcpy(wifi_cfg.sta.bssid, record->bssid, sizeof(record->bssid));
+                wifi_cfg.sta.bssid_set = true;
+                wifi_cfg.sta.channel = record->primary;
+
+                esp_err_t set_err = esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg);
+                if (set_err != ESP_OK)
+                    ESP_LOGE(BT_TAG, "Failed to set WiFi config with resolved BSSID: %s", esp_err_to_name(set_err));
+
+                ESP_LOGI(BT_TAG, "BSSID resolved from scan: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d, rssi: %d)",
+                         record->bssid[0], record->bssid[1], record->bssid[2],
+                         record->bssid[3], record->bssid[4], record->bssid[5],
+                         record->primary, record->rssi);
+            }
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        ESP_LOGW(BT_TAG, "SSID '%s' not found in scan results, connecting by SSID only",
+                 (const char *)wifi_sta_cfg->ssid);
+    }
+
+    xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
+}
+
+static void handle_wifi_cred_recv(wifi_sta_config_t *wifi_sta_cfg)
+{
+    ESP_LOGI(BT_TAG, "Received Wi-Fi credentials"
+                     "\n\tSSID     : %s\n\tPassword : %s",
+             (const char *)wifi_sta_cfg->ssid,
+             (const char *)wifi_sta_cfg->password);
+
+    /* If BSSID use is enabled and was not set by the provisioning layer,
+     * look it up in the local scan results (sorted by RSSI) and inject
+     * it before esp_wifi_connect() is called (1-second timer in the manager). */
+    if (trackle_utils_wifi_is_bssid_enabled() && !wifi_sta_cfg->bssid_set)
+    {
+        resolve_bssid_from_scan(wifi_sta_cfg);
+    }
+    else if (!trackle_utils_wifi_is_bssid_enabled())
+    {
+        ESP_LOGI(BT_TAG, "BSSID use disabled, connecting by SSID only");
+        xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
+    }
+    else
+    {
+        ESP_LOGI(BT_TAG, "BSSID already set by client: %02X:%02X:%02X:%02X:%02X:%02X",
+                 wifi_sta_cfg->bssid[0], wifi_sta_cfg->bssid[1], wifi_sta_cfg->bssid[2],
+                 wifi_sta_cfg->bssid[3], wifi_sta_cfg->bssid[4], wifi_sta_cfg->bssid[5]);
+    }
+
+    esp_wifi_disconnect();
+    trackleDisconnect(trackle_s);
+    xEventGroupClearBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT);
+}
+
+static void handle_wifi_cred_fail(network_prov_wifi_sta_fail_reason_t *reason)
+{
+    ESP_LOGE(BT_TAG, "Provisioning failed!\n\tReason : %s",
+             (*reason == NETWORK_PROV_WIFI_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
+
+    network_prov_mgr_reset_wifi_sm_state_on_failure();
+
+    prov_retry_num++;
+    if (prov_retry_num >= PROV_MGR_MAX_RETRY_CNT)
+    {
+        ESP_LOGI(BT_TAG, "Failed to connect with provisioned AP, reseting provisioned credentials and restarting...");
+        wifi_config_t wifi_cfg = {0};
+        esp_err_t err = esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg);
+        if (err != ESP_OK)
+        {
+            ESP_LOGE(BT_TAG, "Failed to set wifi config, 0x%x", err);
+        }
+        xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
+        xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_ERR);
+
+        ESP_LOGI(BT_TAG, "provisioning error, retry end, stopping...");
+        stop_start_millis = getMillis();
+    }
+}
+
+static void handle_wifi_cred_success(void)
+{
+    ESP_LOGI(BT_TAG, "Provisioning successful");
+    prov_retry_num = 0;
+
+    wifi_config_t wifi_cfg;
+    esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg);
+    if (wifi_cfg.sta.bssid_set)
+    {
+        ESP_LOGI(BT_TAG, "Connected with BSSID: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d)",
+                 wifi_cfg.sta.bssid[0], wifi_cfg.sta.bssid[1], wifi_cfg.sta.bssid[2],
+                 wifi_cfg.sta.bssid[3], wifi_cfg.sta.bssid[4], wifi_cfg.sta.bssid[5],
+                 wifi_cfg.sta.channel);
+    }
+    else
+    {
+        ESP_LOGW(BT_TAG, "Connected without BSSID lock (SSID-only)");
+    }
+
+    writeWifiConfigToStorage((char *)wifi_cfg.sta.ssid, (char *)wifi_cfg.sta.password);
+
+    xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
+    xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
+}
+
+static void handle_prov_end(EventBits_t wifiprov_bits)
+{
+    ESP_LOGI(BT_TAG, "Provisioning end, status: %" PRIu32, wifiprov_bits);
+
+    xEventGroupClearBits(s_wifi_event_group, IS_PROVISIONING);
+    xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
+    xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_END);
+
+    if (deinit_on_provisioning_end)
+    {
+        network_prov_mgr_deinit();
+    }
+
+    if (restart_on_provisioning_error && (wifiprov_bits & PROV_EVT_ERR))
+    {
+        ESP_LOGI(BT_TAG, "provisioning error, restart");
+        xEventGroupSetBits(s_wifi_event_group, RESTART);
+    }
+    else if (restart_on_provisioning_success && (wifiprov_bits & PROV_EVT_OK))
+    {
+        ESP_LOGI(BT_TAG, "provisioning success, restart");
+        xEventGroupSetBits(s_wifi_event_group, RESTART);
+    }
+    else if (restart_on_provisioning_timeout && !(wifiprov_bits & PROV_EVT_ERR) && !(wifiprov_bits & PROV_EVT_OK))
+    {
+        ESP_LOGI(BT_TAG, "provisioning timeout, restart");
+        xEventGroupSetBits(s_wifi_event_group, RESTART);
+    }
+}
+
 // Private function implementations
 static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
@@ -231,170 +401,17 @@ static void bt_event_handler(void *arg, esp_event_base_t event_base, int32_t eve
             xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_RUN);
             break;
         case NETWORK_PROV_WIFI_CRED_RECV:
-        {
-            wifi_sta_config_t *wifi_sta_cfg = (wifi_sta_config_t *)event_data;
-            ESP_LOGI(BT_TAG, "Received Wi-Fi credentials"
-                             "\n\tSSID     : %s\n\tPassword : %s",
-                     (const char *)wifi_sta_cfg->ssid,
-                     (const char *)wifi_sta_cfg->password);
-
-            /* If BSSID use is enabled and was not set by the provisioning layer,
-             * look it up in the local scan results (sorted by RSSI) and inject
-             * it before esp_wifi_connect() is called (1-second timer in the manager). */
-            if (trackle_utils_wifi_is_bssid_enabled() && !wifi_sta_cfg->bssid_set)
-            {
-                uint16_t count = network_prov_mgr_wifi_scan_result_count();
-                ESP_LOGI(BT_TAG, "Scan results (%d networks):", count);
-                for (uint16_t i = 0; i < count; i++)
-                {
-                    const wifi_ap_record_t *r = network_prov_mgr_wifi_scan_result(i);
-                    if (r)
-                    {
-                        ESP_LOGI(BT_TAG, "  [%2d] SSID: %-32s  BSSID: %02X:%02X:%02X:%02X:%02X:%02X  ch: %2d  rssi: %d",
-                                 i, (const char *)r->ssid,
-                                 r->bssid[0], r->bssid[1], r->bssid[2],
-                                 r->bssid[3], r->bssid[4], r->bssid[5],
-                                 r->primary, r->rssi);
-                    }
-                }
-                bool found = false;
-                for (uint16_t i = 0; i < count; i++)
-                {
-                    const wifi_ap_record_t *record = network_prov_mgr_wifi_scan_result(i);
-                    if (record && strncmp((const char *)record->ssid,
-                                          (const char *)wifi_sta_cfg->ssid,
-                                          sizeof(record->ssid)) == 0)
-                    {
-                        wifi_config_t wifi_cfg;
-                        if (esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg) == ESP_OK)
-                        {
-                            memcpy(wifi_cfg.sta.bssid, record->bssid, sizeof(record->bssid));
-                            wifi_cfg.sta.bssid_set = true;
-                            wifi_cfg.sta.channel = record->primary;
-
-                            esp_err_t set_err = esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg);
-                            if (set_err != ESP_OK)
-                                ESP_LOGE(BT_TAG, "Failed to set WiFi config with resolved BSSID: %s", esp_err_to_name(set_err));
-
-                            ESP_LOGI(BT_TAG, "BSSID resolved from scan: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d, rssi: %d)",
-                                     record->bssid[0], record->bssid[1], record->bssid[2],
-                                     record->bssid[3], record->bssid[4], record->bssid[5],
-                                     record->primary, record->rssi);
-                        }
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    ESP_LOGW(BT_TAG, "SSID '%s' not found in scan results, connecting by SSID only",
-                             (const char *)wifi_sta_cfg->ssid);
-                }
-
-                xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
-            }
-            else if (!trackle_utils_wifi_is_bssid_enabled())
-            {
-                ESP_LOGI(BT_TAG, "BSSID use disabled, connecting by SSID only");
-                xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_CRED);
-            }
-            else
-            {
-                ESP_LOGI(BT_TAG, "BSSID already set by client: %02X:%02X:%02X:%02X:%02X:%02X",
-                         wifi_sta_cfg->bssid[0], wifi_sta_cfg->bssid[1], wifi_sta_cfg->bssid[2],
-                         wifi_sta_cfg->bssid[3], wifi_sta_cfg->bssid[4], wifi_sta_cfg->bssid[5]);
-            }
-
-            // disconnect wifi and trackle
-            esp_wifi_disconnect();
-            trackleDisconnect(trackle_s);
-            xEventGroupClearBits(s_wifi_event_group, WIFI_TO_CONNECT_BIT);
-
+            handle_wifi_cred_recv((wifi_sta_config_t *)event_data);
             break;
-        }
         case NETWORK_PROV_WIFI_CRED_FAIL:
-        {
-            network_prov_wifi_sta_fail_reason_t *reason = (network_prov_wifi_sta_fail_reason_t *)event_data;
-            ESP_LOGE(BT_TAG, "Provisioning failed!\n\tReason : %s",
-                     (*reason == NETWORK_PROV_WIFI_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
-
-            network_prov_mgr_reset_wifi_sm_state_on_failure();
-
-            prov_retry_num++;
-            if (prov_retry_num >= PROV_MGR_MAX_RETRY_CNT)
-            {
-                ESP_LOGI(BT_TAG, "Failed to connect with provisioned AP, reseting provisioned credentials and restarting...");
-                wifi_config_t wifi_cfg = {0};
-                esp_err_t err = esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg);
-                if (err != ESP_OK)
-                {
-                    ESP_LOGE(BT_TAG, "Failed to set wifi config, 0x%x", err);
-                }
-                xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
-                xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_ERR);
-
-                ESP_LOGI(BT_TAG, "provisioning error, retry end, stopping...");
-                stop_start_millis = getMillis();
-            }
-
+            handle_wifi_cred_fail((network_prov_wifi_sta_fail_reason_t *)event_data);
             break;
-        }
         case NETWORK_PROV_WIFI_CRED_SUCCESS:
-            ESP_LOGI(BT_TAG, "Provisioning successful");
-            prov_retry_num = 0;
-
-            wifi_config_t wifi_cfg;
-            esp_wifi_get_config(WIFI_IF_STA, &wifi_cfg);
-            if (wifi_cfg.sta.bssid_set)
-            {
-                ESP_LOGI(BT_TAG, "Connected with BSSID: %02X:%02X:%02X:%02X:%02X:%02X (channel: %d)",
-                         wifi_cfg.sta.bssid[0], wifi_cfg.sta.bssid[1], wifi_cfg.sta.bssid[2],
-                         wifi_cfg.sta.bssid[3], wifi_cfg.sta.bssid[4], wifi_cfg.sta.bssid[5],
-                         wifi_cfg.sta.channel);
-            }
-            else
-            {
-                ESP_LOGW(BT_TAG, "Connected without BSSID lock (SSID-only)");
-            }
-
-            writeWifiConfigToStorage((char *)wifi_cfg.sta.ssid, (char *)wifi_cfg.sta.password);
-
-            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
-            xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_OK);
+            handle_wifi_cred_success();
             break;
         case NETWORK_PROV_END:
-            // De-initialize manager once provisioning is finished and restart
-            ESP_LOGI(BT_TAG, "Provisioning end, status: %" PRIu32, wifiprov_bits);
-
-            xEventGroupClearBits(s_wifi_event_group, IS_PROVISIONING);
-            xEventGroupClearBits(wifiProvisioningEvents, PROV_EVT_NO | PROV_EVT_OK | PROV_EVT_ERR | PROV_EVT_RUN | PROV_EVT_CRED | PROV_EVT_END);
-            xEventGroupSetBits(wifiProvisioningEvents, PROV_EVT_END);
-
-            // clear bluetooth memory
-            if (deinit_on_provisioning_end)
-            {
-                network_prov_mgr_deinit();
-            }
-
-            // restart on timeout, error or success
-            if (restart_on_provisioning_error && (wifiprov_bits & PROV_EVT_ERR))
-            {
-                ESP_LOGI(BT_TAG, "provisioning error, restart");
-                xEventGroupSetBits(s_wifi_event_group, RESTART);
-            }
-            else if (restart_on_provisioning_success && (wifiprov_bits & PROV_EVT_OK))
-            {
-                ESP_LOGI(BT_TAG, "provisioning success, restart");
-                xEventGroupSetBits(s_wifi_event_group, RESTART);
-            }
-            else if (restart_on_provisioning_timeout && !(wifiprov_bits & PROV_EVT_ERR) && !(wifiprov_bits & PROV_EVT_OK))
-            {
-                ESP_LOGI(BT_TAG, "provisioning timeout, restart");
-                xEventGroupSetBits(s_wifi_event_group, RESTART);
-            }
-
+            handle_prov_end(wifiprov_bits);
             break;
-
         default:
             break;
         }
