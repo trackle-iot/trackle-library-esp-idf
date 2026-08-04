@@ -88,13 +88,17 @@ static esp_err_t udc_init_uart(void)
         .source_clk = UART_SCLK_APB,
     };
 
-    esp_err_t err = uart_driver_install(UDC_UART_NUM, UDC_UART_BUF_SIZE, UDC_UART_BUF_SIZE, 0, NULL, 0);
-    if (err != ESP_OK)
-        return err;
+    esp_err_t err = ESP_OK;
+    if (!uart_is_driver_installed(UDC_UART_NUM))
+    {
+        err = uart_driver_install(UDC_UART_NUM, UDC_UART_BUF_SIZE, UDC_UART_BUF_SIZE, 0, NULL, 0);
+        if (err != ESP_OK)
+            return err;
 
-    err = uart_param_config(UDC_UART_NUM, &uart_config);
-    if (err != ESP_OK)
-        return err;
+        err = uart_param_config(UDC_UART_NUM, &uart_config);
+        if (err != ESP_OK)
+            return err;
+    }
 
     ESP_LOGI(UDC_TAG, "UART initialized at %d 8N1", UDC_UART_BAUD_RATE);
     return ESP_OK;

@@ -141,6 +141,14 @@ void trackle_utils_bt_provision_set_option(TrackleUtilsBtOption option, bool val
 void trackle_utils_bt_provision_set_wifi_prov_timeout(uint16_t timeout);
 
 /**
+ * @brief Parse claim-code POST args (``cc,<63 chars>``) and save to NVS.
+ *
+ * @param args Mutable C string (strtok). Same format as the BLE ``set`` endpoint.
+ * @return 1 on success, -1 on invalid input.
+ */
+int trackle_utils_bt_apply_claim_args(char *args);
+
+/**
  * @brief Start BT provisioning.
  */
 void trackle_utils_bt_provision_init(void);

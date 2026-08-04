@@ -428,7 +428,7 @@ static void get_device_service_name(char *service_name, size_t max)
     service_name[max - 1] = '\0';
 }
 
-static int btPostCbClaimCode(const char *args)
+int trackle_utils_bt_apply_claim_args(char *args)
 {
     char *key = strtok(args, ",");
     if (key == NULL || strcmp(key, "cc") != 0)
@@ -444,9 +444,16 @@ static int btPostCbClaimCode(const char *args)
     }
     ESP_LOGI(BT_TAG, "Claim code received successfully:");
     ESP_LOG_BUFFER_CHAR_LEVEL(BT_TAG, claimCode, CLAIM_CODE_LENGTH, ESP_LOG_INFO);
-    trackleSetClaimCode(trackle_s, claimCode);
+    if (trackle_s != NULL)
+        trackleSetClaimCode(trackle_s, claimCode);
     Trackle_saveClaimCode(claimCode);
     return 1;
+}
+
+static int btPostCbClaimCode(const char *args)
+{
+    /* strtok needs a mutable buffer; args from protocomm is already mutable. */
+    return trackle_utils_bt_apply_claim_args((char *)args);
 }
 
 static int btPostEnd(const char *args)
