@@ -208,7 +208,9 @@ typedef struct
 
 esp_err_t writeWifiConfigToStorage(const char *ssid, const char *password)
 {
-    if (!ssid || !password || strlen(ssid) > SSID_SIZE || strlen(password) > PASSWORD_SIZE)
+    if (!ssid || !password
+        || strnlen(ssid, SSID_SIZE + 1) > SSID_SIZE
+        || strnlen(password, PASSWORD_SIZE + 1) > PASSWORD_SIZE)
     {
         return ESP_ERR_INVALID_ARG;
     }

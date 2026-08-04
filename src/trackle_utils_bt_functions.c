@@ -53,7 +53,7 @@ bool Trackle_BtPost_add(const char *name, int (*function)(const char *))
     {
         if (isNameAlreadyUsed(name))
             return false;
-        if (strlen(name) + 1 > MAX_BT_POST_NAME_LEN) // +1 because there must be space for null character
+        if (strnlen(name, MAX_BT_POST_NAME_LEN) + 1 > MAX_BT_POST_NAME_LEN) // +1 because there must be space for null character
             return false;
         strcpy(btPosts[actualBtPostsNum].name, name);
         btPosts[actualBtPostsNum].function = function;
@@ -69,7 +69,7 @@ bool Trackle_BtGet_add(const char *name, void *(*function)(const char *), Data_T
     {
         if (isNameAlreadyUsed(name))
             return false;
-        if (strlen(name) + 1 > MAX_BT_GET_NAME_LEN) // +1 because there must be space for null character
+        if (strnlen(name, MAX_BT_GET_NAME_LEN) + 1 > MAX_BT_GET_NAME_LEN) // +1 because there must be space for null character
             return false;
         strcpy(btGets[actualBtGetsNum].name, name);
         btGets[actualBtGetsNum].function = function;

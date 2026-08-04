@@ -408,7 +408,7 @@ static void get_device_service_name(char *service_name, size_t max)
     if (max > 21)
         max = 21;
     strncpy(service_name, bleProvDeviceName, max);
-    bleProvDeviceName[max - 1] = '\0';
+    service_name[max - 1] = '\0';
 }
 
 static int btPostCbClaimCode(const char *args)
@@ -420,7 +420,7 @@ static int btPostCbClaimCode(const char *args)
         return -1;
     }
     char *claimCode = strtok(NULL, ",");
-    if (key == NULL || strlen(claimCode) != 63)
+    if (claimCode == NULL || strnlen(claimCode, 64) != 63)
     {
         ESP_LOGE(BT_TAG, "Invalid claim code");
         return -1;
