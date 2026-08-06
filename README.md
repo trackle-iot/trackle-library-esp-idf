@@ -5,7 +5,12 @@ This framework enables Trackle cloud connectivity with ESP32 based platforms usi
 Documentation for this repository can be found [here](https://trackle-iot.github.io/trackle-library-esp-idf/v4).
 
 ## License
-Unless stated elsewhere, file headers or otherwise, all files herein are licensed under an LGPLv3 license. For more information, please read the LICENSE file.
+
+> ⚠️ **License Notice**
+> **trackle-library-esp-idf** (excluding `trackle-library`) is licensed under **MPL-2.0**.
+> The nested `trackle-library` remains under its own **Source-Available Commercial License** — see [`trackle-library/README.md`](trackle-library/README.md).
+
+Unless stated elsewhere, files herein are licensed under MPL-2.0 (see the LICENSE file). You may use this component in private and commercial firmware; if you modify Covered Software files, only those files must be made available under MPL-2.0, not the larger application as a whole.
 
 ## Getting Started
 ### Hardware

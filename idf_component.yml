@@ -4,6 +4,7 @@ url: https://github.com/trackle-iot/trackle-library-esp-idf
 repository: https://github.com/trackle-iot/trackle-library-esp-idf.git
 documentation: https://trackle-iot.github.io/trackle-library-esp-idf/v4
 issues: https://github.com/trackle-iot/trackle-library-esp-idf/issues
+license: "MPL-2.0"
 dependencies:
   idf: ">=6.0"
   espressif/network_provisioning:
