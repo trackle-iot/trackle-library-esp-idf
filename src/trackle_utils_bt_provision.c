@@ -428,13 +428,14 @@ int trackle_utils_bt_apply_claim_args(char *args)
         return -1;
     }
     char *claimCode = strtok(NULL, ",");
-    if (claimCode == NULL || strnlen(claimCode, 64) != 63)
+    size_t claimCodeLen = (claimCode == NULL) ? 0 : strnlen(claimCode, CLAIM_CODE_LENGTH + 1);
+    if (claimCode == NULL || claimCodeLen == 0 || claimCodeLen > CLAIM_CODE_LENGTH)
     {
         ESP_LOGE(BT_TAG, "Invalid claim code");
         return -1;
     }
     ESP_LOGI(BT_TAG, "Claim code received successfully:");
-    ESP_LOG_BUFFER_CHAR_LEVEL(BT_TAG, claimCode, CLAIM_CODE_LENGTH, ESP_LOG_INFO);
+    ESP_LOG_BUFFER_CHAR_LEVEL(BT_TAG, claimCode, claimCodeLen, ESP_LOG_INFO);
     if (trackle_s != NULL)
         trackleSetClaimCode(trackle_s, claimCode);
     Trackle_saveClaimCode(claimCode);

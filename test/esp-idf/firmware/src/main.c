@@ -179,7 +179,7 @@ static void claimcode_pad(const char *src, char out[CLAIM_CODE_LENGTH])
     memset(out, 0, CLAIM_CODE_LENGTH);
     if (!src)
         return;
-    size_t n = strnlen(src, CLAIM_CODE_LENGTH - 1);
+    size_t n = strnlen(src, CLAIM_CODE_LENGTH);
     memcpy(out, src, n);
 }
 
@@ -210,7 +210,7 @@ static void handle_claimcode_read(void)
             found = true;
         nvs_close(h);
     }
-    /* Prefix ~48 bytes + CLAIM_CODE_LENGTH (63) + NUL — 96 was truncating. */
+    /* Prefix ~48 bytes + CLAIM_CODE_LENGTH + NUL. */
     char buf[128];
     if (found)
         snprintf(buf, sizeof(buf),

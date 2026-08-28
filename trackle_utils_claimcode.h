@@ -19,10 +19,10 @@
  * @brief Functions and constants for working with the claimcode.
  */
 
-#define CLAIM_CODE_LENGTH 63 ///< Length of a valid claim code
+#define CLAIM_CODE_LENGTH 64 ///< Maximum length of a claim code (excluding NUL)
 
 /**
- * @brief Save the provided claim code to NVS. The provided \ref claimCode is expected to be at least \ref CLAIM_CODE_LENGTH bytes long.
+ * @brief Save the provided claim code to NVS. At most \ref CLAIM_CODE_LENGTH characters are stored.
  *
  * @param claimCode Claim code to save to NVS
  */

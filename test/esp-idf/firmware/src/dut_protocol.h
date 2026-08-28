@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "trackle_utils_claimcode.h"
+
 #define DUT_CMD_PREFIX "TRK_CMD:"
 #define DUT_EVT_PREFIX "TRK_EVT:"
 #define DUT_LINE_MAX 4096
@@ -23,7 +25,7 @@ typedef struct
     char server_address[128];
     int server_port;
     bool proxy_status;
-    char claim_code[64];
+    char claim_code[CLAIM_CODE_LENGTH + 1];
     char components_list[256];
     char imei[32];
     char iccid[32];

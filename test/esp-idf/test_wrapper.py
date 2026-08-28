@@ -73,6 +73,9 @@ _ESP_LOG_WARN = 2
 _ESP_LOG_INFO = 3
 _ESP_LOG_DEBUG = 4
 
+# Must match CLAIM_CODE_LENGTH / CLAIM_CODE_SIZE in the C/C++ library.
+CLAIM_CODE_LENGTH = 64
+
 # Prefer origin URL (not CDN) so a freshly uploaded v2 is visible immediately.
 _DUT_OTA_V2_URL = (
     "https://iotready.fra1.digitaloceanspaces.com/Iotready/dut_esp_idf_ota_v2.bin"
@@ -657,9 +660,8 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
         cases = (
             ("", -1),
             ("xx,abc", -1),
-            ("cc,short", -1),
-            ("cc," + "x" * 62, -1),
-            ("cc," + "y" * 64, -1),
+            ("cc,", -1),
+            ("cc," + "z" * (CLAIM_CODE_LENGTH + 1), -1),
         )
         for args, expect_rc in cases:
             self.to_device.put({"msg": "bt_claim_apply", "args": args})
@@ -669,7 +671,7 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
             self.assertEqual(res.get("rc"), expect_rc, args)
 
         alphabet = string.ascii_letters + string.digits
-        good = "".join(alphabet[i % len(alphabet)] for i in range(63))
+        good = "".join(alphabet[i % len(alphabet)] for i in range(CLAIM_CODE_LENGTH))
         self.to_device.put({"msg": "bt_claim_apply", "args": f"cc,{good}"})
         res = wait_queue_message(self.from_device, BT_RESULT, self)
         self.assertTrue(res.get("ok"))
@@ -719,7 +721,7 @@ class TrackleEspWrapperTest(posix_test.TrackleLibraryTest):
         self._wait_bt_run()
 
         alphabet = string.ascii_letters + string.digits
-        claim = "".join(alphabet[i % len(alphabet)] for i in range(63))
+        claim = "".join(alphabet[i % len(alphabet)] for i in range(CLAIM_CODE_LENGTH))
         echo_payload = "hello-bt"
 
         results = asyncio.run(
