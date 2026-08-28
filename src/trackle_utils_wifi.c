@@ -188,13 +188,18 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
         return ESP_ERR_INVALID_ARG;
     }
 
-    if (strlen(ssid) >= sizeof(((wifi_config_t *)0)->sta.ssid))
+    const size_t ssid_max = sizeof(((wifi_config_t *)0)->sta.ssid);
+    const size_t pass_max = sizeof(((wifi_config_t *)0)->sta.password);
+    const size_t ssid_len = strnlen(ssid, ssid_max + 1);
+    const size_t pass_len = strnlen(password, pass_max + 1);
+
+    if (ssid_len > ssid_max)
     {
         ESP_LOGE(WIFI_TAG, "SSID is too long");
         return ESP_ERR_INVALID_ARG;
     }
 
-    if (strlen(password) >= sizeof(((wifi_config_t *)0)->sta.password))
+    if (pass_len > pass_max)
     {
         ESP_LOGE(WIFI_TAG, "Password is too long");
         return ESP_ERR_INVALID_ARG;
@@ -209,9 +214,11 @@ esp_err_t wifi_set_credentials(const char *ssid, const char *password)
         return err;
     }
 
-    // Set new credentials
-    strcpy((char *)config.sta.ssid, ssid);
-    strcpy((char *)config.sta.password, password);
+    // Set new credentials (a 32-char SSID / 64-char password has no NUL in wifi_config_t)
+    memset(config.sta.ssid, 0, sizeof(config.sta.ssid));
+    memset(config.sta.password, 0, sizeof(config.sta.password));
+    memcpy(config.sta.ssid, ssid, ssid_len);
+    memcpy(config.sta.password, password, pass_len);
 
     // New SSID: reset any fixed BSSID and failure counter
     config.sta.bssid_set = false;

@@ -88,11 +88,13 @@ esp_err_t writeWifiConfigToStorage(const char *ssid, const char *password);
 /**
  * @brief Read and decrypt WiFi credentials from NVS
  *
- * @param ssid Buffer to store the SSID
- * @param password Buffer to store the password
+ * @param ssid Buffer to store the SSID (must be at least 33 bytes)
+ * @param ssid_len Size of the SSID buffer
+ * @param password Buffer to store the password (must be at least 65 bytes)
+ * @param password_len Size of the password buffer
  * @return ESP_OK on success, other value on error.
  */
-esp_err_t readWifiConfigFromStorage(char *ssid, char *password);
+esp_err_t readWifiConfigFromStorage(char *ssid, size_t ssid_len, char *password, size_t password_len);
 
 /**
  * @brief Read WiFi SSID and password saved in NVS by WiFiManager

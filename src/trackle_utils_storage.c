@@ -225,9 +225,11 @@ esp_err_t writeWifiConfigToStorage(const char *ssid, const char *password)
     return err;
 }
 
-esp_err_t readWifiConfigFromStorage(char *ssid, char *password)
+esp_err_t readWifiConfigFromStorage(char *ssid, size_t ssid_len, char *password, size_t password_len)
 {
-    if (!ssid || !password)
+    if (!ssid || !password
+        || ssid_len < SSID_SIZE + 1
+        || password_len < PASSWORD_SIZE + 1)
         return ESP_ERR_INVALID_ARG;
 
     wifi_creds_nvs_t creds;
